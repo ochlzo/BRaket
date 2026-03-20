@@ -1,0 +1,63 @@
+export const palette = {
+  brand: {
+    orange: "#FF6B35",
+    orangeStrong: "#F4511E",
+    orangeSoft: "#FFF3E0",
+    blue: "#4FC3F7",
+    blueStrong: "#29B6F6",
+    blueSoft: "#E1F5FE",
+    indigo: "#4F46E5",
+    indigoStrong: "#4338CA",
+  },
+  neutral: {
+    background: "#FCFCFB",
+    foreground: "#18212F",
+    surface: "#FFFFFF",
+    surfaceSoft: "#FEF5F0",
+    surfaceAlt: "#F8FAFC",
+    line: "rgba(24, 33, 47, 0.08)",
+    lineStrong: "#E7EBF1",
+    muted: "#5B6574",
+    mutedSoft: "#657082",
+    body: "#465264",
+    footer: "#141C27",
+  },
+  tones: {
+    sky: { soft: "#E1F5FE", pale: "#EFF6FF", base: "#4FC3F7", deep: "#2593BF" },
+    orange: { soft: "#FFEAD5", pale: "#FFF7ED", base: "#FF6B1A", deep: "#F4511E" },
+    teal: { soft: "#E0F7FA", base: "#4FC3F7", deep: "#0891B2" },
+    indigo: { soft: "#DBEAFE", base: "#4F46E5", deep: "#4338CA" },
+    green: { soft: "#DCFCE7", base: "#22C55E", deep: "#16A34A" },
+    purple: { soft: "#F3E8FF", base: "#A855F7", deep: "#7E22CE" },
+    amber: { soft: "#FEF3C7", base: "#F59E0B", deep: "#D97706" },
+    red: { soft: "#FEE2E2", base: "#EF4444", deep: "#DC2626" },
+    pink: { soft: "#FCE7F3", base: "#EC4899", deep: "#DB2777" },
+  },
+  shadows: {
+    md: "0 18px 42px rgba(38, 54, 82, 0.1)",
+    lg: "0 32px 70px rgba(38, 54, 82, 0.16)",
+  },
+} as const;
+
+export const paletteVars = {
+  brand: {
+    orange: "var(--brand-orange)",
+    orangeStrong: "var(--brand-orange-strong)",
+    blue: "var(--brand-blue)",
+    blueStrong: "var(--brand-blue-strong)",
+    indigo: "var(--brand-indigo)",
+    indigoStrong: "var(--brand-indigo-strong)",
+  },
+  neutral: {
+    background: "var(--background)",
+    foreground: "var(--foreground)",
+    surface: "var(--surface)",
+    surfaceSoft: "var(--surface-soft)",
+    line: "var(--line)",
+    lineStrong: "var(--line-strong)",
+    muted: "var(--ink-muted)",
+    mutedSoft: "var(--ink-soft)",
+    body: "var(--ink-body)",
+    footer: "var(--footer-bg)",
+  },
+} as const;
