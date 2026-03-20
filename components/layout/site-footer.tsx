@@ -28,7 +28,7 @@ export function SiteFooter({
             <div className="mb-4">
               <BrandMark href="/" variant="light" />
             </div>
-            <p className="max-w-sm text-sm leading-7 text-white/65">{brandDescription}</p>
+            <p className="typo-body-sm max-w-sm text-white/65">{brandDescription}</p>
           </div>
           {columns.map((column) => (
             <FooterColumn key={column.title} {...column} />
@@ -36,8 +36,8 @@ export function SiteFooter({
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-8">
-          <p className="text-sm text-white/55">© 2026 BRaket. For Bicol University Students.</p>
-          <div className="flex gap-6 text-sm text-white/55">
+          <p className="typo-meta text-white/55">© 2026 BRaket. For Bicol University Students.</p>
+          <div className="typo-meta flex gap-6 text-white/55">
             {legal.map((link) => (
               <a key={link.label} className="transition-colors hover:text-white" href={link.href}>
                 {link.label}

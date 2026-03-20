@@ -106,3 +106,73 @@ img {
 .br-hero-shadow {
   box-shadow: var(--shadow-lg);
 }
+
+@layer utilities {
+  .typo-brand {
+    @apply text-xl font-extrabold tracking-[-0.02em];
+  }
+
+  .typo-brand-badge {
+    @apply text-lg font-black;
+  }
+
+  .typo-hero {
+    @apply text-5xl font-extrabold leading-[0.95] tracking-[-0.05em] sm:text-6xl lg:text-7xl;
+  }
+
+  .typo-page-title {
+    @apply text-5xl font-extrabold tracking-[-0.05em] sm:text-6xl;
+  }
+
+  .typo-section-title {
+    @apply text-4xl font-bold tracking-[-0.04em] sm:text-5xl;
+  }
+
+  .typo-section-title-heavy {
+    @apply text-4xl font-extrabold tracking-[-0.04em] sm:text-5xl;
+  }
+
+  .typo-card-title-xl {
+    @apply text-xl font-bold tracking-[-0.03em];
+  }
+
+  .typo-card-title-lg {
+    @apply text-lg font-bold tracking-[-0.02em];
+  }
+
+  .typo-card-title-2xl {
+    @apply text-2xl font-bold tracking-[-0.03em];
+  }
+
+  .typo-body-xl {
+    @apply text-xl leading-8;
+  }
+
+  .typo-body-lg {
+    @apply text-lg leading-8;
+  }
+
+  .typo-body {
+    @apply text-base leading-7;
+  }
+
+  .typo-body-sm {
+    @apply text-sm leading-7;
+  }
+
+  .typo-label-sm {
+    @apply text-sm font-semibold;
+  }
+
+  .typo-meta {
+    @apply text-sm font-medium;
+  }
+
+  .typo-caption {
+    @apply text-xs font-semibold uppercase tracking-[0.08em];
+  }
+
+  .typo-stat {
+    @apply text-6xl font-extrabold tracking-[-0.05em] sm:text-7xl;
+  }
+}

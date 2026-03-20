@@ -8,10 +8,10 @@ export function BrandMark({ href, variant = "default" }: BrandMarkProps) {
 
   return (
     <a href={href} className="flex items-center gap-3">
-      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[color:var(--brand-orange)] to-[color:var(--brand-orange-strong)] text-lg font-black text-white">
+      <div className="typo-brand-badge flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[color:var(--brand-orange)] to-[color:var(--brand-orange-strong)] text-white">
         B
       </div>
-      <span className={`text-xl font-extrabold tracking-[-0.02em] ${textClassName}`}>BRaket</span>
+      <span className={`typo-brand ${textClassName}`}>BRaket</span>
     </a>
   );
 }

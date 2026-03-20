@@ -33,19 +33,19 @@ export function ServiceCard({
         {icon}
       </div>
 
-      <h2 className="text-2xl font-bold tracking-[-0.03em] text-foreground">{title}</h2>
-      <p className="mt-3 text-base leading-7 text-[color:var(--ink-body)]">{description}</p>
+      <h2 className="typo-card-title-2xl text-foreground">{title}</h2>
+      <p className="typo-body mt-3 text-[color:var(--ink-body)]">{description}</p>
 
       <ul className="mt-6 space-y-2.5">
         {features.map((feature) => (
-          <li key={feature} className="flex items-center gap-3 text-sm text-[color:var(--ink-body)]">
+          <li key={feature} className="typo-meta flex items-center gap-3 text-[color:var(--ink-body)]">
             <span className={`h-1.5 w-1.5 rounded-full ${styles.dot}`} />
             <span>{feature}</span>
           </li>
         ))}
       </ul>
 
-      <a className="mt-7 inline-flex w-full items-center justify-center rounded-full border-2 border-foreground bg-white px-5 py-3.5 text-sm font-semibold text-foreground transition hover:bg-foreground hover:text-white" href={actionHref}>
+      <a className="typo-label-sm mt-7 inline-flex w-full items-center justify-center rounded-full border-2 border-foreground bg-white px-5 py-3.5 text-foreground transition hover:bg-foreground hover:text-white" href={actionHref}>
         {actionLabel}
       </a>
     </article>

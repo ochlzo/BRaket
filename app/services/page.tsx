@@ -105,10 +105,10 @@ export default function ServicesPage() {
     >
       <section className="bg-[linear-gradient(135deg,var(--tone-sky-pale)_0%,#FFFFFF_50%,var(--tone-orange-soft)_100%)] px-5 pb-16 pt-32 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl text-center">
-          <h1 className="text-5xl font-extrabold tracking-[-0.05em] text-foreground sm:text-6xl">
+          <h1 className="typo-page-title text-foreground">
             Our <span className="text-[color:var(--brand-orange)]">Services</span>
           </h1>
-          <p className="mx-auto mt-6 max-w-3xl text-xl leading-8 text-[color:var(--ink-soft)]">
+          <p className="typo-body-xl mx-auto mt-6 max-w-3xl text-[color:var(--ink-soft)]">
             Discover the wide range of professional services offered by talented
             Bicol University students. From web development to creative design,
             find the right match for your project.

@@ -50,8 +50,8 @@ export function CtaBanner({
   return (
     <div className={`relative overflow-hidden rounded-[2rem] px-8 py-14 text-center sm:px-12 sm:py-16 ${gradientClassName}`}>
       <div className="relative z-10">
-        <h2 className="text-4xl font-extrabold tracking-[-0.04em] text-white sm:text-5xl">{title}</h2>
-        <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-white/90">{description}</p>
+        <h2 className="typo-section-title-heavy text-white">{title}</h2>
+        <p className="typo-body-lg mx-auto mt-5 max-w-2xl text-white/90">{description}</p>
         <div className="mt-8 flex flex-wrap justify-center gap-4">
           {renderAction(primaryAction)}
           {secondaryAction ? renderAction(secondaryAction) : null}

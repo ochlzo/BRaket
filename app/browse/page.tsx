@@ -109,10 +109,10 @@ export default function BrowsePage() {
       <section className="px-5 pb-12 pt-32 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="mb-12 text-center">
-            <h1 className="mb-4 text-5xl font-extrabold tracking-[-0.05em] text-foreground sm:text-6xl">
+            <h1 className="typo-page-title mb-4 text-foreground">
               Find Your Perfect <span className="text-[color:var(--brand-orange)]">Talent</span>
             </h1>
-            <p className="mx-auto max-w-2xl text-xl leading-8 text-[color:var(--ink-soft)]">
+            <p className="typo-body-xl mx-auto max-w-2xl text-[color:var(--ink-soft)]">
               Browse through verified BU student professionals ready to bring your projects to life.
             </p>
           </div>
@@ -135,14 +135,14 @@ export default function BrowsePage() {
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <FilterIcon />
-                <span className="font-semibold text-foreground">Filters</span>
+                <span className="typo-label-sm text-foreground">Filters</span>
               </div>
 
               <div className="flex flex-wrap gap-3">
                 <FilterChip label="All Ratings" />
                 <FilterChip label="All Locations" />
                 <button
-                  className="rounded-full px-4 py-2.5 text-sm font-semibold text-[color:var(--ink-soft)] transition hover:bg-[#F5F7FA] hover:text-foreground"
+                  className="typo-label-sm rounded-full px-4 py-2.5 text-[color:var(--ink-soft)] transition hover:bg-[#F5F7FA] hover:text-foreground"
                   type="button"
                 >
                   Clear All
@@ -152,8 +152,8 @@ export default function BrowsePage() {
           </div>
 
           <div className="mb-6">
-            <p className="text-[color:var(--ink-soft)]">
-              Showing <span className="font-bold text-foreground">{talents.length}</span> talents
+            <p className="typo-meta text-[color:var(--ink-soft)]">
+              Showing <span className="typo-label-sm text-foreground">{talents.length}</span> talents
             </p>
           </div>
 

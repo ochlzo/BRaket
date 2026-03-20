@@ -13,7 +13,7 @@ export function SearchField({ defaultValue, name, placeholder }: SearchFieldProp
         <SearchIcon className="h-5 w-5" />
       </span>
       <input
-        className="w-full rounded-full border-2 border-[color:var(--line-strong)] bg-white py-5 pl-14 pr-5 text-lg text-foreground outline-none transition placeholder:text-[#9BA3B2] focus:border-[color:var(--brand-blue)]"
+        className="typo-body-lg w-full rounded-full border-2 border-[color:var(--line-strong)] bg-white py-5 pl-14 pr-5 text-foreground outline-none transition placeholder:text-[#9BA3B2] focus:border-[color:var(--brand-blue)]"
         defaultValue={defaultValue}
         name={name}
         placeholder={placeholder}

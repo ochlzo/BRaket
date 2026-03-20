@@ -30,7 +30,7 @@ export function TalentCard({
       <div className="relative h-56 bg-[linear-gradient(135deg,var(--tone-indigo-soft)_0%,var(--tone-orange-soft)_100%)]">
         <Image alt={name} className="h-full w-full object-cover" fill sizes="(max-width: 1280px) 50vw, 33vw" src={image} />
         {available ? (
-          <div className="absolute right-4 top-4 rounded-full bg-[color:var(--tone-green-base)] px-3 py-1 text-xs font-semibold text-white">
+          <div className="typo-label-sm absolute right-4 top-4 rounded-full bg-[color:var(--tone-green-base)] px-3 py-1 text-white">
             Available
           </div>
         ) : null}
@@ -38,19 +38,19 @@ export function TalentCard({
 
       <div className="p-6">
         <div className="mb-3">
-          <h2 className="text-xl font-bold tracking-[-0.03em] text-foreground">{name}</h2>
-          <p className="mt-1 text-[color:var(--ink-soft)]">{role}</p>
+          <h2 className="typo-card-title-xl text-foreground">{name}</h2>
+          <p className="typo-meta mt-1 text-[color:var(--ink-soft)]">{role}</p>
         </div>
 
         <div className="mb-4 flex items-center gap-2">
           <span className="text-[color:var(--brand-orange)]">
             <StarIcon className="h-4 w-4 fill-current" />
           </span>
-          <span className="font-bold text-foreground">{rating.toFixed(1)}</span>
-          <span className="text-sm text-[#8C96A8]">({reviews} reviews)</span>
+          <span className="typo-label-sm text-foreground">{rating.toFixed(1)}</span>
+          <span className="typo-meta text-[#8C96A8]">({reviews} reviews)</span>
         </div>
 
-        <div className="mb-4 space-y-2 text-sm text-[color:var(--ink-soft)]">
+        <div className="typo-meta mb-4 space-y-2 text-[color:var(--ink-soft)]">
           <div className="flex items-center gap-2">
             <MapPinIcon className="h-5 w-5" />
             <span>{location}</span>

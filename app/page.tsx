@@ -117,25 +117,25 @@ export default function Home() {
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(135deg,var(--tone-sky-pale)_0%,#FFFFFF_48%,var(--tone-orange-pale)_100%)]" />
         <div className="mx-auto grid max-w-7xl gap-14 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
           <div className="space-y-8">
-            <div className="inline-flex items-center rounded-full bg-[color:var(--tone-sky-soft)] px-4 py-2 text-sm font-semibold text-[color:var(--tone-sky-deep)]">
+            <div className="typo-label-sm inline-flex items-center rounded-full bg-[color:var(--tone-sky-soft)] px-4 py-2 text-[color:var(--tone-sky-deep)]">
               <span className="mr-2 text-xs uppercase tracking-[0.18em]">
                 🎓
               </span>
               For BU Students, By BU Students
             </div>
             <div className="space-y-5">
-              <h1 className="max-w-xl text-5xl font-extrabold leading-[0.95] tracking-[-0.05em] text-foreground sm:text-6xl lg:text-7xl">
+              <h1 className="typo-hero max-w-xl text-foreground">
                 Discover talent.
                 <br />
                 <span className="br-gradient-text">Unlock potential.</span>
               </h1>
-              <p className="max-w-2xl text-lg leading-8 text-[color:var(--ink-muted)] sm:text-xl">
+              <p className="typo-body-lg max-w-2xl text-[color:var(--ink-muted)]">
                 BRaket connects Bicol University students with opportunities to
                 showcase their skills, build portfolios, and earn through
                 commission-based projects.
               </p>
             </div>
-            <div className="flex items-center gap-2 text-sm font-semibold text-[#354052] sm:text-base">
+            <div className="typo-label-sm flex items-center gap-2 text-[#354052]">
               <div className="flex items-center gap-1 text-[color:var(--tone-orange-base)]">
                 {Array.from({ length: 5 }).map((_, index) => (
                   <StarIcon key={index} />
@@ -171,8 +171,8 @@ export default function Home() {
                   />
                 ))}
               </div>
-              <p className="text-sm text-[color:var(--ink-muted)]">
-                <span className="font-bold text-foreground">500+ students</span>{" "}
+              <p className="typo-meta text-[color:var(--ink-muted)]">
+                <span className="typo-label-sm text-foreground">500+ students</span>{" "}
                 already earning
               </p>
             </div>
@@ -202,7 +202,7 @@ export default function Home() {
         <div className="relative z-10 mx-auto grid max-w-7xl gap-14 lg:grid-cols-[1.06fr_0.94fr] lg:items-center">
           <div className="space-y-8">
             <div className="space-y-6">
-              <h2 className="max-w-3xl text-4xl font-bold leading-tight tracking-[-0.04em] text-foreground sm:text-5xl">
+              <h2 className="typo-section-title max-w-3xl leading-tight text-foreground">
                 Whether you&apos;re hiring for a product, campaign, event, or a
                 fresh idea,
                 <span className="text-[color:var(--tone-orange-base)]">
@@ -216,15 +216,15 @@ export default function Home() {
               </a>
             </div>
             <div className="inline-block rounded-[2rem] bg-white px-8 py-8 shadow-[0_18px_48px_rgba(74,57,41,0.08)]">
-              <p className="mb-3 text-sm leading-6 text-[color:var(--ink-muted)]">
+              <p className="typo-meta mb-3 leading-6 text-[color:var(--ink-muted)]">
                 We support you through every step of
                 <br />
                 your relocation journey
               </p>
-              <div className="text-6xl font-extrabold tracking-[-0.05em] text-foreground sm:text-7xl">
+              <div className="typo-stat text-foreground">
                 1378+
               </div>
-              <p className="mt-2 text-[color:var(--ink-muted)]">
+              <p className="typo-meta mt-2 text-[color:var(--ink-muted)]">
                 Clients relocated successfully
               </p>
             </div>
@@ -256,13 +256,13 @@ export default function Home() {
       <section className="px-5 py-20 sm:px-6 lg:px-8" id="categories">
         <div className="mx-auto max-w-7xl">
           <div className="mx-auto mb-14 max-w-3xl text-center">
-            <h2 className="text-4xl font-bold tracking-[-0.04em] text-foreground sm:text-5xl">
+            <h2 className="typo-section-title text-foreground">
               Browse by{" "}
               <span className="text-[color:var(--tone-orange-base)]">
                 Category
               </span>
             </h2>
-            <p className="mt-4 text-lg leading-8 text-[color:var(--ink-muted)]">
+            <p className="typo-body-lg mt-4 text-[color:var(--ink-muted)]">
               Find the right student talent for your project across technical,
               visual, and creative disciplines.
             </p>
@@ -284,10 +284,10 @@ export default function Home() {
         <div className="mx-auto max-w-7xl">
           <div className="mb-12 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-2xl">
-              <h2 className="text-4xl font-bold tracking-[-0.04em] text-foreground sm:text-5xl">
+              <h2 className="typo-section-title text-foreground">
                 Everything you need to find talent with confidence
               </h2>
-              <p className="mt-4 text-lg leading-8 text-[color:var(--ink-muted)]">
+              <p className="typo-body-lg mt-4 text-[color:var(--ink-muted)]">
                 We provide end-to-end support throughout your project journey,
                 from discovery to final delivery.
               </p>

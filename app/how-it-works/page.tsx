@@ -117,10 +117,10 @@ export default function HowItWorksPage() {
     >
       <section className="bg-[linear-gradient(135deg,var(--tone-sky-pale)_0%,var(--tone-purple-soft)_100%)] px-5 pb-16 pt-32 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl text-center">
-          <h1 className="text-5xl font-extrabold tracking-[-0.05em] text-foreground sm:text-6xl">
+          <h1 className="typo-page-title text-foreground">
             How <span className="text-[color:var(--brand-orange)]">BRaket</span> Works
           </h1>
-          <p className="mx-auto mt-6 max-w-3xl text-xl leading-8 text-[color:var(--ink-soft)]">
+          <p className="typo-body-xl mx-auto mt-6 max-w-3xl text-[color:var(--ink-soft)]">
             A simple, transparent process for connecting BU students with real opportunities.
           </p>
         </div>
@@ -129,10 +129,10 @@ export default function HowItWorksPage() {
       <section className="bg-white px-5 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="mb-16 text-center">
-            <h2 className="text-4xl font-extrabold tracking-[-0.04em] text-foreground">
+            <h2 className="typo-section-title-heavy text-foreground">
               For <span className="text-[color:var(--brand-indigo)]">Clients</span>
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-xl leading-8 text-[color:var(--ink-soft)]">
+            <p className="typo-body-xl mx-auto mt-4 max-w-2xl text-[color:var(--ink-soft)]">
               Find and hire talented BU students in four simple steps.
             </p>
           </div>
@@ -163,10 +163,10 @@ export default function HowItWorksPage() {
       <section className="bg-[linear-gradient(135deg,var(--tone-orange-soft)_0%,var(--tone-indigo-soft)_100%)] px-5 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="mb-16 text-center">
-            <h2 className="text-4xl font-extrabold tracking-[-0.04em] text-foreground">
+            <h2 className="typo-section-title-heavy text-foreground">
               For <span className="text-[color:var(--brand-orange)]">Talents</span>
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-xl leading-8 text-[color:var(--ink-soft)]">
+            <p className="typo-body-xl mx-auto mt-4 max-w-2xl text-[color:var(--ink-soft)]">
               Start earning and building your portfolio in four easy steps.
             </p>
           </div>
@@ -197,10 +197,10 @@ export default function HowItWorksPage() {
       <section className="bg-white px-5 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="mb-16 text-center">
-            <h2 className="text-4xl font-extrabold tracking-[-0.04em] text-foreground">
+            <h2 className="typo-section-title-heavy text-foreground">
               Platform <span className="text-[color:var(--brand-indigo)]">Features</span>
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-xl leading-8 text-[color:var(--ink-soft)]">
+            <p className="typo-body-xl mx-auto mt-4 max-w-2xl text-[color:var(--ink-soft)]">
               Everything you need for successful collaboration.
             </p>
           </div>
@@ -211,8 +211,8 @@ export default function HowItWorksPage() {
                 key={feature.title}
                 className="rounded-[1.5rem] border border-[color:var(--line-strong)] bg-[linear-gradient(135deg,var(--surface-alt)_0%,#FFFFFF_100%)] p-6 transition duration-200 hover:shadow-[0_18px_40px_rgba(35,46,66,0.08)]"
               >
-                <h3 className="text-lg font-bold tracking-[-0.02em] text-foreground">{feature.title}</h3>
-                <p className="mt-2 text-base leading-7 text-[color:var(--ink-soft)]">{feature.description}</p>
+                <h3 className="typo-card-title-lg text-foreground">{feature.title}</h3>
+                <p className="typo-body mt-2 text-[color:var(--ink-soft)]">{feature.description}</p>
               </article>
             ))}
           </div>

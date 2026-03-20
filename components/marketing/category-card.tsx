@@ -22,10 +22,10 @@ export function CategoryCard({ description, href, icon, title, tone }: CategoryC
       <div className="space-y-5">
         <div className={`flex h-14 w-14 items-center justify-center rounded-2xl ${styles.icon}`}>{icon}</div>
         <div>
-          <h3 className="text-xl font-bold tracking-[-0.03em] text-foreground">{title}</h3>
-          <p className="mt-2 text-sm leading-7 text-[#4a5565]">{description}</p>
+          <h3 className="typo-card-title-xl text-foreground">{title}</h3>
+          <p className="typo-body-sm mt-2 text-[#4a5565]">{description}</p>
         </div>
-        <div className="inline-flex items-center gap-2 font-semibold text-foreground transition group-hover:gap-3">
+        <div className="typo-label-sm inline-flex items-center gap-2 text-foreground transition group-hover:gap-3">
           Explore
           <ArrowRightIcon />
         </div>
