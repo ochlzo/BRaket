@@ -1,0 +1,9 @@
+[mcp_servers.filesystem]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-filesystem", "C:/Projects/test-figma-skill"]
+startup_timeout_sec = 30
+
+[mcp_servers.git]
+command = "python"
+args = ["-m", "mcp_server_git", "--repository", "C:/Projects/test-figma-skill"]
+startup_timeout_sec = 30
