@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 import { PageShell } from "@/components/layout/page-shell";
@@ -108,6 +111,14 @@ const features = [
 ];
 
 export default function HowItWorksPage() {
+  const [mounted, setMounted] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setIsLoggedIn(!!localStorage.getItem("braket_session"));
+  }, []);
+
   return (
     <PageShell
       activeHref="/how-it-works"
@@ -219,17 +230,19 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      <section className="px-5 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-5xl">
-          <CtaBanner
-            description="Join the BRaket community today and unlock new opportunities."
-            gradientClassName="bg-[linear-gradient(90deg,var(--brand-orange)_0%,var(--brand-indigo)_100%)]"
-            primaryAction={{ href: "/#cta", label: "Sign Up Now", variant: "whiteOrange" }}
-            secondaryAction={{ href: "/#top", label: "Learn More", variant: "outlineWhite" }}
-            title="Ready to get started?"
-          />
-        </div>
-      </section>
+      {(!mounted || !isLoggedIn) && (
+        <section className="px-5 py-20 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-5xl">
+            <CtaBanner
+              description="Join the BRaket community today and unlock new opportunities."
+              gradientClassName="bg-[linear-gradient(90deg,var(--brand-orange)_0%,var(--brand-indigo)_100%)]"
+              primaryAction={{ href: "/signup", label: "Sign Up Now", variant: "whiteOrange" }}
+              secondaryAction={{ href: "/#top", label: "Learn More", variant: "outlineWhite" }}
+              title="Ready to get started?"
+            />
+          </div>
+        </section>
+      )}
     </PageShell>
   );
 }

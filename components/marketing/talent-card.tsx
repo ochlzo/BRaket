@@ -12,6 +12,7 @@ type TalentCardProps = {
   reviews: number;
   role: string;
   skills: string[];
+  username?: string;
 };
 
 export function TalentCard({
@@ -24,9 +25,10 @@ export function TalentCard({
   reviews,
   role,
   skills,
+  username,
 }: TalentCardProps) {
   return (
-    <article className="group overflow-hidden rounded-[1.75rem] border border-[color:var(--line-strong)] bg-white transition duration-200 hover:-translate-y-1 hover:shadow-[0_24px_48px_rgba(28,43,67,0.12)]">
+    <article className="group overflow-hidden rounded-[1.75rem] border border-[color:var(--line-strong)] bg-white">
       <div className="relative h-56 bg-[linear-gradient(135deg,var(--tone-indigo-soft)_0%,var(--tone-orange-soft)_100%)]">
         <Image alt={name} className="h-full w-full object-cover" fill sizes="(max-width: 1280px) 50vw, 33vw" src={image} />
         {available ? (
@@ -72,12 +74,12 @@ export function TalentCard({
           ))}
         </div>
 
-        <button
-          className="w-full rounded-full bg-[color:var(--brand-blue)] px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-[color:var(--brand-blue-strong)]"
-          type="button"
+        <a
+          className="block w-full rounded-full bg-[color:var(--brand-blue)] px-5 py-3.5 text-center text-sm font-semibold text-white transition hover:bg-[color:var(--brand-blue-strong)]"
+          href={username ? `/talent/${username}` : "#"}
         >
           View Profile
-        </button>
+        </a>
       </div>
     </article>
   );

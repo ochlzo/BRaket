@@ -7,7 +7,7 @@ export function FilterChip({ active = false, label }: FilterChipProps) {
   return (
     <button
       type="button"
-      className={`typo-meta rounded-full border px-4 py-2.5 transition ${
+      className={`typo-meta rounded-full border px-3 py-1.5 transition ${
         active
           ? "border-[color:var(--brand-blue)] bg-[color:var(--brand-blue)] text-white"
           : "border-[color:var(--line-strong)] bg-white text-[color:var(--ink-body)] hover:border-[color:var(--brand-blue)] hover:text-foreground"

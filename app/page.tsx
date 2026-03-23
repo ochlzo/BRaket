@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 
 import { CategoryCard } from "@/components/marketing/category-card";
@@ -102,6 +105,14 @@ const featureCards = [
 ];
 
 export default function Home() {
+  const [mounted, setMounted] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setIsLoggedIn(!!localStorage.getItem("braket_session"));
+  }, []);
+
   return (
     <PageShell
       activeHref="#top"
@@ -144,7 +155,7 @@ export default function Home() {
               <span>4.9/5 from 500+ reviews</span>
             </div>
             <div className="flex flex-wrap gap-4">
-              <a className={semantic.button.brandBlue} href="#categories">
+              <a className={semantic.button.brandBlue} href="/browse">
                 Browse Talents
                 <span className="ml-3">
                   <SearchIcon />
@@ -152,7 +163,7 @@ export default function Home() {
               </a>
               <a
                 className={semantic.button.outlineNeutralStrong}
-                href="#journey"
+                href="/onboarding/talent"
               >
                 I&apos;m a Talent
               </a>
@@ -186,7 +197,7 @@ export default function Home() {
                 alt="Bicol University students collaborating together"
                 className="h-[28rem] w-full rounded-[1.5rem] object-cover sm:h-[34rem]"
                 height={1360}
-                src="https://images.unsplash.com/photo-1758270705902-f50dde4add9f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYXBweSUyMGNvbGxlZ2UlMjBzdHVkZW50cyUyMGRpdmVyc2UlMjBncm91cHxlbnwxfHx8fDE3NzM4NDI2MTh8MA&ixlib=rb-4.1.0&q=80&w=1080"
+                src="/images/hero_students.png"
                 width={1080}
               />
             </div>
@@ -211,7 +222,7 @@ export default function Home() {
                 </span>
                 in discovery, matching, and delivery.
               </h2>
-              <a className={semantic.button.brandBlue} href="#features">
+              <a className={semantic.button.brandBlue} href="/browse">
                 View Our Cases
               </a>
             </div>
@@ -236,7 +247,7 @@ export default function Home() {
                 alt="Student speaking on a video call"
                 className="aspect-square w-full rounded-[1.5rem] object-cover"
                 height={1080}
-                src="https://images.unsplash.com/photo-1650686947677-b62e1acf99ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhc2lhbiUyMHdvbWFuJTIwdmlkZW8lMjBjYWxsJTIwbGFwdG9wfGVufDF8fHx8MTc3Mzg0NDc2M3ww&ixlib=rb-4.1.0&q=80&w=1080"
+                src="/images/student_video_call.png"
                 width={1080}
               />
             </div>
@@ -245,7 +256,7 @@ export default function Home() {
                 alt="Happy clients celebrating together"
                 className="aspect-square w-full rounded-[1.5rem] object-cover"
                 height={1080}
-                src="https://images.unsplash.com/photo-1771923892021-e94fcc4895cb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhc2lhbiUyMGZhbWlseSUyMGhhcHB5JTIwaG9tZXxlbnwxfHx8fDE3NzM4NDQ3NjN8MA&ixlib=rb-4.1.0&q=80&w=1080"
+                src="/images/team_celebration.png"
                 width={1080}
               />
             </div>
@@ -272,7 +283,7 @@ export default function Home() {
             {categories.map((category) => (
               <CategoryCard
                 key={category.title}
-                href="#features"
+                href="/browse"
                 {...category}
               />
             ))}
@@ -292,7 +303,7 @@ export default function Home() {
                 from discovery to final delivery.
               </p>
             </div>
-            <a className={semantic.button.brandBlueMd} href="#cta">
+            <a className={semantic.button.brandBlueMd} href="/post-project">
               Start a Project
             </a>
           </div>
@@ -305,25 +316,27 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="px-5 py-20 sm:px-6 lg:px-8" id="cta">
-        <div className="mx-auto max-w-5xl">
-          <CtaBanner
-            description="Join hundreds of BU students already building income, experience, and stronger portfolios on BRaket."
-            gradientClassName="bg-[linear-gradient(90deg,var(--tone-orange-base)_0%,var(--brand-blue)_100%)]"
-            primaryAction={{
-              href: "#top",
-              label: "Get Started Today",
-              variant: "whiteOrange",
-            }}
-            secondaryAction={{
-              href: "#features",
-              label: "Learn More",
-              variant: "outlineWhite",
-            }}
-            title="Ready to start your journey?"
-          />
-        </div>
-      </section>
+      {(!mounted || !isLoggedIn) && (
+        <section className="px-5 py-20 sm:px-6 lg:px-8" id="cta">
+          <div className="mx-auto max-w-5xl">
+            <CtaBanner
+              description="Join hundreds of BU students already building income, experience, and stronger portfolios on BRaket."
+              gradientClassName="bg-[linear-gradient(90deg,var(--tone-orange-base)_0%,var(--brand-blue)_100%)]"
+              primaryAction={{
+                href: "/signup",
+                label: "Get Started Today",
+                variant: "whiteOrange",
+              }}
+              secondaryAction={{
+                href: "/how-it-works",
+                label: "Learn More",
+                variant: "outlineWhite",
+              }}
+              title="Ready to start your journey?"
+            />
+          </div>
+        </section>
+      )}
     </PageShell>
   );
 }

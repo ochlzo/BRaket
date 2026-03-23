@@ -25,7 +25,7 @@ export function ServiceCard({
 
   return (
     <article
-      className={`${styles.card} group rounded-[1.75rem] p-8 transition duration-200 hover:-translate-y-2 hover:shadow-[0_28px_54px_rgba(31,44,65,0.12)]`}
+      className={`${styles.card} group rounded-[1.75rem] p-8 transition duration-200`}
     >
       <div
         className={`mb-6 flex h-16 w-16 items-center justify-center rounded-[1.25rem] bg-white transition-transform group-hover:scale-110 ${styles.text}`}
@@ -45,7 +45,7 @@ export function ServiceCard({
         ))}
       </ul>
 
-      <a className="typo-label-sm mt-7 inline-flex w-full items-center justify-center rounded-full border-2 border-foreground bg-white px-5 py-3.5 text-foreground transition hover:bg-foreground hover:text-white" href={actionHref}>
+      <a className="typo-label-sm mt-7 inline-flex w-full items-center justify-center rounded-full border-2 border-[color:var(--line-strong)] bg-white px-5 py-3.5 text-foreground transition hover:bg-[color:var(--surface-alt)]" href={actionHref}>
         {actionLabel}
       </a>
     </article>
