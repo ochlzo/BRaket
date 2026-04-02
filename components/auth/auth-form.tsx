@@ -68,6 +68,14 @@ function ArrowRightIcon() {
   );
 }
 
+function IdCardIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" className="size-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z" />
+    </svg>
+  );
+}
+
 /* ─── Shared password input ─── */
 function PasswordInput({
   id,
@@ -198,6 +206,7 @@ export function SignUpForm() {
   const router = useRouter();
   const [showOtp, setShowOtp] = useState(false);
   const [otp, setOtp] = useState("");
+  const [userType, setUserType] = useState<"client" | "talent">("client");
 
   return (
     <form
@@ -212,10 +221,35 @@ export function SignUpForm() {
           alert("Invalid OTP code. Please use 123456 for testing.");
           return;
         }
-        localStorage.setItem("braket_session", JSON.stringify({ type: "client", username: "new-user" }));
+        localStorage.setItem("braket_session", JSON.stringify({ type: userType, username: "new-user" }));
         router.push("/");
       }}
     >
+      <div className="flex rounded-xl bg-[color:var(--surface-alt)] p-1">
+        <button
+          type="button"
+          onClick={() => setUserType("client")}
+          className={`flex-1 rounded-lg py-2 text-sm font-medium transition-all ${
+            userType === "client"
+              ? "bg-white text-foreground shadow-sm"
+              : "text-[color:var(--ink-muted)] hover:text-foreground"
+          }`}
+        >
+          Client
+        </button>
+        <button
+          type="button"
+          onClick={() => setUserType("talent")}
+          className={`flex-1 rounded-lg py-2 text-sm font-medium transition-all ${
+            userType === "talent"
+              ? "bg-white text-foreground shadow-sm"
+              : "text-[color:var(--ink-muted)] hover:text-foreground"
+          }`}
+        >
+          Student Provider
+        </button>
+      </div>
+
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="signup-first-name" className="text-sm font-medium text-foreground">
@@ -254,7 +288,7 @@ export function SignUpForm() {
 
       <div className="space-y-2">
         <Label htmlFor="signup-email" className="text-sm font-medium text-foreground">
-          University Email
+          {userType === "talent" ? "University Email" : "Email Address"}
         </Label>
         <div className="flex gap-2">
           <div className="relative flex-1">
@@ -264,7 +298,7 @@ export function SignUpForm() {
             <Input
               id="signup-email"
               type="email"
-              placeholder="you@bicol-u.edu.ph"
+              placeholder={userType === "talent" ? "you@bicol-u.edu.ph" : "you@example.com"}
               className="h-11 w-full rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] pl-10 text-sm placeholder:text-[color:var(--ink-soft)] focus-visible:border-[color:var(--brand-blue)] focus-visible:ring-[color:var(--brand-blue)]/20"
             />
           </div>
@@ -278,6 +312,32 @@ export function SignUpForm() {
           </Button>
         </div>
       </div>
+
+      {userType === "talent" && (
+        <div className="space-y-2">
+          <Label htmlFor="signup-buid" className="text-sm font-medium text-foreground">
+            BU ID Photo (Verification)
+          </Label>
+          <div className="relative flex items-center">
+            <div className="pointer-events-none absolute left-3 text-[color:var(--ink-muted)]">
+              <IdCardIcon />
+            </div>
+            <Input
+              id="signup-buid"
+              type="file"
+              accept="image/*"
+              required={userType === "talent"}
+              className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] pl-10 pt-2.5 text-sm file:mr-4 file:rounded-md file:border-0 file:bg-transparent file:text-sm file:font-semibold focus-visible:border-[color:var(--brand-blue)] focus-visible:ring-[color:var(--brand-blue)]/20"
+            />
+          </div>
+          <p className="text-xs text-[color:var(--ink-soft)]">
+            Please upload a clear picture of your Bicol University ID to verify your student status.
+          </p>
+          <div className="mt-2 rounded-lg bg-[color:var(--tone-amber-soft)] p-3 text-xs font-medium text-[color:var(--tone-amber-deep)]">
+            ℹ️ Note: Pending admin verification of your school email and ID before your profile goes live.
+          </div>
+        </div>
+      )}
 
       {showOtp && (
         <div className="space-y-2 animate-in fade-in slide-in-from-top-2">

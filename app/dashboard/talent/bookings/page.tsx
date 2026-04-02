@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { getBookingsByTalent, mockCurrentTalentProfile } from "@/lib/mock-data";
-import type { BookingStatus } from "@/types";
+import type { BookingStatus, Booking } from "@/types";
 
 const statusColors: Record<string, string> = {
   pending: "bg-[color:var(--tone-amber-soft)] text-[color:var(--tone-amber-deep)]",
@@ -25,15 +25,21 @@ const tabs: { value: Tab; label: string }[] = [
 
 export default function TalentBookingsPage() {
   const [activeTab, setActiveTab] = useState<Tab>("all");
-  const bookings = getBookingsByTalent(mockCurrentTalentProfile.id);
+  const [bookingsList, setBookingsList] = useState<Booking[]>(getBookingsByTalent(mockCurrentTalentProfile.id));
 
   const filtered = activeTab === "all"
-    ? bookings
+    ? bookingsList
     : activeTab === "active"
-      ? bookings.filter((b) => b.status === "in-progress" || b.status === "accepted")
+      ? bookingsList.filter((b) => b.status === "in-progress" || b.status === "accepted")
       : activeTab === "pending"
-        ? bookings.filter((b) => b.status === "pending")
-        : bookings.filter((b) => b.status === "completed");
+        ? bookingsList.filter((b) => b.status === "pending")
+        : bookingsList.filter((b) => b.status === "completed");
+
+  const updateStatus = (id: string, newStatus: BookingStatus) => {
+    setBookingsList((prev) =>
+      prev.map((b) => (b.id === id ? { ...b, status: newStatus } : b))
+    );
+  };
 
   return (
     <DashboardLayout role="talent" title="My Bookings" subtitle="Manage your commission requests">
@@ -114,19 +120,36 @@ export default function TalentBookingsPage() {
                     </span>
                   </div>
 
+                  {/* Contact Info Reveal upon acceptance */}
+                  {["accepted", "in-progress", "completed"].includes(booking.status) && (
+                    <div className="mt-4 rounded-xl border border-[color:var(--line)] bg-[color:var(--surface-alt)] p-4">
+                      <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[color:var(--ink-muted)]">
+                        Client Contact Information
+                      </p>
+                      <div className="grid gap-2 text-sm text-[color:var(--ink-body)] sm:grid-cols-2">
+                        <p>📧 Email: <a href={`mailto:${booking.client.email}`} className="text-[color:var(--brand-blue)] hover:underline">{booking.client.email}</a></p>
+                        {booking.client.phone && <p>📞 Phone: {booking.client.phone}</p>}
+                        {booking.client.socials?.facebook && <p>🔵 FB: {booking.client.socials.facebook}</p>}
+                        {booking.client.socials?.instagram && <p>📸 IG: {booking.client.socials.instagram}</p>}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Actions */}
                   <div className="mt-4 flex gap-2">
                     {booking.status === "pending" && (
                       <>
                         <button
                           type="button"
+                          onClick={() => updateStatus(booking.id, "accepted")}
                           className="rounded-lg bg-[color:var(--tone-green-base)] px-4 py-2 text-xs font-bold text-white transition hover:bg-[color:var(--tone-green-deep)]"
                         >
                           Accept
                         </button>
                         <button
                           type="button"
-                          className="rounded-lg border border-[color:var(--line-strong)] bg-white px-4 py-2 text-xs font-bold text-[color:var(--tone-red-base)] transition hover:bg-[color:var(--tone-red-soft)]"
+                          onClick={() => updateStatus(booking.id, "declined")}
+                          className="rounded-lg border border-[color:var(--tone-red-base)]/30 bg-[color:var(--tone-red-soft)] px-4 py-2 text-xs font-bold text-[color:var(--tone-red-base)] transition hover:bg-[color:var(--tone-red-base)]/20"
                         >
                           Decline
                         </button>
@@ -135,6 +158,7 @@ export default function TalentBookingsPage() {
                     {(booking.status === "in-progress" || booking.status === "accepted") && (
                       <button
                         type="button"
+                        onClick={() => updateStatus(booking.id, "completed")}
                         className="rounded-lg bg-[color:var(--brand-blue)] px-4 py-2 text-xs font-bold text-white transition hover:bg-[color:var(--brand-blue-strong)]"
                       >
                         Mark Complete

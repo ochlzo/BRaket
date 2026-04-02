@@ -1,22 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { mockCurrentClientProfile } from "@/lib/mock-data";
+import { mockCurrentClientProfile, mockCurrentTalentProfile } from "@/lib/mock-data";
 
 type Tab = "profile" | "account";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<Tab>("profile");
-  const profile = mockCurrentClientProfile;
+  const [role, setRole] = useState<"client" | "talent">("client");
+
+  useEffect(() => {
+    const session = localStorage.getItem("braket_session");
+    if (session) {
+      try {
+        const parsed = JSON.parse(session);
+        if (parsed.type === "talent") setRole("talent");
+      } catch { /* ignore */ }
+    }
+  }, []);
+
+  const profileInfo = role === "client" ? mockCurrentClientProfile : mockCurrentTalentProfile;
 
   return (
-    <DashboardLayout role="client" title="Settings" subtitle="Manage your account and profile">
+    <DashboardLayout role={role} title="Settings" subtitle="Manage your account and profile">
       {/* Tabs */}
       <div className="mb-6 flex gap-2">
         {([
@@ -46,24 +58,42 @@ export default function SettingsPage() {
 
             <div className="space-y-2">
               <Label htmlFor="s-username" className="text-sm font-semibold">Username</Label>
-              <Input id="s-username" defaultValue={profile.username} className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm" />
+              <Input id="s-username" defaultValue={profileInfo.username} className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm" />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="s-first" className="text-sm font-semibold">First Name</Label>
-                <Input id="s-first" defaultValue={profile.firstName} className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm" />
+                <Input id="s-first" defaultValue={profileInfo.firstName} className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="s-last" className="text-sm font-semibold">Last Name</Label>
-                <Input id="s-last" defaultValue={profile.lastName} className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm" />
+                <Input id="s-last" defaultValue={profileInfo.lastName} className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm" />
               </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="s-bio" className="text-sm font-semibold">Bio</Label>
-              <Textarea id="s-bio" rows={4} defaultValue={profile.bio} className="rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm" />
+              <Textarea id="s-bio" rows={4} defaultValue={profileInfo.bio} className="rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm" />
             </div>
+
+            {role === "talent" && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="s-skills" className="text-sm font-semibold">Skills</Label>
+                  <Input id="s-skills" defaultValue={(profileInfo as typeof mockCurrentTalentProfile).skills?.map(s => s.name).join(", ")} placeholder="e.g. React, UI Design, Analytics" className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm" />
+                  <p className="text-xs text-[color:var(--ink-soft)]">Separate skills with commas.</p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="s-portfolio" className="text-sm font-semibold">Portfolio Gallery</Label>
+                  <div className="flex flex-col gap-3">
+                    <Input id="s-portfolio" type="file" multiple accept="image/*,application/pdf" className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] pt-2.5 text-sm file:mr-4 file:rounded-md file:border-0 file:bg-transparent file:text-sm file:font-semibold focus-visible:border-[color:var(--brand-blue)] focus-visible:ring-[color:var(--brand-blue)]/20" />
+                    <p className="text-xs text-[color:var(--ink-soft)]">Upload images or PDFs to showcase your previous work.</p>
+                  </div>
+                </div>
+              </>
+            )}
 
             <Separator />
 

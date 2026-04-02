@@ -8,6 +8,7 @@ import type {
   Booking,
   Category,
   ClientProfile,
+  Review,
   ServiceListing,
   TalentProfile,
 } from "@/types";
@@ -55,6 +56,9 @@ export const talents: TalentProfile[] = [
     available: true,
     servicesCount: 3,
     completedProjects: 42,
+    verified: true,
+    phone: "+63 917 123 4567",
+    socials: { facebook: "maria.santos.bu", instagram: "@maria.designs" },
     createdAt: "2024-08-15T00:00:00Z",
   },
   {
@@ -84,6 +88,9 @@ export const talents: TalentProfile[] = [
     available: true,
     servicesCount: 4,
     completedProjects: 68,
+    verified: true,
+    phone: "+63 918 234 5678",
+    socials: { facebook: "john.reyes.dev", instagram: "@john.codes" },
     createdAt: "2024-06-10T00:00:00Z",
   },
   {
@@ -112,6 +119,9 @@ export const talents: TalentProfile[] = [
     available: false,
     servicesCount: 2,
     completedProjects: 35,
+    verified: true,
+    phone: "+63 919 345 6789",
+    socials: { facebook: "ana.cruz.writes", instagram: "@ana.writesstuff" },
     createdAt: "2024-09-01T00:00:00Z",
   },
   {
@@ -140,6 +150,9 @@ export const talents: TalentProfile[] = [
     available: true,
     servicesCount: 3,
     completedProjects: 28,
+    verified: true,
+    phone: "+63 920 456 7890",
+    socials: { facebook: "carlos.edits", instagram: "@carlos.motion" },
     createdAt: "2024-07-20T00:00:00Z",
   },
   {
@@ -168,6 +181,9 @@ export const talents: TalentProfile[] = [
     available: true,
     servicesCount: 4,
     completedProjects: 55,
+    verified: false,
+    phone: "+63 921 567 8901",
+    socials: { facebook: "sofia.designs", instagram: "@sofia.graphix" },
     createdAt: "2024-05-15T00:00:00Z",
   },
   {
@@ -196,6 +212,9 @@ export const talents: TalentProfile[] = [
     available: true,
     servicesCount: 3,
     completedProjects: 44,
+    verified: true,
+    phone: "+63 922 678 9012",
+    socials: { facebook: "miguel.shots", instagram: "@miguel.captures" },
     createdAt: "2024-04-10T00:00:00Z",
   },
 ];
@@ -214,6 +233,8 @@ export const clients: ClientProfile[] = [
     role: "client",
     company: "Albay Startup Hub",
     projectsPosted: 5,
+    phone: "+63 923 789 0123",
+    socials: { facebook: "albay.startup.hub", instagram: "@albaystartup" },
     createdAt: "2024-10-01T00:00:00Z",
   },
   {
@@ -228,6 +249,8 @@ export const clients: ClientProfile[] = [
     role: "client",
     company: "Café Bicolano",
     projectsPosted: 3,
+    phone: "+63 924 890 1234",
+    socials: { facebook: "cafe.bicolano", instagram: "@cafebicolano" },
     createdAt: "2024-11-15T00:00:00Z",
   },
 ];
@@ -370,7 +393,7 @@ export const bookings: Booking[] = [
     projectDetails: "We need a complete redesign of our startup's website. Looking for a modern, clean interface that highlights our tech products. Target audience is B2B professionals.",
     budget: 4000,
     notes: "Please use our existing brand colors (blue and white). We'd like the project done within 3 weeks.",
-    status: "in-progress",
+    status: "pending",
     createdAt: "2024-11-01T00:00:00Z",
     updatedAt: "2024-11-05T00:00:00Z",
   },
@@ -431,6 +454,40 @@ export const bookings: Booking[] = [
   },
 ];
 
+/* ── Reviews ── */
+export const reviews: Review[] = [
+  {
+    id: "r1",
+    bookingId: "b3",
+    clientId: "c1",
+    client: clients[0],
+    talentId: "t2",
+    rating: 5,
+    comment: "John delivered an outstanding portfolio website. The design was modern, the code was clean, and he communicated throughout the project. Would definitely hire again!",
+    createdAt: "2024-10-22T00:00:00Z",
+  },
+  {
+    id: "r2",
+    bookingId: "b3",
+    clientId: "c1",
+    client: clients[0],
+    talentId: "t1",
+    rating: 5,
+    comment: "Maria's UI/UX work was phenomenal. She exceeded my expectations with her attention to detail and creative solutions.",
+    createdAt: "2024-10-25T00:00:00Z",
+  },
+  {
+    id: "r3",
+    bookingId: "b3",
+    clientId: "c2",
+    client: clients[1],
+    talentId: "t5",
+    rating: 4,
+    comment: "Sofia created a beautiful brand identity for our café. The logo perfectly captured our Bicolano heritage.",
+    createdAt: "2024-11-01T00:00:00Z",
+  },
+];
+
 /* ── Helper functions ── */
 export function getTalentByUsername(username: string): TalentProfile | undefined {
   return talents.find((t) => t.username === username);
@@ -456,8 +513,20 @@ export function getBookingsByTalent(talentId: string): Booking[] {
   return bookings.filter((b) => b.talentId === talentId);
 }
 
+export function getReviewsByTalent(talentId: string): Review[] {
+  return reviews.filter((r) => r.talentId === talentId);
+}
+
 export function getCategoryLabel(slug: string): string {
   return categories.find((c) => c.slug === slug)?.label ?? slug;
+}
+
+export function getPendingTalents(): TalentProfile[] {
+  return talents.filter((t) => !t.verified);
+}
+
+export function getAllUsers(): (TalentProfile | ClientProfile)[] {
+  return [...talents, ...clients];
 }
 
 /* ── Mock current user (toggle to test different views) ── */

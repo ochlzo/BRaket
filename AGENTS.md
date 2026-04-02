@@ -37,7 +37,7 @@ When building context, look for and summarize:
 
 ## Preferred evidence sources
 
-1. `AGENTS.md` in the repo root and current subdirectory
+1. `AGENTS.md` in the repo root and current subdierctory
 2. `README.md` and docs under `docs/`
 3. root manifests such as `package.json`, `pnpm-workspace.yaml`, `turbo.json`, `nx.json`, `tsconfig.json`, `vite.config.*`, `next.config.*`
 4. app bootstrap and route files

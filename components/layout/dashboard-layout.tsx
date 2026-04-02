@@ -8,6 +8,7 @@ type DashboardLayoutProps = {
   title: string;
   subtitle?: string;
   action?: ReactNode;
+  noScroll?: boolean;
 };
 
 export function DashboardLayout({
@@ -16,26 +17,29 @@ export function DashboardLayout({
   title,
   subtitle,
   action,
+  noScroll = false,
 }: DashboardLayoutProps) {
   return (
-    <div className="flex min-h-screen bg-[color:var(--surface-alt)]">
+    <div className={`flex bg-[color:var(--surface-alt)] ${noScroll ? "h-screen overflow-hidden" : "min-h-screen"}`}>
       <DashboardSidebar role={role} />
 
       {/* Main content area */}
-      <main className="flex-1 pl-64">
+      <main className={`flex-1 pl-64 ${noScroll ? "flex flex-col h-screen" : ""}`}>
         {/* Top bar */}
-        <header className="sticky top-0 z-30 flex items-center justify-between border-b border-[color:var(--line)] bg-white/80 px-8 py-5 backdrop-blur-xl">
+        <header className="sticky top-0 z-30 shrink-0 flex items-center justify-between border-b border-[color:var(--line)] bg-white/80 px-6 py-2 backdrop-blur-xl">
           <div>
-            <h1 className="text-xl font-bold tracking-[-0.02em] text-foreground">{title}</h1>
+            <h1 className="text-base font-bold tracking-[-0.02em] text-foreground">{title}</h1>
             {subtitle && (
-              <p className="mt-0.5 text-sm text-[color:var(--ink-muted)]">{subtitle}</p>
+              <p className="text-xs text-[color:var(--ink-muted)]">{subtitle}</p>
             )}
           </div>
           {action && <div>{action}</div>}
         </header>
 
         {/* Page content */}
-        <div className="px-8 py-8">{children}</div>
+        <div className={`px-8 py-5 ${noScroll ? "flex-1 overflow-hidden" : "pb-8"}`}>
+          {children}
+        </div>
       </main>
     </div>
   );

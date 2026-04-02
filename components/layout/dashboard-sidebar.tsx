@@ -28,9 +28,14 @@ const talentNavItems: SidebarItem[] = [
   { href: "/settings", label: "Settings", emoji: "⚙️" },
 ];
 
+const adminNavItems: SidebarItem[] = [
+  { href: "/dashboard/admin", label: "Admin Panel", emoji: "🛡️" },
+  { href: "/settings", label: "Settings", emoji: "⚙️" },
+];
+
 export function DashboardSidebar({ role }: { role: UserRole }) {
   const pathname = usePathname();
-  const items = role === "client" ? clientNavItems : talentNavItems;
+  const items = role === "admin" ? adminNavItems : role === "client" ? clientNavItems : talentNavItems;
 
   return (
     <aside className="fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-[color:var(--line-strong)] bg-white">
@@ -64,14 +69,14 @@ export function DashboardSidebar({ role }: { role: UserRole }) {
       <div className="border-t border-[color:var(--line)] px-4 py-4">
         <div className="flex items-center gap-3 rounded-xl bg-[color:var(--surface-alt)] px-4 py-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[color:var(--brand-orange)] to-[#FF9252] text-sm font-bold text-white">
-            {role === "client" ? "A" : "M"}
+            {role === "admin" ? "S" : role === "client" ? "A" : "M"}
           </div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold text-foreground">
-              {role === "client" ? "Alex Tan" : "Maria Santos"}
+              {role === "admin" ? "SysAdmin" : role === "client" ? "Alex Tan" : "Maria Santos"}
             </p>
-            <p className="truncate text-xs text-[color:var(--ink-soft)]">
-              {role === "client" ? "Client" : "Talent"}
+            <p className="truncate text-xs text-[color:var(--ink-soft)] capitalize">
+              {role}
             </p>
           </div>
         </div>

@@ -3,7 +3,7 @@
    ══════════════════════════════════════════════════ */
 
 /* ── Auth & Users ── */
-export type UserRole = "client" | "talent";
+export type UserRole = "client" | "talent" | "admin";
 
 export interface AuthUser {
   id: string;
@@ -23,6 +23,8 @@ export interface BaseProfile {
   bio: string;
   role: UserRole;
   createdAt: string;
+  phone?: string;
+  socials?: { facebook?: string; instagram?: string; twitter?: string };
 }
 
 export interface TalentProfile extends BaseProfile {
@@ -37,6 +39,8 @@ export interface TalentProfile extends BaseProfile {
   available: boolean;
   servicesCount: number;
   completedProjects: number;
+  verified: boolean;
+  portfolio?: PortfolioItem[];
 }
 
 export interface ClientProfile extends BaseProfile {
@@ -110,6 +114,26 @@ export interface Booking {
   status: BookingStatus;
   createdAt: string;
   updatedAt: string;
+}
+
+/* ── Reviews ── */
+export interface Review {
+  id: string;
+  bookingId: string;
+  clientId: string;
+  client: ClientProfile;
+  talentId: string;
+  rating: number;
+  comment?: string;
+  createdAt: string;
+}
+
+/* ── Portfolio ── */
+export interface PortfolioItem {
+  id: string;
+  title: string;
+  description: string;
+  imageUrl: string;
 }
 
 /* ── Helpers ── */

@@ -111,77 +111,77 @@ export default function ProfilePage() {
   });
 
   return (
-    <DashboardLayout role={role} title="My Profile" subtitle="View and manage your profile details">
-      <div className="mx-auto max-w-4xl space-y-6">
+    <DashboardLayout role={role} title="My Profile" subtitle="View and manage your profile details" noScroll>
+      <div className="flex h-full flex-col gap-2.5 overflow-hidden">
 
         {/* ═══ Profile Hero Card ═══ */}
-        <div className="overflow-hidden rounded-2xl border border-[color:var(--line-strong)] bg-white">
+        <div className="overflow-hidden rounded-xl border border-[color:var(--line-strong)] bg-white">
           {/* Gradient banner */}
-          <div className="relative h-36 bg-gradient-to-r from-[color:var(--brand-orange)] via-[#FF9252] to-[color:var(--brand-blue)]">
-            <div className="absolute -bottom-6 -left-6 h-32 w-32 rounded-full bg-white/10" />
-            <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-white/[0.07]" />
+          <div className="relative h-16 bg-gradient-to-r from-[color:var(--brand-orange)] via-[#FF9252] to-[color:var(--brand-blue)]">
+            <div className="absolute -bottom-4 -left-4 h-20 w-20 rounded-full bg-white/10" />
+            <div className="absolute -right-3 -top-3 h-16 w-16 rounded-full bg-white/[0.07]" />
           </div>
 
-          <div className="relative px-8 pb-8">
-            {/* Avatar - overlapping the banner */}
-            <div className="-mt-14 mb-5 flex items-end justify-between">
-              <div className="flex items-end gap-5">
-                <div className="h-28 w-28 overflow-hidden rounded-2xl border-4 border-white bg-white shadow-lg">
+          <div className="relative px-5 pb-3">
+            {/* Avatar and Profile Header */}
+            <div className="flex items-start justify-between">
+              <div className="flex items-start gap-4">
+                <div className="-mt-8 h-16 w-16 shrink-0 overflow-hidden rounded-xl border-[3px] border-white bg-white shadow-md">
                   <Image
                     alt={`${profile.firstName} ${profile.lastName}`}
                     className="h-full w-full object-cover"
-                    height={224}
+                    height={128}
                     src={profile.avatarUrl}
-                    width={224}
+                    width={128}
                   />
                 </div>
-                <div className="pb-1">
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-2xl font-extrabold tracking-[-0.03em] text-foreground">
+                <div className="mt-1.5 flex flex-col justify-center">
+                  <div className="flex items-center gap-1.5">
+                    <h2 className="text-lg font-extrabold tracking-[-0.03em] text-foreground leading-none">
                       {profile.firstName} {profile.lastName}
                     </h2>
                     {isVerified && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--tone-green-soft)] px-2.5 py-0.5 text-xs font-bold text-[color:var(--tone-green-deep)]">
-                        <ShieldCheckIcon className="size-3.5" />
+                      <span className="inline-flex items-center gap-0.5 rounded-full bg-[color:var(--tone-green-soft)] px-2 py-px text-[10px] font-bold text-[color:var(--tone-green-deep)]">
+                        <ShieldCheckIcon className="size-3" />
                         Verified
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-[color:var(--ink-muted)]">
+                  <p className="mt-1 text-xs text-[color:var(--ink-muted)] leading-none">
                     @{profile.username}
                     {!isClient && talentProfile && (
-                      <span className="ml-2 text-[color:var(--ink-soft)]">· {talentProfile.headline}</span>
+                      <span className="ml-1.5 text-[color:var(--ink-soft)]">· {talentProfile.headline}</span>
                     )}
                   </p>
                 </div>
               </div>
               <Link
                 href="/settings"
-                className="inline-flex items-center gap-2 rounded-xl border border-[color:var(--line-strong)] bg-white px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-[color:var(--surface-alt)]"
+                className="mt-1.5 inline-flex items-center gap-1 rounded-md border border-[color:var(--line-strong)] bg-white px-2.5 py-1 text-[11px] font-semibold text-foreground transition hover:bg-[color:var(--surface-alt)]"
               >
                 ✏️ Edit Profile
               </Link>
             </div>
 
             {/* Bio */}
-            <p className="max-w-2xl text-sm leading-relaxed text-[color:var(--ink-body)]">
+            <p className="text-xs leading-relaxed text-[color:var(--ink-body)]">
               {profile.bio}
             </p>
 
             {/* Meta row */}
-            <div className="mt-4 flex flex-wrap items-center gap-5 text-sm text-[color:var(--ink-muted)]">
-              <span className="flex items-center gap-1.5">
+            <div className="mt-2 flex flex-wrap items-center gap-4 text-xs text-[color:var(--ink-muted)]">
+              <span className="flex items-center gap-1">
                 <EnvelopeIcon /> {profile.email}
               </span>
               {!isClient && talentProfile && (
-                <span className="flex items-center gap-1.5">
+                <span className="flex items-center gap-1">
                   <MapPinIcon /> {talentProfile.location}
                 </span>
               )}
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-1">
                 <CalendarIcon /> Joined {joinDate}
               </span>
-              <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--tone-sky-soft)] px-3 py-0.5 text-xs font-bold text-[color:var(--tone-sky-deep)]">
+              <span className="inline-flex items-center gap-0.5 rounded-full bg-[color:var(--tone-sky-soft)] px-2 py-px text-[10px] font-bold text-[color:var(--tone-sky-deep)]">
                 {isClient ? "Client" : "Talent"}
               </span>
             </div>
@@ -190,49 +190,49 @@ export default function ProfilePage() {
 
         {/* ═══ BU Student Verification Card (Client only) ═══ */}
         {isClient && (
-          <div className={`rounded-2xl border-2 p-6 transition-all ${
+          <div className={`rounded-xl border-2 px-4 py-3 transition-all ${
             isVerified
               ? "border-[color:var(--tone-green-base)]/30 bg-[color:var(--tone-green-soft)]"
               : "border-dashed border-[color:var(--brand-orange)]/40 bg-gradient-to-r from-[color:var(--tone-orange-soft)] to-white"
           }`}>
-            <div className="flex items-start gap-4">
-              <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${
+            <div className="flex items-center gap-3">
+              <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
                 isVerified
                   ? "bg-[color:var(--tone-green-base)] text-white"
                   : "bg-[color:var(--brand-orange)]/15 text-[color:var(--brand-orange)]"
               }`}>
-                {isVerified ? <ShieldCheckIcon className="size-6" /> : <AcademicCapIcon className="size-6" />}
+                {isVerified ? <ShieldCheckIcon className="size-4" /> : <AcademicCapIcon className="size-4" />}
               </div>
               <div className="flex-1">
-                <h3 className="text-base font-bold text-foreground">
+                <h3 className="text-xs font-bold text-foreground">
                   {isVerified ? "BU Student Verified ✅" : "Register & Verify as BU Student"}
                 </h3>
-                <p className="mt-1 max-w-xl text-sm leading-relaxed text-[color:var(--ink-muted)]">
+                <p className="mt-0.5 max-w-xl text-[11px] leading-snug text-[color:var(--ink-muted)]">
                   {isVerified
                     ? "Your Bicol University student identity has been authenticated. You can now post projects and access all platform features."
                     : "Authenticate your Bicol University student identity to unlock project posting, enhanced trust badges, and priority access to talent commissions."
                   }
                 </p>
                 {!isVerified && (
-                  <div className="mt-4 flex flex-wrap items-center gap-3">
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
                     <Button
                       onClick={handleVerify}
                       disabled={verifying}
-                      className="h-11 rounded-xl bg-[color:var(--brand-orange)] px-6 text-sm font-semibold !text-white shadow-md shadow-[color:var(--brand-orange)]/25 transition hover:bg-[color:var(--brand-orange-strong)] disabled:opacity-60"
+                      className="h-7 rounded-md bg-[color:var(--brand-orange)] px-3 text-[11px] font-semibold !text-white shadow-sm shadow-[color:var(--brand-orange)]/25 transition hover:bg-[color:var(--brand-orange-strong)] disabled:opacity-60"
                     >
                       {verifying ? (
                         <>
-                          <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                          <span className="mr-1.5 inline-block h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
                           Verifying…
                         </>
                       ) : (
                         <>
-                          <AcademicCapIcon className="mr-2 size-4" />
+                          <AcademicCapIcon className="mr-1 size-3" />
                           Verify with BU Email
                         </>
                       )}
                     </Button>
-                    <p className="text-xs text-[color:var(--ink-soft)]">
+                    <p className="text-[10px] text-[color:var(--ink-soft)]">
                       Requires a valid <span className="font-semibold">@bicol-u.edu.ph</span> email address
                     </p>
                   </div>
@@ -243,7 +243,7 @@ export default function ProfilePage() {
         )}
 
         {/* ═══ Stats Grid ═══ */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
           {(isClient
             ? [
                 { label: "Active Bookings", value: activeBookings.length, emoji: "🔥", bg: "from-[color:var(--tone-orange-soft)] to-white" },
@@ -260,14 +260,14 @@ export default function ProfilePage() {
           ).map((stat) => (
             <div
               key={stat.label}
-              className={`flex items-center justify-between rounded-2xl border border-[color:var(--line-strong)] bg-gradient-to-br ${stat.bg} p-4 transition-all hover:-translate-y-0.5 hover:shadow-sm`}
+              className={`flex items-center justify-between rounded-xl border border-[color:var(--line-strong)] bg-gradient-to-br ${stat.bg} px-3 py-2 transition-all hover:-translate-y-0.5 hover:shadow-sm`}
             >
               <div>
-                <p className="text-2xl font-extrabold leading-none tracking-[-0.03em] text-foreground">{stat.value}</p>
-                <p className="mt-1 text-xs font-medium leading-none text-[color:var(--ink-muted)]">{stat.label}</p>
+                <p className="text-xl font-extrabold leading-none tracking-[-0.03em] text-foreground">{stat.value}</p>
+                <p className="mt-0.5 text-[10px] font-medium leading-none text-[color:var(--ink-muted)]">{stat.label}</p>
               </div>
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center opacity-80">
-                <span className="text-2xl leading-none">{stat.emoji}</span>
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center opacity-80">
+                <span className="text-xl leading-none">{stat.emoji}</span>
               </div>
             </div>
           ))}
@@ -335,43 +335,42 @@ export default function ProfilePage() {
 
         {/* ═══ Client-specific: Company ═══ */}
         {isClient && (profile as typeof mockCurrentClientProfile).company && (
-          <div className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-6">
-            <h3 className="mb-3 text-base font-bold text-foreground">Company</h3>
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[color:var(--tone-sky-soft)] text-lg">
+          <div className="rounded-xl border border-[color:var(--line-strong)] bg-white px-4 py-2.5">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[color:var(--tone-sky-soft)] text-sm">
                 🏢
               </div>
               <div>
-                <p className="text-sm font-semibold text-foreground">
+                <p className="text-xs font-semibold text-foreground">
                   {(profile as typeof mockCurrentClientProfile).company}
                 </p>
-                <p className="text-xs text-[color:var(--ink-soft)]">Organization</p>
+                <p className="text-[10px] text-[color:var(--ink-soft)]">Organization</p>
               </div>
             </div>
           </div>
         )}
 
         {/* ═══ Quick Actions ═══ */}
-        <div className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-6">
-          <h3 className="mb-4 text-base font-bold text-foreground">Quick Actions</h3>
-          <div className="flex flex-wrap gap-3">
+        <div className="rounded-xl border border-[color:var(--line-strong)] bg-white px-4 py-2.5">
+          <h3 className="mb-1.5 text-xs font-bold text-foreground">Quick Actions</h3>
+          <div className="flex flex-wrap gap-1.5">
             {isClient ? (
               <>
                 <Link
                   href="/browse"
-                  className="inline-flex items-center gap-2 rounded-xl bg-[color:var(--brand-orange)] px-5 py-3 text-sm font-semibold !text-white transition hover:bg-[color:var(--brand-orange-strong)]"
+                  className="inline-flex items-center gap-1 rounded-md bg-[color:var(--brand-orange)] px-3 py-1.5 text-[11px] font-semibold !text-white transition hover:bg-[color:var(--brand-orange-strong)]"
                 >
                   🔍 Browse Talents
                 </Link>
                 <Link
                   href="/post-project"
-                  className="inline-flex items-center gap-2 rounded-xl border-2 border-[color:var(--line-strong)] bg-white px-5 py-3 text-sm font-semibold text-foreground transition hover:bg-[color:var(--surface-alt)]"
+                  className="inline-flex items-center gap-1 rounded-md border border-[color:var(--line-strong)] bg-white px-3 py-1.5 text-[11px] font-semibold text-foreground transition hover:bg-[color:var(--surface-alt)]"
                 >
                   📝 Post a Project
                 </Link>
                 <Link
                   href="/dashboard/client/bookings"
-                  className="inline-flex items-center gap-2 rounded-xl border-2 border-[color:var(--line-strong)] bg-white px-5 py-3 text-sm font-semibold text-foreground transition hover:bg-[color:var(--surface-alt)]"
+                  className="inline-flex items-center gap-1 rounded-md border border-[color:var(--line-strong)] bg-white px-3 py-1.5 text-[11px] font-semibold text-foreground transition hover:bg-[color:var(--surface-alt)]"
                 >
                   📋 View Bookings
                 </Link>
@@ -380,19 +379,19 @@ export default function ProfilePage() {
               <>
                 <Link
                   href="/dashboard/talent/services/new"
-                  className="inline-flex items-center gap-2 rounded-xl bg-[color:var(--brand-orange)] px-5 py-3 text-sm font-semibold !text-white transition hover:bg-[color:var(--brand-orange-strong)]"
+                  className="inline-flex items-center gap-1 rounded-md bg-[color:var(--brand-orange)] px-3 py-1.5 text-[11px] font-semibold !text-white transition hover:bg-[color:var(--brand-orange-strong)]"
                 >
                   + New Service
                 </Link>
                 <Link
                   href="/dashboard/talent/services"
-                  className="inline-flex items-center gap-2 rounded-xl border-2 border-[color:var(--line-strong)] bg-white px-5 py-3 text-sm font-semibold text-foreground transition hover:bg-[color:var(--surface-alt)]"
+                  className="inline-flex items-center gap-1 rounded-md border border-[color:var(--line-strong)] bg-white px-3 py-1.5 text-[11px] font-semibold text-foreground transition hover:bg-[color:var(--surface-alt)]"
                 >
                   🛠️ My Services
                 </Link>
                 <Link
                   href="/dashboard/talent/bookings"
-                  className="inline-flex items-center gap-2 rounded-xl border-2 border-[color:var(--line-strong)] bg-white px-5 py-3 text-sm font-semibold text-foreground transition hover:bg-[color:var(--surface-alt)]"
+                  className="inline-flex items-center gap-1 rounded-md border border-[color:var(--line-strong)] bg-white px-3 py-1.5 text-[11px] font-semibold text-foreground transition hover:bg-[color:var(--surface-alt)]"
                 >
                   📋 View Bookings
                 </Link>
@@ -401,26 +400,24 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <Separator />
-
         {/* ═══ Account Info Footer ═══ */}
-        <div className="rounded-2xl border border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-6 py-5">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="space-y-1">
-              <p className="text-xs font-semibold uppercase tracking-widest text-[color:var(--ink-soft)]">Account ID</p>
-              <p className="font-mono text-sm text-foreground">{profile.id}</p>
+        <div className="rounded-xl border border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 py-2">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="space-y-0.5">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-[color:var(--ink-soft)]">Account ID</p>
+              <p className="font-mono text-xs text-foreground">{profile.id}</p>
             </div>
-            <div className="space-y-1">
-              <p className="text-xs font-semibold uppercase tracking-widest text-[color:var(--ink-soft)]">Account Type</p>
-              <p className="text-sm font-semibold capitalize text-foreground">{role}</p>
+            <div className="space-y-0.5">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-[color:var(--ink-soft)]">Account Type</p>
+              <p className="text-xs font-semibold capitalize text-foreground">{role}</p>
             </div>
-            <div className="space-y-1">
-              <p className="text-xs font-semibold uppercase tracking-widest text-[color:var(--ink-soft)]">Member Since</p>
-              <p className="text-sm text-foreground">{joinDate}</p>
+            <div className="space-y-0.5">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-[color:var(--ink-soft)]">Member Since</p>
+              <p className="text-xs text-foreground">{joinDate}</p>
             </div>
             <Link
               href="/settings"
-              className="inline-flex items-center gap-2 rounded-xl border border-[color:var(--line-strong)] bg-white px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-white/80"
+              className="inline-flex items-center gap-1.5 rounded-md border border-[color:var(--line-strong)] bg-white px-3 py-1.5 text-[11px] font-semibold text-foreground transition hover:bg-white/80"
             >
               ⚙️ Account Settings
             </Link>
