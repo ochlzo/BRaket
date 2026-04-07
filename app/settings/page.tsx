@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,22 +8,31 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { mockCurrentClientProfile, mockCurrentTalentProfile } from "@/lib/mock-data";
+import type { UserRole } from "@/types";
 
 type Tab = "profile" | "account";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<Tab>("profile");
-  const [role, setRole] = useState<"client" | "talent">("client");
-
-  useEffect(() => {
-    const session = localStorage.getItem("braket_session");
-    if (session) {
+  const role = useSyncExternalStore<UserRole>(
+    (onStoreChange) => {
+      if (typeof window === "undefined") return () => {};
+      const handler = () => onStoreChange();
+      window.addEventListener("storage", handler);
+      return () => window.removeEventListener("storage", handler);
+    },
+    () => {
+      const session = localStorage.getItem("braket_session");
+      if (!session) return "client";
       try {
         const parsed = JSON.parse(session);
-        if (parsed.type === "talent") setRole("talent");
-      } catch { /* ignore */ }
-    }
-  }, []);
+        return parsed.type === "talent" ? "talent" : "client";
+      } catch {
+        return "client";
+      }
+    },
+    () => "client",
+  );
 
   const profileInfo = role === "client" ? mockCurrentClientProfile : mockCurrentTalentProfile;
 
@@ -52,7 +61,11 @@ export default function SettingsPage() {
 
       <div className="mx-auto max-w-2xl rounded-2xl border border-[color:var(--line-strong)] bg-white p-8">
         {activeTab === "profile" ? (
-          <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+          <form
+            key={role}
+            className="space-y-6"
+            onSubmit={(e) => e.preventDefault()}
+          >
             <h2 className="text-lg font-bold text-foreground">Profile Information</h2>
             <p className="text-sm text-[color:var(--ink-muted)]">Update your public profile details.</p>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import Image from "next/image";
 
 import { CategoryCard } from "@/components/marketing/category-card";
@@ -105,13 +105,11 @@ const featureCards = [
 ];
 
 export default function Home() {
-  const [mounted, setMounted] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    setIsLoggedIn(!!localStorage.getItem("braket_session"));
-  }, []);
+  const isLoggedIn = useSyncExternalStore(
+    () => () => {},
+    () => !!localStorage.getItem("braket_session"),
+    () => false,
+  );
 
   return (
     <PageShell
@@ -183,7 +181,9 @@ export default function Home() {
                 ))}
               </div>
               <p className="typo-meta text-[color:var(--ink-muted)]">
-                <span className="typo-label-sm text-foreground">500+ students</span>{" "}
+                <span className="typo-label-sm text-foreground">
+                  500+ students
+                </span>{" "}
                 already earning
               </p>
             </div>
@@ -199,6 +199,7 @@ export default function Home() {
                 height={1360}
                 src="/images/hero_students.png"
                 width={1080}
+                loading="eager"
               />
             </div>
           </div>
@@ -232,9 +233,7 @@ export default function Home() {
                 <br />
                 your relocation journey
               </p>
-              <div className="typo-stat text-foreground">
-                1378+
-              </div>
+              <div className="typo-stat text-foreground">1378+</div>
               <p className="typo-meta mt-2 text-[color:var(--ink-muted)]">
                 Clients relocated successfully
               </p>
@@ -281,11 +280,7 @@ export default function Home() {
 
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
             {categories.map((category) => (
-              <CategoryCard
-                key={category.title}
-                href="/browse"
-                {...category}
-              />
+              <CategoryCard key={category.title} href="/browse" {...category} />
             ))}
           </div>
         </div>
@@ -316,7 +311,7 @@ export default function Home() {
         </div>
       </section>
 
-      {(!mounted || !isLoggedIn) && (
+      {!isLoggedIn && (
         <section className="px-5 py-20 sm:px-6 lg:px-8" id="cta">
           <div className="mx-auto max-w-5xl">
             <CtaBanner

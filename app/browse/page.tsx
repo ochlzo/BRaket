@@ -5,10 +5,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { FilterIcon } from "@/components/icons/marketing-icons";
 import { PageShell } from "@/components/layout/page-shell";
-import { FilterChip } from "@/components/marketing/filter-chip";
 import { appNavigation } from "@/content/navigation";
-import { semantic } from "@/theme/semantic";
-import { services, talents, getCategoryLabel, categories } from "@/lib/mock-data";
+import {
+  services,
+  talents,
+  getCategoryLabel,
+  categories,
+} from "@/lib/mock-data";
 
 export default function BrowsePage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -47,18 +50,31 @@ export default function BrowsePage() {
         <div className="mx-auto max-w-7xl">
           <div className="mb-12 text-center">
             <h1 className="typo-page-title mb-4 text-foreground">
-              Find the Perfect <span className="text-[color:var(--brand-orange)]">Service</span>
+              Find the Perfect{" "}
+              <span className="text-[color:var(--brand-orange)]">Service</span>
             </h1>
             <p className="typo-body-xl mx-auto max-w-2xl text-[color:var(--ink-soft)]">
-              Browse through verified BU student professionals ready to bring your projects to life.
+              Browse through verified BU student professionals ready to bring
+              your projects to life.
             </p>
           </div>
 
           <div className="mx-auto mb-8 max-w-3xl">
             <div className="relative">
               <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[color:var(--ink-muted)]">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
                 </svg>
               </span>
               <input
@@ -110,11 +126,19 @@ export default function BrowsePage() {
 
               <div className="flex flex-wrap items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-[color:var(--ink-muted)]">Max Price:</span>
+                  <span className="text-sm font-semibold text-[color:var(--ink-muted)]">
+                    Max Price:
+                  </span>
                   <select
                     className="rounded-lg border border-[color:var(--line-strong)] bg-white px-3 py-1.5 text-sm font-medium text-foreground outline-none"
                     value={maxPrice === null ? "any" : maxPrice}
-                    onChange={(e) => setMaxPrice(e.target.value === "any" ? null : Number(e.target.value))}
+                    onChange={(e) =>
+                      setMaxPrice(
+                        e.target.value === "any"
+                          ? null
+                          : Number(e.target.value),
+                      )
+                    }
                   >
                     <option value="any">Any Price</option>
                     <option value="1000">Up to ₱1,000</option>
@@ -123,7 +147,7 @@ export default function BrowsePage() {
                     <option value="10000">Up to ₱10,000</option>
                   </select>
                 </div>
-                
+
                 <button
                   type="button"
                   onClick={() => {
@@ -141,7 +165,11 @@ export default function BrowsePage() {
 
           <div className="mb-6">
             <p className="typo-meta text-[color:var(--ink-soft)]">
-              Showing <span className="typo-label-sm text-foreground">{filteredServices.length}</span> services
+              Showing{" "}
+              <span className="typo-label-sm text-foreground">
+                {filteredServices.length}
+              </span>{" "}
+              services
             </p>
           </div>
 
@@ -151,17 +179,29 @@ export default function BrowsePage() {
               if (!talent) return null;
 
               return (
-                <div key={service.id} className="group flex flex-col overflow-hidden rounded-[1.75rem] border border-[color:var(--line-strong)] bg-white transition hover:-translate-y-1 hover:shadow-lg">
+                <div
+                  key={service.id}
+                  className="group flex flex-col overflow-hidden rounded-[1.75rem] border border-[color:var(--line-strong)] bg-white transition hover:-translate-y-1 hover:shadow-lg"
+                >
                   <div className="relative h-48 bg-gradient-to-br from-[color:var(--tone-sky-soft)] to-[color:var(--tone-indigo-soft)] p-6 flex flex-col justify-between">
                     <span className="self-start rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-[color:var(--tone-indigo-deep)] shadow-sm backdrop-blur-md">
                       {getCategoryLabel(service.category)}
                     </span>
                     <div className="flex items-end justify-between">
                       <div className="h-14 w-14 overflow-hidden rounded-xl border-2 border-white bg-white shadow-md">
-                        <Image alt={talent.firstName} src={talent.avatarUrl} width={56} height={56} className="h-full w-full object-cover" />
+                        <Image
+                          alt={talent.firstName}
+                          src={talent.avatarUrl}
+                          width={56}
+                          height={56}
+                          className="h-full w-full object-cover"
+                        />
                       </div>
                       <div className="flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-xs font-bold shadow-sm backdrop-blur-md">
-                        <span className="text-[color:var(--brand-orange)]">★</span> {talent.rating.toFixed(1)}
+                        <span className="text-[color:var(--brand-orange)]">
+                          ★
+                        </span>{" "}
+                        {talent.rating.toFixed(1)}
                       </div>
                     </div>
                   </div>
@@ -171,9 +211,10 @@ export default function BrowsePage() {
                       {service.title}
                     </h3>
                     <p className="mb-4 text-sm font-medium text-[color:var(--ink-muted)]">
-                      by {talent.firstName} {talent.lastName} {talent.verified && "✓"}
+                      by {talent.firstName} {talent.lastName}{" "}
+                      {talent.verified && "✓"}
                     </p>
-                    
+
                     <div className="mt-auto flex items-center justify-between pt-4">
                       <span className="text-xl font-extrabold text-[color:var(--brand-orange)]">
                         ₱{service.price.toLocaleString()}
@@ -194,8 +235,12 @@ export default function BrowsePage() {
           {filteredServices.length === 0 && (
             <div className="py-20 text-center">
               <p className="text-4xl">🔍</p>
-              <h3 className="mt-4 text-xl font-bold text-foreground">No services found</h3>
-              <p className="mt-2 text-[color:var(--ink-muted)]">Try adjusting your search or filters.</p>
+              <h3 className="mt-4 text-xl font-bold text-foreground">
+                No services found
+              </h3>
+              <p className="mt-2 text-[color:var(--ink-muted)]">
+                Try adjusting your search or filters.
+              </p>
             </div>
           )}
         </div>
