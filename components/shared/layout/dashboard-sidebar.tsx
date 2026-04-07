@@ -68,7 +68,7 @@ export function DashboardSidebar({ role }: { role: UserRole }) {
       {/* Bottom user area */}
       <div className="border-t border-[color:var(--line)] px-4 py-4">
         <div className="flex items-center gap-3 rounded-xl bg-[color:var(--surface-alt)] px-4 py-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[color:var(--brand-orange)] to-[#FF9252] text-sm font-bold text-white">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[color:var(--brand-orange)] to-[color:var(--brand-orange-accent)] text-sm font-bold text-white">
             {role === "admin" ? "S" : role === "client" ? "A" : "M"}
           </div>
           <div className="min-w-0 flex-1">

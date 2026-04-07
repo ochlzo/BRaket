@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -272,7 +272,7 @@ export function LoginForm() {
 
       <Button
         type="submit"
-        className="h-11 w-full rounded-xl bg-gradient-to-r from-[color:var(--brand-orange)] to-[#FF9252] text-sm font-semibold text-white shadow-[0_8px_24px_rgba(255,107,53,0.35)] transition-all hover:shadow-[0_12px_32px_rgba(255,107,53,0.45)] hover:brightness-105 active:scale-[0.98]"
+        className="h-11 w-full rounded-xl bg-gradient-to-r from-[color:var(--brand-orange)] to-[color:var(--brand-orange-accent)] text-sm font-semibold text-white shadow-[var(--shadow-brand-orange-md)] transition-all hover:shadow-[var(--shadow-brand-orange-lg)] hover:brightness-105 active:scale-[0.98]"
       >
         Sign In
         <ArrowRightIcon />
@@ -547,7 +547,7 @@ export function SignUpForm() {
 
       <Button
         type="submit"
-        className="h-11 w-full rounded-xl bg-gradient-to-r from-[color:var(--brand-orange)] to-[#FF9252] text-sm font-semibold text-white shadow-[0_8px_24px_rgba(255,107,53,0.35)] transition-all hover:shadow-[0_12px_32px_rgba(255,107,53,0.45)] hover:brightness-105 active:scale-[0.98]"
+        className="h-11 w-full rounded-xl bg-gradient-to-r from-[color:var(--brand-orange)] to-[color:var(--brand-orange-accent)] text-sm font-semibold text-white shadow-[var(--shadow-brand-orange-md)] transition-all hover:shadow-[var(--shadow-brand-orange-lg)] hover:brightness-105 active:scale-[0.98]"
       >
         Create Account
         <ArrowRightIcon />

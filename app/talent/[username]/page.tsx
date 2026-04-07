@@ -1,7 +1,12 @@
-import Image from "next/image";
+﻿import Image from "next/image";
 import { PageShell } from "@/components/shared/layout/page-shell";
 import { appNavigation } from "@/lib/content/navigation";
-import { getTalentByUsername, getServicesByTalent, getCategoryLabel, getReviewsByTalent } from "@/lib/mock-data";
+import {
+  getTalentByUsername,
+  getServicesByTalent,
+  getCategoryLabel,
+  getReviewsByTalent,
+} from "@/lib/mock-data";
 import { notFound } from "next/navigation";
 import {
   MapPinIcon,
@@ -30,7 +35,7 @@ export default async function TalentProfilePage({ params }: Props) {
     >
       {/* ── Hero / Header ── */}
       <section className="relative overflow-hidden px-5 pb-0 pt-28 sm:px-6 lg:px-8">
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(135deg,var(--tone-sky-pale)_0%,#FFFFFF_50%,var(--tone-orange-pale)_100%)]" />
+        <div className="absolute inset-0 -z-10 bg-[linear-gradient(135deg,var(--tone-sky-pale)_0%,var(--surface)_50%,var(--tone-orange-pale)_100%)]" />
 
         <div className="mx-auto max-w-5xl">
           <div className="flex flex-col gap-8 sm:flex-row sm:items-start">
@@ -72,7 +77,9 @@ export default async function TalentProfilePage({ params }: Props) {
                   <span className="text-[color:var(--brand-orange)]">
                     <StarIcon className="h-4 w-4 fill-current" />
                   </span>
-                  <span className="font-semibold text-foreground">{talent.rating.toFixed(1)}</span>
+                  <span className="font-semibold text-foreground">
+                    {talent.rating.toFixed(1)}
+                  </span>
                   ({talent.reviewCount} reviews)
                 </span>
                 <span className="flex items-center gap-1.5">
@@ -110,20 +117,28 @@ export default async function TalentProfilePage({ params }: Props) {
           <div className="space-y-10">
             {/* About */}
             <div>
-              <h2 className="typo-card-title-2xl mb-4 text-foreground">About</h2>
-              <p className="text-base leading-7 text-[color:var(--ink-body)]">{talent.bio}</p>
+              <h2 className="typo-card-title-2xl mb-4 text-foreground">
+                About
+              </h2>
+              <p className="text-base leading-7 text-[color:var(--ink-body)]">
+                {talent.bio}
+              </p>
             </div>
 
             {/* Skills */}
             <div>
-              <h2 className="typo-card-title-2xl mb-4 text-foreground">Skills</h2>
+              <h2 className="typo-card-title-2xl mb-4 text-foreground">
+                Skills
+              </h2>
               <div className="grid gap-3 sm:grid-cols-2">
                 {talent.skills.map((skill) => (
                   <div
                     key={skill.name}
                     className="flex items-center justify-between rounded-2xl border border-[color:var(--line-strong)] bg-white px-5 py-3.5"
                   >
-                    <span className="text-sm font-semibold text-foreground">{skill.name}</span>
+                    <span className="text-sm font-semibold text-foreground">
+                      {skill.name}
+                    </span>
                     <span
                       className={`rounded-full px-3 py-1 text-xs font-bold ${
                         skill.level === "expert"
@@ -133,7 +148,8 @@ export default async function TalentProfilePage({ params }: Props) {
                             : "bg-[color:var(--tone-sky-soft)] text-[color:var(--tone-sky-deep)]"
                       }`}
                     >
-                      {skill.level.charAt(0).toUpperCase() + skill.level.slice(1)}
+                      {skill.level.charAt(0).toUpperCase() +
+                        skill.level.slice(1)}
                     </span>
                   </div>
                 ))}
@@ -142,10 +158,14 @@ export default async function TalentProfilePage({ params }: Props) {
 
             {/* Services */}
             <div>
-              <h2 className="typo-card-title-2xl mb-4 text-foreground">Services</h2>
+              <h2 className="typo-card-title-2xl mb-4 text-foreground">
+                Services
+              </h2>
               {talentServices.length === 0 ? (
                 <div className="rounded-2xl border border-dashed border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-8 py-12 text-center">
-                  <p className="text-sm text-[color:var(--ink-muted)]">No published services yet.</p>
+                  <p className="text-sm text-[color:var(--ink-muted)]">
+                    No published services yet.
+                  </p>
                 </div>
               ) : (
                 <div className="grid gap-5">
@@ -185,39 +205,70 @@ export default async function TalentProfilePage({ params }: Props) {
             {/* Reviews */}
             <div>
               <div className="flex items-center justify-between mb-4">
-                <h2 className="typo-card-title-2xl text-foreground">Client Reviews</h2>
+                <h2 className="typo-card-title-2xl text-foreground">
+                  Client Reviews
+                </h2>
                 <div className="flex items-center gap-1.5 text-sm font-bold text-foreground">
-                  <span className="text-[color:var(--brand-orange)]">★</span> {talent.rating.toFixed(1)}
-                  <span className="font-medium text-[color:var(--ink-muted)]">({talent.reviewCount} total)</span>
+                  <span className="text-[color:var(--brand-orange)]">★</span>{" "}
+                  {talent.rating.toFixed(1)}
+                  <span className="font-medium text-[color:var(--ink-muted)]">
+                    ({talent.reviewCount} total)
+                  </span>
                 </div>
               </div>
-              
+
               {talentReviews.length === 0 ? (
                 <div className="rounded-2xl border border-dashed border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-8 py-12 text-center">
-                  <p className="text-sm text-[color:var(--ink-muted)]">No reviews yet.</p>
+                  <p className="text-sm text-[color:var(--ink-muted)]">
+                    No reviews yet.
+                  </p>
                 </div>
               ) : (
                 <div className="grid gap-5">
                   {talentReviews.map((review) => (
-                    <div key={review.id} className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-6">
+                    <div
+                      key={review.id}
+                      className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-6"
+                    >
                       <div className="flex items-start justify-between gap-4 mb-3">
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 overflow-hidden rounded-full bg-[color:var(--surface-alt)]">
-                            <Image src={review.client.avatarUrl} alt={review.client.firstName} width={40} height={40} className="w-full h-full object-cover" />
+                            <Image
+                              src={review.client.avatarUrl}
+                              alt={review.client.firstName}
+                              width={40}
+                              height={40}
+                              className="w-full h-full object-cover"
+                            />
                           </div>
                           <div>
-                            <p className="text-sm font-bold text-foreground">{review.client.firstName} {review.client.lastName}</p>
-                            <p className="text-xs text-[color:var(--ink-muted)]">{new Date(review.createdAt).toLocaleDateString()}</p>
+                            <p className="text-sm font-bold text-foreground">
+                              {review.client.firstName} {review.client.lastName}
+                            </p>
+                            <p className="text-xs text-[color:var(--ink-muted)]">
+                              {new Date(review.createdAt).toLocaleDateString()}
+                            </p>
                           </div>
                         </div>
                         <div className="flex text-lg">
                           {[1, 2, 3, 4, 5].map((star) => (
-                            <span key={star} className={star <= review.rating ? "text-[color:var(--brand-orange)]" : "text-[color:var(--line-strong)]"}>★</span>
+                            <span
+                              key={star}
+                              className={
+                                star <= review.rating
+                                  ? "text-[color:var(--brand-orange)]"
+                                  : "text-[color:var(--line-strong)]"
+                              }
+                            >
+                              ★
+                            </span>
                           ))}
                         </div>
                       </div>
                       {review.comment && (
-                        <p className="text-sm leading-relaxed text-[color:var(--ink-body)]">{review.comment}</p>
+                        <p className="text-sm leading-relaxed text-[color:var(--ink-body)]">
+                          {review.comment}
+                        </p>
                       )}
                     </div>
                   ))}
@@ -230,17 +281,32 @@ export default async function TalentProfilePage({ params }: Props) {
           <div className="space-y-6">
             {/* Quick stats */}
             <div className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-6">
-              <h3 className="typo-card-title-lg mb-5 text-foreground">Quick Stats</h3>
+              <h3 className="typo-card-title-lg mb-5 text-foreground">
+                Quick Stats
+              </h3>
               <div className="space-y-4">
                 {[
-                  { label: "Projects Completed", value: talent.completedProjects },
+                  {
+                    label: "Projects Completed",
+                    value: talent.completedProjects,
+                  },
                   { label: "Services Offered", value: talent.servicesCount },
                   { label: "Total Reviews", value: talent.reviewCount },
-                  { label: "Rating", value: `${talent.rating.toFixed(1)} / 5.0` },
+                  {
+                    label: "Rating",
+                    value: `${talent.rating.toFixed(1)} / 5.0`,
+                  },
                 ].map((stat) => (
-                  <div key={stat.label} className="flex items-center justify-between">
-                    <span className="text-sm text-[color:var(--ink-muted)]">{stat.label}</span>
-                    <span className="text-sm font-bold text-foreground">{stat.value}</span>
+                  <div
+                    key={stat.label}
+                    className="flex items-center justify-between"
+                  >
+                    <span className="text-sm text-[color:var(--ink-muted)]">
+                      {stat.label}
+                    </span>
+                    <span className="text-sm font-bold text-foreground">
+                      {stat.value}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -248,7 +314,9 @@ export default async function TalentProfilePage({ params }: Props) {
 
             {/* Availability */}
             <div className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-6">
-              <h3 className="typo-card-title-lg mb-3 text-foreground">Availability</h3>
+              <h3 className="typo-card-title-lg mb-3 text-foreground">
+                Availability
+              </h3>
               <div
                 className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold ${
                   talent.available
@@ -256,14 +324,20 @@ export default async function TalentProfilePage({ params }: Props) {
                     : "bg-[color:var(--tone-red-soft)] text-[color:var(--tone-red-deep)]"
                 }`}
               >
-                <span className={`h-2 w-2 rounded-full ${talent.available ? "bg-[color:var(--tone-green-base)]" : "bg-[color:var(--tone-red-base)]"}`} />
-                {talent.available ? "Open for commissions" : "Currently unavailable"}
+                <span
+                  className={`h-2 w-2 rounded-full ${talent.available ? "bg-[color:var(--tone-green-base)]" : "bg-[color:var(--tone-red-base)]"}`}
+                />
+                {talent.available
+                  ? "Open for commissions"
+                  : "Currently unavailable"}
               </div>
             </div>
 
             {/* Rate card */}
             <div className="rounded-2xl border border-[color:var(--line-strong)] bg-gradient-to-br from-[color:var(--tone-orange-soft)] to-white p-6">
-              <h3 className="typo-card-title-lg mb-2 text-foreground">Hourly Rate</h3>
+              <h3 className="typo-card-title-lg mb-2 text-foreground">
+                Hourly Rate
+              </h3>
               <p className="text-2xl font-extrabold tracking-[-0.03em] text-[color:var(--brand-orange)]">
                 ₱{talent.minRate} – ₱{talent.maxRate}
               </p>
@@ -275,7 +349,7 @@ export default async function TalentProfilePage({ params }: Props) {
             {/* CTA */}
             <a
               href={`/book/${talentServices[0]?.id ?? ""}`}
-              className="block w-full rounded-2xl bg-gradient-to-r from-[color:var(--brand-orange)] to-[#FF9252] px-6 py-4 text-center text-sm font-bold text-white shadow-[0_8px_24px_rgba(255,107,53,0.3)] transition-all hover:shadow-[0_12px_32px_rgba(255,107,53,0.4)] hover:brightness-105 active:scale-[0.98]"
+              className="block w-full rounded-2xl bg-gradient-to-r from-[color:var(--brand-orange)] to-[color:var(--brand-orange-accent)] px-6 py-4 text-center text-sm font-bold text-white shadow-[var(--shadow-brand-orange-sm)] transition-all hover:shadow-[var(--shadow-brand-orange-lg-soft)] hover:brightness-105 active:scale-[0.98]"
             >
               Book {talent.firstName}&apos;s Services
             </a>

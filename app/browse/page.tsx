@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Image from "next/image";
@@ -41,7 +41,7 @@ export default function BrowsePage() {
   return (
     <PageShell
       activeHref="/browse"
-      className="bg-[linear-gradient(180deg,var(--tone-sky-pale)_0%,#FFFFFF_44%)]"
+      className="bg-[linear-gradient(180deg,var(--tone-sky-pale)_0%,var(--surface)_44%)]"
       ctaHref="/#cta"
       items={appNavigation}
       signInHref="/#cta"
@@ -117,7 +117,7 @@ export default function BrowsePage() {
 
       <section className="px-5 pb-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-8 rounded-2xl border border-[color:var(--line-strong)] bg-white p-4 shadow-[0_16px_36px_rgba(34,46,69,0.06)]">
+          <div className="mb-8 rounded-2xl border border-[color:var(--line-strong)] bg-white p-4 shadow-[var(--shadow-surface-soft)]">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <FilterIcon />
@@ -155,7 +155,7 @@ export default function BrowsePage() {
                     setActiveCategory("all");
                     setMaxPrice(null);
                   }}
-                  className="typo-label-sm rounded-full px-3 py-1.5 text-[color:var(--ink-soft)] transition hover:bg-[#F5F7FA] hover:text-foreground"
+                  className="typo-label-sm rounded-full px-3 py-1.5 text-[color:var(--ink-soft)] transition hover:bg-[color:var(--surface-hover)] hover:text-foreground"
                 >
                   Clear All
                 </button>

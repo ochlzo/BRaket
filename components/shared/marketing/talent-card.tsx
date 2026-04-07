@@ -1,4 +1,4 @@
-import Image from "next/image";
+﻿import Image from "next/image";
 
 import { BriefcaseIcon, MapPinIcon, StarIcon } from "@/components/shared/icons/marketing-icons";
 
@@ -49,7 +49,7 @@ export function TalentCard({
             <StarIcon className="h-4 w-4 fill-current" />
           </span>
           <span className="typo-label-sm text-foreground">{rating.toFixed(1)}</span>
-          <span className="typo-meta text-[#8C96A8]">({reviews} reviews)</span>
+          <span className="typo-meta text-[color:var(--ink-soft)]">({reviews} reviews)</span>
         </div>
 
         <div className="typo-meta mb-4 space-y-2 text-[color:var(--ink-soft)]">
@@ -84,3 +84,4 @@ export function TalentCard({
     </article>
   );
 }
+

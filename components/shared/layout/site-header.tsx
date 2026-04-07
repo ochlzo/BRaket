@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useSyncExternalStore } from "react";
 import Link from "next/link";
@@ -91,7 +91,7 @@ export function SiteHeader({
 
               {/* Dropdown Menu (wrapper with top padding keeps cursor on the element to prevent hover closing) */}
               <div className="absolute right-0 top-full hidden pt-2 group-hover:block w-48 z-50">
-                <div className="overflow-hidden rounded-xl border border-[color:var(--line-strong)] bg-white shadow-[0_12px_24px_rgba(0,0,0,0.06)]">
+                <div className="overflow-hidden rounded-xl border border-[color:var(--line-strong)] bg-white shadow-[var(--shadow-menu)]">
                   <div className="px-4 py-3">
                     <p className="text-sm font-semibold text-foreground">
                       {session.type === "talent"
@@ -164,3 +164,4 @@ export function SiteHeader({
     </header>
   );
 }
+

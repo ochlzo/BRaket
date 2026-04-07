@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useSyncExternalStore } from "react";
 import Image from "next/image";
@@ -123,7 +123,7 @@ export default function Home() {
         className="relative overflow-hidden px-5 pb-20 pt-32 sm:px-6 lg:px-8 lg:pb-24 lg:pt-36"
         id="top"
       >
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(135deg,var(--tone-sky-pale)_0%,#FFFFFF_48%,var(--tone-orange-pale)_100%)]" />
+        <div className="absolute inset-0 -z-10 bg-[linear-gradient(135deg,var(--tone-sky-pale)_0%,var(--surface)_48%,var(--tone-orange-pale)_100%)]" />
         <div className="mx-auto grid max-w-7xl gap-14 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
           <div className="space-y-8">
             <div className="typo-label-sm inline-flex items-center rounded-full bg-[color:var(--tone-sky-soft)] px-4 py-2 text-[color:var(--tone-sky-deep)]">
@@ -144,7 +144,7 @@ export default function Home() {
                 commission-based projects.
               </p>
             </div>
-            <div className="typo-label-sm flex items-center gap-2 text-[#354052]">
+            <div className="typo-label-sm flex items-center gap-2 text-[color:var(--ink-body)]">
               <div className="flex items-center gap-1 text-[color:var(--tone-orange-base)]">
                 {Array.from({ length: 5 }).map((_, index) => (
                   <StarIcon key={index} />
@@ -169,9 +169,9 @@ export default function Home() {
             <div className="flex items-center gap-4 pt-2">
               <div className="flex -space-x-3">
                 {[
-                  "from-[color:var(--tone-orange-base)] to-[#FF9C63]",
-                  "from-[color:var(--brand-blue)] to-[#8AE0FF]",
-                  "from-[#FF8E53] to-[color:var(--brand-blue)]",
+                  "from-[color:var(--tone-orange-base)] to-[color:var(--brand-orange-peach)]",
+                  "from-[color:var(--brand-blue)] to-[color:var(--brand-blue-light)]",
+                  "from-[color:var(--brand-orange-warm)] to-[color:var(--brand-blue)]",
                   "from-[color:var(--brand-blue)] to-[color:var(--tone-orange-base)]",
                 ].map((gradient, index) => (
                   <div
@@ -210,7 +210,7 @@ export default function Home() {
         className="relative overflow-hidden bg-[color:var(--surface-soft)] px-5 py-20 sm:px-6 lg:px-8"
         id="journey"
       >
-        <div className="pointer-events-none absolute left-1/2 top-1/2 -z-0 h-[50rem] w-[50rem] -translate-x-1/2 -translate-y-1/2 rounded-full border-[80px] border-[#FFE8DC] opacity-60" />
+        <div className="pointer-events-none absolute left-1/2 top-1/2 -z-0 h-[50rem] w-[50rem] -translate-x-1/2 -translate-y-1/2 rounded-full border-[80px] border-[color:var(--surface-ring-soft)] opacity-60" />
         <div className="relative z-10 mx-auto grid max-w-7xl gap-14 lg:grid-cols-[1.06fr_0.94fr] lg:items-center">
           <div className="space-y-8">
             <div className="space-y-6">
@@ -227,7 +227,7 @@ export default function Home() {
                 View Our Cases
               </a>
             </div>
-            <div className="inline-block rounded-[2rem] bg-white px-8 py-8 shadow-[0_18px_48px_rgba(74,57,41,0.08)]">
+            <div className="inline-block rounded-[2rem] bg-white px-8 py-8 shadow-[var(--shadow-surface-warm)]">
               <p className="typo-meta mb-3 leading-6 text-[color:var(--ink-muted)]">
                 We support you through every step of
                 <br />
@@ -241,7 +241,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-2 gap-4 sm:gap-5">
-            <div className="overflow-hidden rounded-[2rem] bg-white p-2 shadow-[0_18px_40px_rgba(59,52,44,0.08)]">
+            <div className="overflow-hidden rounded-[2rem] bg-white p-2 shadow-[var(--shadow-panel-elevated)]">
               <Image
                 alt="Student speaking on a video call"
                 className="aspect-square w-full rounded-[1.5rem] object-cover"
@@ -250,7 +250,7 @@ export default function Home() {
                 width={1080}
               />
             </div>
-            <div className="overflow-hidden rounded-[2rem] bg-white p-2 pt-8 shadow-[0_18px_40px_rgba(59,52,44,0.08)]">
+            <div className="overflow-hidden rounded-[2rem] bg-white p-2 pt-8 shadow-[var(--shadow-panel-elevated)]">
               <Image
                 alt="Happy clients celebrating together"
                 className="aspect-square w-full rounded-[1.5rem] object-cover"

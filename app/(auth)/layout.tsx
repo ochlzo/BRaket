@@ -15,7 +15,7 @@ export default function AuthLayout({
   return (
     <div className="relative flex min-h-screen">
       {/* ── Left decorative panel ── */}
-      <div className="relative hidden w-[52%] overflow-hidden bg-gradient-to-br from-[color:var(--brand-orange)] via-[#FF9252] to-[color:var(--brand-blue)] lg:flex lg:flex-col lg:justify-between">
+      <div className="relative hidden w-[52%] overflow-hidden bg-gradient-to-br from-[color:var(--brand-orange)] via-[color:var(--brand-orange-accent)] to-[color:var(--brand-blue)] lg:flex lg:flex-col lg:justify-between">
         {/* Animated background decorations */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -right-20 -top-20 h-80 w-80 rounded-full bg-white/10 blur-3xl" />
@@ -26,7 +26,7 @@ export default function AuthLayout({
             className="absolute inset-0 opacity-[0.04]"
             style={{
               backgroundImage:
-                "linear-gradient(rgba(255,255,255,.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.4) 1px, transparent 1px)",
+                "linear-gradient(var(--overlay-grid-line-soft) 1px, transparent 1px), linear-gradient(90deg, var(--overlay-grid-line-soft) 1px, transparent 1px)",
               backgroundSize: "60px 60px",
             }}
           />
@@ -54,8 +54,8 @@ export default function AuthLayout({
             <div className="flex -space-x-3">
               {[
                 "from-white/40 to-white/20",
-                "from-[#FF9252]/80 to-[#FF6B35]/80",
-                "from-[color:var(--brand-blue)]/80 to-[#29B6F6]/80",
+                "from-[color:var(--brand-orange-accent)]/80 to-[color:var(--brand-orange)]/80",
+                "from-[color:var(--brand-blue)]/80 to-[color:var(--brand-blue-strong)]/80",
                 "from-white/30 to-white/10",
               ].map((gradient, i) => (
                 <div

@@ -12,6 +12,14 @@
   --brand-blue-strong: #29b6f6;
   --brand-orange: #ff6b35;
   --brand-orange-strong: #f4511e;
+  --brand-orange-accent: #ff9252;
+  --brand-orange-light: #ffa87e;
+  --brand-orange-warm: #ff8e53;
+  --brand-orange-peach: #ff9c63;
+  --brand-blue-light: #8ae0ff;
+  --brand-indigo-vivid: #7c3aed;
+  --surface-hover: #f5f7fa;
+  --surface-ring-soft: #ffe8dc;
   --brand-indigo: #4f46e5;
   --brand-indigo-strong: #4338ca;
   --tone-sky-soft: #e1f5fe;
@@ -51,6 +59,24 @@
   --footer-bg: #141c27;
   --shadow-lg: 0 32px 70px rgba(38, 54, 82, 0.16);
   --shadow-md: 0 18px 42px rgba(38, 54, 82, 0.1);
+  --shadow-surface-soft: 0 16px 36px rgba(34, 46, 69, 0.06);
+  --shadow-panel-soft: 0 18px 40px rgba(35, 46, 66, 0.08);
+  --shadow-surface-warm: 0 18px 48px rgba(74, 57, 41, 0.08);
+  --shadow-panel-elevated: 0 18px 40px rgba(59, 52, 44, 0.08);
+  --shadow-panel-strong: 0 24px 60px rgba(108, 99, 255, 0.1);
+  --shadow-brand-violet-md: 0 8px 24px rgba(108, 99, 255, 0.35);
+  --shadow-brand-violet-lg: 0 12px 32px rgba(108, 99, 255, 0.45);
+  --shadow-brand-orange-sm: 0 8px 24px rgba(255, 107, 53, 0.3);
+  --shadow-brand-orange-md: 0 8px 24px rgba(255, 107, 53, 0.35);
+  --shadow-brand-orange-lg-soft: 0 12px 32px rgba(255, 107, 53, 0.4);
+  --shadow-brand-orange-lg: 0 12px 32px rgba(255, 107, 53, 0.45);
+  --shadow-brand-blue-md: 0 18px 35px rgba(79, 195, 247, 0.28);
+  --shadow-menu: 0 12px 24px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 20px 42px rgba(37, 48, 69, 0.12);
+  --shadow-step-base: 0 16px 36px rgba(40, 46, 64, 0.06);
+  --shadow-step-hover: 0 22px 48px rgba(29, 42, 64, 0.12);
+  --overlay-grid-line-soft: rgba(255, 255, 255, 0.4);
+  --overlay-grid-line-medium: rgba(255, 255, 255, 0.5);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -162,7 +188,7 @@ img {
 }
 
 .br-gradient-text {
-  background: linear-gradient(135deg, var(--brand-orange), #ff9252);
+  background: linear-gradient(135deg, var(--brand-orange), var(--brand-orange-accent));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

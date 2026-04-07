@@ -1,4 +1,4 @@
-import {
+﻿import {
   CameraIcon,
   CodeIcon,
   MegaphoneIcon,
@@ -103,7 +103,7 @@ export default function ServicesPage() {
       items={appNavigation}
       signInHref="/#cta"
     >
-      <section className="bg-[linear-gradient(135deg,var(--tone-sky-pale)_0%,#FFFFFF_50%,var(--tone-orange-soft)_100%)] px-5 pb-16 pt-32 sm:px-6 lg:px-8">
+      <section className="bg-[linear-gradient(135deg,var(--tone-sky-pale)_0%,var(--surface)_50%,var(--tone-orange-soft)_100%)] px-5 pb-16 pt-32 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl text-center">
           <h1 className="typo-page-title text-foreground">
             Our <span className="text-[color:var(--brand-orange)]">Services</span>
@@ -139,7 +139,7 @@ export default function ServicesPage() {
         <div className="mx-auto max-w-4xl">
           <CtaBanner
             description="Post your project requirements and get custom proposals from talented BU students."
-            gradientClassName="bg-[linear-gradient(90deg,var(--brand-indigo)_0%,#7C3AED_100%)]"
+            gradientClassName="bg-[linear-gradient(90deg,var(--brand-indigo)_0%,var(--brand-indigo-vivid)_100%)]"
             primaryAction={{ href: "/#cta", label: "Post a Project", variant: "whiteIndigo" }}
             title="Don&apos;t see what you&apos;re looking for?"
           />
@@ -148,3 +148,4 @@ export default function ServicesPage() {
     </PageShell>
   );
 }
+

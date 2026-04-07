@@ -208,7 +208,7 @@ export default function ProfilePage() {
         {/* ═══ Profile Hero Card ═══ */}
         <div className="overflow-hidden rounded-xl border border-[color:var(--line-strong)] bg-white">
           {/* Gradient banner */}
-          <div className="relative h-16 bg-gradient-to-r from-[color:var(--brand-orange)] via-[#FF9252] to-[color:var(--brand-blue)]">
+          <div className="relative h-16 bg-gradient-to-r from-[color:var(--brand-orange)] via-[color:var(--brand-orange-accent)] to-[color:var(--brand-blue)]">
             <div className="absolute -bottom-4 -left-4 h-20 w-20 rounded-full bg-white/10" />
             <div className="absolute -right-3 -top-3 h-16 w-16 rounded-full bg-white/[0.07]" />
           </div>

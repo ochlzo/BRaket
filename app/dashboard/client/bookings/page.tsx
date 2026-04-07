@@ -235,7 +235,7 @@ export default function ClientBookingsPage() {
                 </button>
                 <button
                   type="submit"
-                  className="rounded-lg bg-[color:var(--brand-orange)] px-5 py-2 text-sm font-bold text-white transition hover:bg-[#FF9252] hover:shadow-md"
+                  className="rounded-lg bg-[color:var(--brand-orange)] px-5 py-2 text-sm font-bold text-white transition hover:bg-[color:var(--brand-orange-accent)] hover:shadow-md"
                 >
                   Submit Review
                 </button>

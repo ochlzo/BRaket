@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useSyncExternalStore } from "react";
 import Link from "next/link";
@@ -218,7 +218,7 @@ export default function HowItWorksPage() {
             {features.map((feature) => (
               <article
                 key={feature.title}
-                className="rounded-[1.5rem] border border-[color:var(--line-strong)] bg-[linear-gradient(135deg,var(--surface-alt)_0%,#FFFFFF_100%)] p-6 transition duration-200 hover:shadow-[0_18px_40px_rgba(35,46,66,0.08)]"
+                className="rounded-[1.5rem] border border-[color:var(--line-strong)] bg-[linear-gradient(135deg,var(--surface-alt)_0%,var(--surface)_100%)] p-6 transition duration-200 hover:shadow-[var(--shadow-panel-soft)]"
               >
                 <h3 className="typo-card-title-lg text-foreground">{feature.title}</h3>
                 <p className="typo-body mt-2 text-[color:var(--ink-soft)]">{feature.description}</p>
@@ -244,3 +244,5 @@ export default function HowItWorksPage() {
     </PageShell>
   );
 }
+
+
