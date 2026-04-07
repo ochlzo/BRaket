@@ -12,19 +12,19 @@ Keep styling consistent, maintainable, and easy to refactor by enforcing a singl
 
 ## Do
 - Use CSS variables via Tailwind arbitrary values:
-  - `text-[color:var(--...)]`
-  - `bg-[color:var(--...)]`
-  - `border-[color:var(--...)]`
-  - `shadow-[var(--...)]`
+  - `text-[color:var(--ink-body)]`
+  - `bg-[color:var(--surface)]`
+  - `border-[color:var(--line-strong)]`
+  - `shadow-[var(--shadow-panel-elevated)]`
 - Prefer `semantic` and `toneStyles` utilities before writing new ad-hoc class strings.
 - Add new colors/shadows as CSS variables in `app/globals.css`, then expose them in `paletteVars`.
 - Reuse shared shadow tokens (for example `--shadow-*`) instead of inline `rgba(...)` shadow literals.
-- Keep gradients token-based whenever possible using `var(--...)`.
+- Keep gradients token-based whenever possible using `var(--token-name)`.
 
 ## Do Not
 - Do not hardcode hex colors in component class strings.
 - Do not hardcode `rgba(...)` values in `shadow-[...]` classes.
-- Do not reference `var(--...)` directly in TS theme utilities when a `paletteVars` entry exists.
+- Do not reference `var(--token-name)` directly in TS theme utilities when a `paletteVars` entry exists.
 - Do not introduce one-off style tokens in random files; define them in `app/globals.css` first.
 
 ## Allowed Exceptions
