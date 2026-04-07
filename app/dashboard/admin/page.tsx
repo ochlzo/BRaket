@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { DashboardLayout } from "@/components/shared/layout/dashboard-layout";
 import {
   talents,
   clients,
@@ -10,7 +10,7 @@ import {
   getPendingTalents,
   getAllUsers,
 } from "@/lib/mock-data";
-import type { TalentProfile, ClientProfile } from "@/types";
+import type { TalentProfile, ClientProfile } from "@/lib/types";
 
 const statusColors: Record<string, string> = {
   pending: "bg-[color:var(--tone-amber-soft)] text-[color:var(--tone-amber-deep)]",

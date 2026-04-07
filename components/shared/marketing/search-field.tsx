@@ -1,4 +1,4 @@
-import { SearchIcon } from "@/components/icons/marketing-icons";
+import { SearchIcon } from "@/components/shared/icons/marketing-icons";
 
 type SearchFieldProps = {
   defaultValue?: string;

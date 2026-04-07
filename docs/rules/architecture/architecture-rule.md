@@ -2,7 +2,6 @@
 
 Use this structure:
 
-src/
 app/
 components/
 features/
@@ -12,22 +11,22 @@ prisma/
 
 ## Directory Rules
 
-### src/app
+### /app
 
 Route files only. Put `page.tsx`, `layout.tsx`, route handlers, loading/error files, and route-local UI here. Keep non-routing code outside `app`.
 
-### src/components
+### /components
 
 Shared presentational components. Use:
 
 - `ui/` for design-system primitives
 - `shared/` for reusable app components
 
-### src/features
+### /features
 
 Feature-scoped client code. Each feature owns its Redux slice, selectors, hooks, types, and feature-specific components.
 
-### src/lib
+### /lib
 
 Shared infrastructure and reusable modules.
 
@@ -37,7 +36,7 @@ Shared infrastructure and reusable modules.
 - `validations/` = input schemas
 - `utils/` = pure helpers
 
-### src/server
+### /server
 
 Server-only business logic. Put services, server actions, and authorization rules here. Do not import this code into client components.
 
@@ -47,7 +46,7 @@ Database schema, migrations, and seed scripts only.
 
 ## Implementation Rules
 
-- Use the Next.js App Router and keep routing concerns inside `src/app`.
+- Use the Next.js App Router and keep routing concerns inside `/app`.
 - Default to Server Components. Add `"use client"` only for interactivity, browser APIs, or React client state.
 - Keep Redux for client/UI state, not primary server data.
 - Create the Redux store per request and provide it through a small client `providers.tsx`.

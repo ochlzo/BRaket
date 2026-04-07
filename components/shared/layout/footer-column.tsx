@@ -1,4 +1,4 @@
-import type { FooterColumn as FooterColumnType } from "@/content/footer";
+import type { FooterColumn as FooterColumnType } from "@/lib/content/footer";
 
 type FooterColumnProps = FooterColumnType;
 

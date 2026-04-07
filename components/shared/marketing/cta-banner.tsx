@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { semantic } from "@/theme/semantic";
+import { semantic } from "@/lib/theme/semantic";
 
 type Action = {
   href: string;

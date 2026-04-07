@@ -7,11 +7,11 @@ import {
   PencilIcon,
   TrendingUpIcon,
   VideoIcon,
-} from "@/components/icons/marketing-icons";
-import { PageShell } from "@/components/layout/page-shell";
-import { CtaBanner } from "@/components/marketing/cta-banner";
-import { ServiceCard } from "@/components/marketing/service-card";
-import { appNavigation } from "@/content/navigation";
+} from "@/components/shared/icons/marketing-icons";
+import { PageShell } from "@/components/shared/layout/page-shell";
+import { CtaBanner } from "@/components/shared/marketing/cta-banner";
+import { ServiceCard } from "@/components/shared/marketing/service-card";
+import { appNavigation } from "@/lib/content/navigation";
 
 const services = [
   {

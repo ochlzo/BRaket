@@ -3,7 +3,7 @@
 import { useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { DashboardLayout } from "@/components/shared/layout/dashboard-layout";
 import { Button } from "@/components/ui/button";
 import {
   mockCurrentClientProfile,
@@ -12,7 +12,7 @@ import {
   getBookingsByTalent,
   getServicesByTalent,
 } from "@/lib/mock-data";
-import type { UserRole } from "@/types";
+import type { UserRole } from "@/lib/types";
 
 /* ── Icons ── */
 function ShieldCheckIcon({ className = "size-5" }: { className?: string }) {

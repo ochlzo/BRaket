@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import { BriefcaseIcon, MapPinIcon, StarIcon } from "@/components/icons/marketing-icons";
+import { BriefcaseIcon, MapPinIcon, StarIcon } from "@/components/shared/icons/marketing-icons";
 
 type TalentCardProps = {
   available: boolean;

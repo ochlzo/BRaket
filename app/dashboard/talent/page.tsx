@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { DashboardLayout } from "@/components/shared/layout/dashboard-layout";
 import { getBookingsByTalent, getServicesByTalent, mockCurrentTalentProfile } from "@/lib/mock-data";
 
 const statusColors: Record<string, string> = {

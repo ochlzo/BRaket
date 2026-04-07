@@ -4,7 +4,7 @@ import {
   legalLinks,
   type FooterColumn as FooterColumnType,
   type FooterLink,
-} from "@/content/footer";
+} from "@/lib/content/footer";
 
 import { BrandMark } from "../branding/brand-mark";
 import { FooterColumn } from "./footer-column";

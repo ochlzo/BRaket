@@ -3,9 +3,9 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { FilterIcon } from "@/components/icons/marketing-icons";
-import { PageShell } from "@/components/layout/page-shell";
-import { appNavigation } from "@/content/navigation";
+import { FilterIcon } from "@/components/shared/icons/marketing-icons";
+import { PageShell } from "@/components/shared/layout/page-shell";
+import { appNavigation } from "@/lib/content/navigation";
 import {
   services,
   talents,

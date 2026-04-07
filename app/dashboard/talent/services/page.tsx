@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { DashboardLayout } from "@/components/shared/layout/dashboard-layout";
 import {
   getCategoryLabel,
   mockCurrentTalentProfile,

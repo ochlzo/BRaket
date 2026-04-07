@@ -1,4 +1,4 @@
-import { BrandMark } from "@/components/branding/brand-mark";
+import { BrandMark } from "@/components/shared/branding/brand-mark";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

@@ -11,7 +11,7 @@ import type {
   Review,
   ServiceListing,
   TalentProfile,
-} from "@/types";
+} from "@/lib/types";
 
 /* ── Categories ── */
 export const categories: Category[] = [

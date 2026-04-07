@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { UserRole } from "@/types";
+import type { UserRole } from "@/lib/types";
 import { DashboardSidebar } from "./dashboard-sidebar";
 
 type DashboardLayoutProps = {

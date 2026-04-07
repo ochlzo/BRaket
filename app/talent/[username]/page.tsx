@@ -1,13 +1,13 @@
 import Image from "next/image";
-import { PageShell } from "@/components/layout/page-shell";
-import { appNavigation } from "@/content/navigation";
+import { PageShell } from "@/components/shared/layout/page-shell";
+import { appNavigation } from "@/lib/content/navigation";
 import { getTalentByUsername, getServicesByTalent, getCategoryLabel, getReviewsByTalent } from "@/lib/mock-data";
 import { notFound } from "next/navigation";
 import {
   MapPinIcon,
   StarIcon,
   BriefcaseIcon,
-} from "@/components/icons/marketing-icons";
+} from "@/components/shared/icons/marketing-icons";
 
 type Props = { params: Promise<{ username: string }> };
 

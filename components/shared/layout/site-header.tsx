@@ -2,9 +2,9 @@
 
 import { useSyncExternalStore } from "react";
 import Link from "next/link";
-import { BrandMark } from "@/components/branding/brand-mark";
-import type { NavItem } from "@/content/navigation";
-import { semantic } from "@/theme/semantic";
+import { BrandMark } from "@/components/shared/branding/brand-mark";
+import type { NavItem } from "@/lib/content/navigation";
+import { semantic } from "@/lib/theme/semantic";
 import Image from "next/image";
 
 type Session = { type: string; username: string };

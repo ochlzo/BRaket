@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { toneStyles, type ToneName } from "@/theme/tailwind";
+import { toneStyles, type ToneName } from "@/lib/theme/tailwind";
 
 type ServiceCardProps = {
   actionHref: string;

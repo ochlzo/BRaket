@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
-import { ArrowRightIcon } from "@/components/icons/marketing-icons";
-import { toneStyles, type ToneName } from "@/theme/tailwind";
+import { ArrowRightIcon } from "@/components/shared/icons/marketing-icons";
+import { toneStyles, type ToneName } from "@/lib/theme/tailwind";
 
 type CategoryCardProps = {
   description: string;

@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BrandMark } from "@/components/branding/brand-mark";
-import type { UserRole } from "@/types";
+import { BrandMark } from "@/components/shared/branding/brand-mark";
+import type { UserRole } from "@/lib/types";
 
 type SidebarItem = {
   href: string;

@@ -3,9 +3,9 @@
 import { useSyncExternalStore } from "react";
 import Image from "next/image";
 
-import { CategoryCard } from "@/components/marketing/category-card";
-import { CtaBanner } from "@/components/marketing/cta-banner";
-import { FeatureCard } from "@/components/marketing/feature-card";
+import { CategoryCard } from "@/components/shared/marketing/category-card";
+import { CtaBanner } from "@/components/shared/marketing/cta-banner";
+import { FeatureCard } from "@/components/shared/marketing/feature-card";
 import {
   CameraIcon,
   CodeIcon,
@@ -15,10 +15,10 @@ import {
   StarIcon,
   UsersIcon,
   VideoIcon,
-} from "@/components/icons/marketing-icons";
-import { PageShell } from "@/components/layout/page-shell";
-import { appNavigation } from "@/content/navigation";
-import { semantic } from "@/theme/semantic";
+} from "@/components/shared/icons/marketing-icons";
+import { PageShell } from "@/components/shared/layout/page-shell";
+import { appNavigation } from "@/lib/content/navigation";
+import { semantic } from "@/lib/theme/semantic";
 
 const categories = [
   {

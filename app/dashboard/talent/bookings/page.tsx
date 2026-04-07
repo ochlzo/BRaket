@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { DashboardLayout } from "@/components/shared/layout/dashboard-layout";
 import { getBookingsByTalent, mockCurrentTalentProfile } from "@/lib/mock-data";
-import type { BookingStatus, Booking } from "@/types";
+import type { BookingStatus, Booking } from "@/lib/types";
 
 const statusColors: Record<string, string> = {
   pending: "bg-[color:var(--tone-amber-soft)] text-[color:var(--tone-amber-deep)]",

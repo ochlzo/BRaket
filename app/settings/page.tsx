@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
-import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { DashboardLayout } from "@/components/shared/layout/dashboard-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { mockCurrentClientProfile, mockCurrentTalentProfile } from "@/lib/mock-data";
-import type { UserRole } from "@/types";
+import type { UserRole } from "@/lib/types";
 
 type Tab = "profile" | "account";
 

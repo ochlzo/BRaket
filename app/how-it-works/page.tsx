@@ -3,17 +3,17 @@
 import { useSyncExternalStore } from "react";
 import Link from "next/link";
 
-import { PageShell } from "@/components/layout/page-shell";
-import { CtaBanner } from "@/components/marketing/cta-banner";
-import { ProcessStepCard } from "@/components/marketing/process-step-card";
+import { PageShell } from "@/components/shared/layout/page-shell";
+import { CtaBanner } from "@/components/shared/marketing/cta-banner";
+import { ProcessStepCard } from "@/components/shared/marketing/process-step-card";
 import {
   BriefcaseIcon,
   SearchIcon,
   StarOutlineIcon,
   UserCheckIcon,
-} from "@/components/icons/marketing-icons";
-import { appNavigation } from "@/content/navigation";
-import { semantic } from "@/theme/semantic";
+} from "@/components/shared/icons/marketing-icons";
+import { appNavigation } from "@/lib/content/navigation";
+import { semantic } from "@/lib/theme/semantic";
 
 const clientSteps = [
   {
