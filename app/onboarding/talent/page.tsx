@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { PageShell } from "@/components/layout/page-shell";
 import { appNavigation } from "@/content/navigation";
 import { Button } from "@/components/ui/button";
@@ -13,21 +12,59 @@ import { Separator } from "@/components/ui/separator";
 import type { SkillLevel } from "@/types";
 
 const availableSkills = [
-  "HTML/CSS", "React", "Next.js", "JavaScript", "TypeScript", "Node.js",
-  "Figma", "Adobe Photoshop", "Adobe Illustrator", "Canva",
-  "Premiere Pro", "After Effects", "Lightroom",
-  "SEO Writing", "Copywriting", "Blog Posts",
-  "Social Media Management", "Content Strategy",
-  "Photography", "Video Editing", "Motion Graphics",
-  "Branding", "Logo Design", "Web Design", "Mobile Design",
-  "Python", "PHP", "WordPress", "MongoDB", "Tailwind CSS",
+  "HTML/CSS",
+  "React",
+  "Next.js",
+  "JavaScript",
+  "TypeScript",
+  "Node.js",
+  "Figma",
+  "Adobe Photoshop",
+  "Adobe Illustrator",
+  "Canva",
+  "Premiere Pro",
+  "After Effects",
+  "Lightroom",
+  "SEO Writing",
+  "Copywriting",
+  "Blog Posts",
+  "Social Media Management",
+  "Content Strategy",
+  "Photography",
+  "Video Editing",
+  "Motion Graphics",
+  "Branding",
+  "Logo Design",
+  "Web Design",
+  "Mobile Design",
+  "Python",
+  "PHP",
+  "WordPress",
+  "MongoDB",
+  "Tailwind CSS",
 ];
 
-const proficiencyLevels: { value: SkillLevel; label: string; color: string }[] = [
-  { value: "beginner", label: "Beginner", color: "bg-[color:var(--tone-sky-soft)] text-[color:var(--tone-sky-deep)]" },
-  { value: "intermediate", label: "Intermediate", color: "bg-[color:var(--tone-amber-soft)] text-[color:var(--tone-amber-deep)]" },
-  { value: "expert", label: "Expert", color: "bg-[color:var(--tone-green-soft)] text-[color:var(--tone-green-deep)]" },
-];
+const proficiencyLevels: { value: SkillLevel; label: string; color: string }[] =
+  [
+    {
+      value: "beginner",
+      label: "Beginner",
+      color:
+        "bg-[color:var(--tone-sky-soft)] text-[color:var(--tone-sky-deep)]",
+    },
+    {
+      value: "intermediate",
+      label: "Intermediate",
+      color:
+        "bg-[color:var(--tone-amber-soft)] text-[color:var(--tone-amber-deep)]",
+    },
+    {
+      value: "expert",
+      label: "Expert",
+      color:
+        "bg-[color:var(--tone-green-soft)] text-[color:var(--tone-green-deep)]",
+    },
+  ];
 
 type SelectedSkill = { name: string; level: SkillLevel };
 
@@ -46,7 +83,7 @@ export default function OnboardingPage() {
   const filteredSkills = availableSkills.filter(
     (s) =>
       s.toLowerCase().includes(skillSearch.toLowerCase()) &&
-      !selectedSkills.some((sel) => sel.name === s)
+      !selectedSkills.some((sel) => sel.name === s),
   );
 
   function addSkill(name: string) {
@@ -61,7 +98,7 @@ export default function OnboardingPage() {
 
   function setSkillLevel(name: string, level: SkillLevel) {
     setSelectedSkills((prev) =>
-      prev.map((s) => (s.name === name ? { ...s, level } : s))
+      prev.map((s) => (s.name === name ? { ...s, level } : s)),
     );
   }
 
@@ -88,48 +125,132 @@ export default function OnboardingPage() {
           </div>
 
           <div className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-8">
-              <form
-                className="space-y-7"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  localStorage.setItem("braket_session", JSON.stringify({ type: "talent", username: "maria-santos" }));
-                  router.push("/dashboard/talent/services/new");
-                }}
-              >
+            <form
+              className="space-y-7"
+              onSubmit={(e) => {
+                e.preventDefault();
+                localStorage.setItem(
+                  "braket_session",
+                  JSON.stringify({ type: "talent", username: "maria-santos" }),
+                );
+                router.push("/dashboard/talent/services/new");
+              }}
+            >
               {/* ── Section 1: Basic Info ── */}
               <div>
                 <h2 className="mb-4 flex items-center gap-2 text-lg font-bold text-foreground">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[color:var(--brand-orange)] text-xs font-bold text-white">1</span>
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[color:var(--brand-orange)] text-xs font-bold text-white">
+                    1
+                  </span>
                   Basic Information
                 </h2>
 
                 <div className="space-y-5">
                   <div className="space-y-2">
-                    <Label htmlFor="ob-username" className="text-sm font-semibold">Username <span className="text-[color:var(--tone-red-base)]">*</span></Label>
-                    <Input id="ob-username" placeholder="e.g. maria-santos" value={username} onChange={(e) => setUsername(e.target.value)} required className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm" />
+                    <Label
+                      htmlFor="ob-username"
+                      className="text-sm font-semibold"
+                    >
+                      Username{" "}
+                      <span className="text-[color:var(--tone-red-base)]">
+                        *
+                      </span>
+                    </Label>
+                    <Input
+                      id="ob-username"
+                      placeholder="e.g. maria-santos"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      required
+                      className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm"
+                    />
                   </div>
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="ob-first" className="text-sm font-semibold">First Name <span className="text-[color:var(--tone-red-base)]">*</span></Label>
-                      <Input id="ob-first" placeholder="Maria" value={firstName} onChange={(e) => setFirstName(e.target.value)} required className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm" />
+                      <Label
+                        htmlFor="ob-first"
+                        className="text-sm font-semibold"
+                      >
+                        First Name{" "}
+                        <span className="text-[color:var(--tone-red-base)]">
+                          *
+                        </span>
+                      </Label>
+                      <Input
+                        id="ob-first"
+                        placeholder="Maria"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        required
+                        className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm"
+                      />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="ob-last" className="text-sm font-semibold">Last Name <span className="text-[color:var(--tone-red-base)]">*</span></Label>
-                      <Input id="ob-last" placeholder="Santos" value={lastName} onChange={(e) => setLastName(e.target.value)} required className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm" />
+                      <Label
+                        htmlFor="ob-last"
+                        className="text-sm font-semibold"
+                      >
+                        Last Name{" "}
+                        <span className="text-[color:var(--tone-red-base)]">
+                          *
+                        </span>
+                      </Label>
+                      <Input
+                        id="ob-last"
+                        placeholder="Santos"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        required
+                        className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm"
+                      />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="ob-headline" className="text-sm font-semibold">Headline <span className="text-[color:var(--tone-red-base)]">*</span></Label>
-                    <Input id="ob-headline" placeholder="e.g. UI/UX Designer & Prototyping Specialist" value={headline} onChange={(e) => setHeadline(e.target.value)} required className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm" />
+                    <Label
+                      htmlFor="ob-headline"
+                      className="text-sm font-semibold"
+                    >
+                      Headline{" "}
+                      <span className="text-[color:var(--tone-red-base)]">
+                        *
+                      </span>
+                    </Label>
+                    <Input
+                      id="ob-headline"
+                      placeholder="e.g. UI/UX Designer & Prototyping Specialist"
+                      value={headline}
+                      onChange={(e) => setHeadline(e.target.value)}
+                      required
+                      className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm"
+                    />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="ob-bio" className="text-sm font-semibold">Bio <span className="text-[color:var(--tone-red-base)]">*</span></Label>
-                    <Textarea id="ob-bio" rows={4} placeholder="Tell clients about yourself, your experience, and what makes you unique..." value={bio} onChange={(e) => setBio(e.target.value)} required className="rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm" />
-                    {!(process.env._TESTING === "true" || process.env.NEXT_PUBLIC__TESTING === "true" || process.env.NEXT_PUBLIC_TESTING === "true") && (
-                      <p className={`text-xs ${bioLength < 150 ? "text-[color:var(--tone-red-base)]" : bioLength > 500 ? "text-[color:var(--tone-red-base)]" : "text-[color:var(--ink-soft)]"}`}>
+                    <Label htmlFor="ob-bio" className="text-sm font-semibold">
+                      Bio{" "}
+                      <span className="text-[color:var(--tone-red-base)]">
+                        *
+                      </span>
+                    </Label>
+                    <Textarea
+                      id="ob-bio"
+                      rows={4}
+                      placeholder="Tell clients about yourself, your experience, and what makes you unique..."
+                      value={bio}
+                      onChange={(e) => setBio(e.target.value)}
+                      required
+                      className="rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm"
+                    />
+                    {!(
+                      process.env._TESTING === "true" ||
+                      process.env.NEXT_PUBLIC__TESTING === "true" ||
+                      process.env.NEXT_PUBLIC_TESTING === "true"
+                    ) && (
+                      <p
+                        className={`text-xs ${bioLength < 150 ? "text-[color:var(--tone-red-base)]" : bioLength > 500 ? "text-[color:var(--tone-red-base)]" : "text-[color:var(--ink-soft)]"}`}
+                      >
                         {bioLength}/500 characters (minimum 150)
                       </p>
                     )}
@@ -142,23 +263,57 @@ export default function OnboardingPage() {
               {/* ── Section 2: Rates ── */}
               <div>
                 <h2 className="mb-4 flex items-center gap-2 text-lg font-bold text-foreground">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[color:var(--brand-orange)] text-xs font-bold text-white">2</span>
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[color:var(--brand-orange)] text-xs font-bold text-white">
+                    2
+                  </span>
                   Hourly Rates
                 </h2>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="ob-min" className="text-sm font-semibold">Min Rate (₱/hr) <span className="text-[color:var(--tone-red-base)]">*</span></Label>
+                    <Label htmlFor="ob-min" className="text-sm font-semibold">
+                      Min Rate (₱/hr){" "}
+                      <span className="text-[color:var(--tone-red-base)]">
+                        *
+                      </span>
+                    </Label>
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-[color:var(--ink-muted)]">₱</span>
-                      <Input id="ob-min" type="number" min="1" placeholder="500" value={minRate} onChange={(e) => setMinRate(e.target.value)} required className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] pl-8 text-sm" />
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-[color:var(--ink-muted)]">
+                        ₱
+                      </span>
+                      <Input
+                        id="ob-min"
+                        type="number"
+                        min="1"
+                        placeholder="500"
+                        value={minRate}
+                        onChange={(e) => setMinRate(e.target.value)}
+                        required
+                        className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] pl-8 text-sm"
+                      />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="ob-max" className="text-sm font-semibold">Max Rate (₱/hr) <span className="text-[color:var(--tone-red-base)]">*</span></Label>
+                    <Label htmlFor="ob-max" className="text-sm font-semibold">
+                      Max Rate (₱/hr){" "}
+                      <span className="text-[color:var(--tone-red-base)]">
+                        *
+                      </span>
+                    </Label>
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-[color:var(--ink-muted)]">₱</span>
-                      <Input id="ob-max" type="number" min="1" placeholder="1000" value={maxRate} onChange={(e) => setMaxRate(e.target.value)} required className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] pl-8 text-sm" />
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-[color:var(--ink-muted)]">
+                        ₱
+                      </span>
+                      <Input
+                        id="ob-max"
+                        type="number"
+                        min="1"
+                        placeholder="1000"
+                        value={maxRate}
+                        onChange={(e) => setMaxRate(e.target.value)}
+                        required
+                        className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] pl-8 text-sm"
+                      />
                     </div>
                   </div>
                 </div>
@@ -169,7 +324,9 @@ export default function OnboardingPage() {
               {/* ── Section 3: Skills ── */}
               <div>
                 <h2 className="mb-4 flex items-center gap-2 text-lg font-bold text-foreground">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[color:var(--brand-orange)] text-xs font-bold text-white">3</span>
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[color:var(--brand-orange)] text-xs font-bold text-white">
+                    3
+                  </span>
                   Skills
                   <span className="ml-1 text-sm font-normal text-[color:var(--ink-muted)]">
                     ({selectedSkills.length}/10 selected, minimum 3)
@@ -184,15 +341,21 @@ export default function OnboardingPage() {
                         key={skill.name}
                         className="flex items-center justify-between rounded-xl border border-[color:var(--line-strong)] bg-white px-4 py-3"
                       >
-                        <span className="text-sm font-semibold text-foreground">{skill.name}</span>
+                        <span className="text-sm font-semibold text-foreground">
+                          {skill.name}
+                        </span>
                         <div className="flex items-center gap-2">
                           {proficiencyLevels.map((lev) => (
                             <button
                               key={lev.value}
                               type="button"
-                              onClick={() => setSkillLevel(skill.name, lev.value)}
+                              onClick={() =>
+                                setSkillLevel(skill.name, lev.value)
+                              }
                               className={`rounded-lg px-3 py-1 text-xs font-bold transition ${
-                                skill.level === lev.value ? lev.color : "text-[color:var(--ink-soft)] hover:bg-[color:var(--surface-alt)]"
+                                skill.level === lev.value
+                                  ? lev.color
+                                  : "text-[color:var(--ink-soft)] hover:bg-[color:var(--surface-alt)]"
                               }`}
                             >
                               {lev.label}

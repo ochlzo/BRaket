@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import Link from "next/link";
 
 import { PageShell } from "@/components/layout/page-shell";
@@ -111,13 +111,11 @@ const features = [
 ];
 
 export default function HowItWorksPage() {
-  const [mounted, setMounted] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    setIsLoggedIn(!!localStorage.getItem("braket_session"));
-  }, []);
+  const isLoggedIn = useSyncExternalStore(
+    () => () => {},
+    () => !!localStorage.getItem("braket_session"),
+    () => false,
+  );
 
   return (
     <PageShell
@@ -230,7 +228,7 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      {(!mounted || !isLoggedIn) && (
+      {!isLoggedIn && (
         <section className="px-5 py-20 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-5xl">
             <CtaBanner

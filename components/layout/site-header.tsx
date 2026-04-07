@@ -1,10 +1,29 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { BrandMark } from "@/components/branding/brand-mark";
 import type { NavItem } from "@/content/navigation";
 import { semantic } from "@/theme/semantic";
+import Image from "next/image";
+
+type Session = { type: string; username: string };
+
+const subscribeToStorage = (onStoreChange: () => void) => {
+  window.addEventListener("storage", onStoreChange);
+  return () => window.removeEventListener("storage", onStoreChange);
+};
+
+const getClientSessionSnapshot = (): Session | null => {
+  const data = localStorage.getItem("braket_session");
+  if (!data) return null;
+
+  try {
+    return JSON.parse(data) as Session;
+  } catch {
+    return null;
+  }
+};
 
 type SiteHeaderProps = {
   activeHref: string;
@@ -17,22 +36,20 @@ type SiteHeaderProps = {
 
 export function SiteHeader({
   activeHref,
-  ctaHref,
-  ctaLabel = "Get Started",
   homeHref = "/",
   items,
-  signInHref,
 }: SiteHeaderProps) {
-  const [mounted, setMounted] = useState(false);
-  const [session, setSession] = useState<{ type: string; username: string } | null>(null);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
-  useEffect(() => {
-    setMounted(true);
-    const data = localStorage.getItem("braket_session");
-    if (data) {
-      setSession(JSON.parse(data));
-    }
-  }, []);
+  const session = useSyncExternalStore(
+    subscribeToStorage,
+    getClientSessionSnapshot,
+    () => null,
+  );
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-[color:var(--line)] bg-white/82 backdrop-blur-xl">
@@ -42,7 +59,11 @@ export function SiteHeader({
           {items.map((item) => (
             <a
               key={item.href}
-              className={item.href === activeHref ? "typo-label-sm text-foreground" : undefined}
+              className={
+                item.href === activeHref
+                  ? "typo-label-sm text-foreground"
+                  : undefined
+              }
               href={item.href}
             >
               {item.label}
@@ -53,9 +74,16 @@ export function SiteHeader({
           {mounted && session ? (
             <div className="group relative">
               {/* Profile Avatar Trigger */}
-              <button type="button" className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] transition-colors hover:border-[color:var(--brand-orange)] focus:outline-none">
-                <img
-                  src={session.type === "talent" ? "/images/avatar_maria.png" : "/images/avatar_john.png"}
+              <button
+                type="button"
+                className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] transition-colors hover:border-[color:var(--brand-orange)] focus:outline-none"
+              >
+                <Image
+                  src={
+                    session.type === "talent"
+                      ? "/images/avatar_maria.png"
+                      : "/images/avatar_john.png"
+                  }
                   alt="Profile"
                   className="h-full w-full object-cover"
                 />
@@ -66,7 +94,9 @@ export function SiteHeader({
                 <div className="overflow-hidden rounded-xl border border-[color:var(--line-strong)] bg-white shadow-[0_12px_24px_rgba(0,0,0,0.06)]">
                   <div className="px-4 py-3">
                     <p className="text-sm font-semibold text-foreground">
-                      {session.type === "talent" ? "Maria Santos" : "Client User"}
+                      {session.type === "talent"
+                        ? "Maria Santos"
+                        : "Client User"}
                     </p>
                     <p className="truncate text-xs font-medium text-[color:var(--ink-muted)]">
                       @{session.username}
@@ -75,13 +105,21 @@ export function SiteHeader({
                   <div className="h-px bg-[color:var(--line-strong)]" />
                   <div className="p-1.5">
                     <Link
-                      href={session.type === "talent" ? `/talent/${session.username}` : "/dashboard/client"}
+                      href={
+                        session.type === "talent"
+                          ? `/talent/${session.username}`
+                          : "/dashboard/client"
+                      }
                       className="block rounded-lg px-3 py-2 text-sm font-medium text-[color:var(--ink-body)] hover:bg-[color:var(--surface-alt)] hover:text-foreground"
                     >
                       My Profile
                     </Link>
                     <Link
-                      href={session.type === "talent" ? "/dashboard/talent" : "/dashboard/client"}
+                      href={
+                        session.type === "talent"
+                          ? "/dashboard/talent"
+                          : "/dashboard/client"
+                      }
                       className="block rounded-lg px-3 py-2 text-sm font-medium text-[color:var(--ink-body)] hover:bg-[color:var(--surface-alt)] hover:text-foreground"
                     >
                       Dashboard
@@ -105,10 +143,16 @@ export function SiteHeader({
             </div>
           ) : mounted ? (
             <>
-              <Link href="/login" className="hidden text-sm font-semibold text-[color:var(--ink-muted)] transition-colors hover:text-foreground md:inline-flex">
+              <Link
+                href="/login"
+                className="hidden text-sm font-semibold text-[color:var(--ink-muted)] transition-colors hover:text-foreground md:inline-flex"
+              >
                 Sign In
               </Link>
-              <Link href="/signup" className={`hidden md:inline-flex !text-white ${semantic.button.brandOrange}`}>
+              <Link
+                href="/signup"
+                className={`hidden md:inline-flex !text-white ${semantic.button.brandOrange}`}
+              >
                 Sign Up
               </Link>
             </>
