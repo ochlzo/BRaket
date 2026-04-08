@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { SignUpForm } from "@/components/shared/auth/auth-form";
+import { SignUpForm } from "@/components/shared/auth/signup-form";
 
 export const metadata: Metadata = {
   title: "Create Account – BRaket",
