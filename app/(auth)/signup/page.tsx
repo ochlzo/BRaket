@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     "Create your BRaket account and start showcasing your skills, building your portfolio, and earning through commissions at Bicol University.",
 };
 
-export default function SignUpPage() {
+export default async function SignUpPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
