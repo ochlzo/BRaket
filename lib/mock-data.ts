@@ -4,7 +4,6 @@
    ══════════════════════════════════════════════════ */
 
 import type {
-  AuthUser,
   Booking,
   Category,
   ClientProfile,
@@ -530,7 +529,7 @@ export function getAllUsers(): (TalentProfile | ClientProfile)[] {
 }
 
 /* ── Mock current user (toggle to test different views) ── */
-export const mockCurrentUser: AuthUser = {
+export const mockCurrentUser = {
   id: "u10",
   email: "alex.tan@example.com",
   role: "client",

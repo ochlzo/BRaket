@@ -3,16 +3,9 @@
    ══════════════════════════════════════════════════ */
 
 /* ── Auth & Users ── */
-export type UserRole = "client" | "talent" | "admin";
+export type UserRole = "client" | "talent";
 
-export interface AuthUser {
-  id: string;
-  email: string;
-  role: UserRole;
-  isOnboarded: boolean;
-}
-
-export interface BaseProfile {
+export interface User {
   id: string;
   userId: string;
   username: string;
@@ -27,7 +20,7 @@ export interface BaseProfile {
   socials?: { facebook?: string; instagram?: string; twitter?: string };
 }
 
-export interface TalentProfile extends BaseProfile {
+export interface TalentProfile extends User {
   role: "talent";
   headline: string;
   location: string;
@@ -43,7 +36,7 @@ export interface TalentProfile extends BaseProfile {
   portfolio?: PortfolioItem[];
 }
 
-export interface ClientProfile extends BaseProfile {
+export interface ClientProfile extends User {
   role: "client";
   company?: string;
   projectsPosted: number;

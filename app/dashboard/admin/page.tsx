@@ -59,7 +59,7 @@ export default function AdminDashboardPage() {
   ];
 
   return (
-    <DashboardLayout role="admin" title="Admin Dashboard" subtitle="Platform management and moderation">
+    <DashboardLayout role="client" title="Operations Dashboard" subtitle="Platform management and moderation">
       {/* Tabs */}
       <div className="mb-6 flex gap-2">
         {tabs.map((tab) => (
