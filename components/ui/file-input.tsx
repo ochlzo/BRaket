@@ -106,26 +106,24 @@ export function FileInput({ id, accept, required }: FileInputProps) {
               Preview of the uploaded image file.
             </DialogDescription>
           </DialogHeader>
-
+          {/* TO DO: Make preview dialog a little bigger for large screens (maintain current behavior for mobile/small screens) 
+          and remove visible gray container on the preview image, and instead just display the image without any visible wrapper or container and
+          apply the radius on the image itself*/}
           {previewUrl && (
             <div className="relative mt-4 max-h-[70vh] min-h-[260px] overflow-hidden rounded-xl border border-[color:var(--line-strong)] bg-[color:var(--surface-alt)]">
               <Image
                 src={previewUrl}
-                alt={selectedFile ? `${selectedFile.name} preview` : "Uploaded image preview"}
+                alt={
+                  selectedFile
+                    ? `${selectedFile.name} preview`
+                    : "Uploaded image preview"
+                }
                 fill
                 sizes="(max-width: 768px) 90vw, 800px"
                 className="object-contain"
               />
             </div>
           )}
-
-          <DialogFooter>
-            <DialogClose
-              className="inline-flex h-8 items-center rounded-lg border border-[color:var(--line-strong)] bg-white px-2.5 text-sm font-medium text-[color:var(--ink-body)] transition-colors hover:bg-[color:var(--surface-alt)] active:bg-[color:var(--line-strong)]"
-            >
-              Close
-            </DialogClose>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
