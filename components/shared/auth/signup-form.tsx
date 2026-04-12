@@ -3,13 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { FileInput } from "@/components/ui/file-input";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import {
   ArrowRightIcon,
   GoogleIcon,
-  IdCardIcon,
   MailIcon,
   PasswordInput,
   UserIcon,
@@ -173,18 +173,11 @@ export function SignUpForm() {
             >
               School ID (Upload)
             </Label>
-            <div className="relative">
-              <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[color:var(--ink-muted)]">
-                <IdCardIcon />
-              </div>
-              <Input
-                id="signup-school-id"
-                type="file"
-                accept="image/*"
-                required={userType === "talent"}
-                className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] pl-10 pt-2.5 text-sm file:mr-4 file:rounded-md file:border-0 file:bg-transparent file:text-sm file:font-semibold focus-visible:border-[color:var(--brand-blue)] focus-visible:ring-[color:var(--brand-blue)]/20"
-              />
-            </div>
+            <FileInput
+              id="signup-school-id"
+              accept="image/*"
+              required={userType === "talent"}
+            />
             <p className="text-xs text-[color:var(--ink-soft)]">
               Please upload a clear picture of your Bicol University ID to
               verify your student status.
@@ -285,4 +278,3 @@ export function SignUpForm() {
     </form>
   );
 }
-

@@ -2,9 +2,9 @@ import { BrandMark } from "@/components/shared/branding/brand-mark";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "BRaket – Sign In or Create Account",
+  title: "BRaket â€“ Sign In or Create Account",
   description:
-    "Access the BRaket platform – discover talent and commission opportunities for Bicol University students.",
+    "Access the BRaket platform â€“ discover talent and commission opportunities for Bicol University students.",
 };
 
 export default function AuthLayout({
@@ -13,9 +13,9 @@ export default function AuthLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="relative flex min-h-screen">
-      {/* ── Left decorative panel ── */}
-      <div className="relative hidden w-[52%] overflow-hidden bg-gradient-to-br from-[color:var(--brand-orange)] via-[color:var(--brand-orange-accent)] to-[color:var(--brand-blue)] lg:flex lg:flex-col lg:justify-between">
+    <div className="relative min-h-screen lg:flex">
+      {/* â”€â”€ Left decorative panel â”€â”€ */}
+      <div className="relative hidden w-[52%] overflow-hidden bg-gradient-to-br from-[color:var(--brand-orange)] via-[color:var(--brand-orange-accent)] to-[color:var(--brand-blue)] lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:flex-col lg:justify-between">
         {/* Animated background decorations */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -right-20 -top-20 h-80 w-80 rounded-full bg-white/10 blur-3xl" />
@@ -87,8 +87,8 @@ export default function AuthLayout({
         </div>
       </div>
 
-      {/* ── Right form panel ── */}
-      <div className="flex flex-1 flex-col">
+      {/* â”€â”€ Right form panel â”€â”€ */}
+      <div className="flex min-h-screen flex-1 flex-col lg:ml-[52%]">
         {/* Mobile header */}
         <div className="flex items-center justify-between px-6 pt-6 lg:hidden">
           <BrandMark href="/" />
@@ -100,7 +100,7 @@ export default function AuthLayout({
 
         {/* Footer */}
         <div className="px-6 pb-6 text-center text-xs text-[color:var(--ink-soft)]">
-          © {new Date().getFullYear()} BRaket. All rights reserved.
+          Â© {new Date().getFullYear()} BRaket. All rights reserved.
         </div>
       </div>
     </div>
