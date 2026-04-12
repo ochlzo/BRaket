@@ -4,10 +4,8 @@ import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -99,18 +97,16 @@ export function FileInput({ id, accept, required }: FileInputProps) {
       </div>
 
       <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-        <DialogContent className="max-w-3xl p-5">
+        <DialogContent className="max-w-3xl p-5 lg:max-w-5xl">
           <DialogHeader>
             <DialogTitle>School ID Preview</DialogTitle>
             <DialogDescription>
               Preview of the uploaded image file.
             </DialogDescription>
           </DialogHeader>
-          {/* TO DO: Make preview dialog a little bigger for large screens (maintain current behavior for mobile/small screens) 
-          and remove visible gray container on the preview image, and instead just display the image without any visible wrapper or container and
-          apply the radius on the image itself*/}
+
           {previewUrl && (
-            <div className="relative mt-4 max-h-[70vh] min-h-[260px] overflow-hidden rounded-xl border border-[color:var(--line-strong)] bg-[color:var(--surface-alt)]">
+            <div className="relative mt-4 w-full max-h-[70vh] min-h-[260px] sm:min-h-[320px] lg:mx-auto lg:min-h-0 lg:aspect-[4/3]">
               <Image
                 src={previewUrl}
                 alt={
@@ -119,8 +115,8 @@ export function FileInput({ id, accept, required }: FileInputProps) {
                     : "Uploaded image preview"
                 }
                 fill
-                sizes="(max-width: 768px) 90vw, 800px"
-                className="object-contain"
+                sizes="(max-width: 1024px) 90vw, 1200px"
+                className="rounded-xl object-cover"
               />
             </div>
           )}
