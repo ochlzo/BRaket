@@ -1,6 +1,16 @@
 "use client";
 
-import { useRef, useState } from "react";
+import Image from "next/image";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 function IdCardIcon() {
   return (
@@ -29,8 +39,21 @@ type FileInputProps = {
 
 export function FileInput({ id, accept, required }: FileInputProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [fileName, setFileName] = useState("No file chosen");
-  const hasFile = fileName !== "No file chosen";
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
+  const fileName = selectedFile?.name ?? "No file chosen";
+  const hasFile = selectedFile !== null;
+  const previewUrl = useMemo(
+    () => (selectedFile ? URL.createObjectURL(selectedFile) : null),
+    [selectedFile],
+  );
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
 
   return (
     <div className="relative">
@@ -47,7 +70,7 @@ export function FileInput({ id, accept, required }: FileInputProps) {
         className="sr-only"
         onChange={(e) => {
           const file = e.target.files?.[0];
-          setFileName(file?.name ?? "No file chosen");
+          setSelectedFile(file ?? null);
         }}
       />
 
@@ -67,13 +90,44 @@ export function FileInput({ id, accept, required }: FileInputProps) {
         {hasFile && (
           <button
             type="button"
-            onClick={(e) => e.preventDefault()}
+            onClick={() => setIsPreviewOpen(true)}
             className="inline-flex h-7 items-center rounded-md border border-[color:var(--line-strong)] bg-white px-2.5 text-xs font-semibold text-[color:var(--ink-body)] transition-colors hover:bg-[color:var(--surface-alt)] active:bg-[color:var(--line-strong)]"
           >
             Preview
           </button>
         )}
       </div>
+
+      <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+        <DialogContent className="max-w-3xl p-5">
+          <DialogHeader>
+            <DialogTitle>School ID Preview</DialogTitle>
+            <DialogDescription>
+              Preview of the uploaded image file.
+            </DialogDescription>
+          </DialogHeader>
+
+          {previewUrl && (
+            <div className="relative mt-4 max-h-[70vh] min-h-[260px] overflow-hidden rounded-xl border border-[color:var(--line-strong)] bg-[color:var(--surface-alt)]">
+              <Image
+                src={previewUrl}
+                alt={selectedFile ? `${selectedFile.name} preview` : "Uploaded image preview"}
+                fill
+                sizes="(max-width: 768px) 90vw, 800px"
+                className="object-contain"
+              />
+            </div>
+          )}
+
+          <DialogFooter>
+            <DialogClose
+              className="inline-flex h-8 items-center rounded-lg border border-[color:var(--line-strong)] bg-white px-2.5 text-sm font-medium text-[color:var(--ink-body)] transition-colors hover:bg-[color:var(--surface-alt)] active:bg-[color:var(--line-strong)]"
+            >
+              Close
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
