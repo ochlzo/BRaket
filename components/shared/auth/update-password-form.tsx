@@ -17,13 +17,7 @@ import { createClient } from "@/lib/supabase/client";
 const READY_MESSAGE =
   "Enter your new password below to finish resetting your account.";
 
-type UpdatePasswordFormProps = {
-  isRecoveryAttempt: boolean;
-};
-
-export function UpdatePasswordForm({
-  isRecoveryAttempt,
-}: UpdatePasswordFormProps) {
+export function UpdatePasswordForm() {
   const router = useRouter();
   const [supabase] = useState(createClient);
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -42,7 +36,7 @@ export function UpdatePasswordForm({
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (!isActive) return;
 
-      if (event === "PASSWORD_RECOVERY") {
+      if (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") {
         setError("");
         setHasRecoverySession(Boolean(session));
         setIsChecking(false);
@@ -51,16 +45,6 @@ export function UpdatePasswordForm({
     });
 
     const initialize = async () => {
-      if (!isRecoveryAttempt) {
-        setIsChecking(false);
-        setError(PASSWORD_RESET_SESSION_REQUIRED_MESSAGE);
-        setHasRecoverySession(false);
-        setStatus("");
-        return;
-      }
-
-      await supabase.auth.initialize();
-
       const {
         data: { session },
         error: sessionError,
@@ -88,7 +72,7 @@ export function UpdatePasswordForm({
       isActive = false;
       subscription.unsubscribe();
     };
-  }, [isRecoveryAttempt, supabase]);
+  }, [supabase]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

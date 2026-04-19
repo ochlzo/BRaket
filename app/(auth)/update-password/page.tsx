@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { UpdatePasswordForm } from "@/components/shared/auth/update-password-form";
-import { isPasswordRecoveryAttempt } from "@/lib/auth/password-reset";
 
 export const metadata: Metadata = {
   title: "Update Password - BRaket",
@@ -8,17 +7,7 @@ export const metadata: Metadata = {
     "Set a new password for your BRaket account after opening the password reset link from your email.",
 };
 
-type UpdatePasswordPageProps = {
-  searchParams: Promise<{
-    recovery?: string;
-  }>;
-};
-
-export default async function UpdatePasswordPage({
-  searchParams,
-}: UpdatePasswordPageProps) {
-  const { recovery } = await searchParams;
-
+export default function UpdatePasswordPage() {
   return (
     <div className="space-y-8">
       <div className="space-y-2">
@@ -30,7 +19,7 @@ export default async function UpdatePasswordPage({
         </p>
       </div>
 
-      <UpdatePasswordForm isRecoveryAttempt={isPasswordRecoveryAttempt(recovery)} />
+      <UpdatePasswordForm />
     </div>
   );
 }

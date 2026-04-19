@@ -7,7 +7,6 @@ const passwordResetModule = await import(
 
 const {
   buildPasswordResetRedirectTo,
-  isPasswordRecoveryAttempt,
   PASSWORD_RESET_CONFIRM_MISMATCH_MESSAGE,
   PASSWORD_RESET_MIN_LENGTH_MESSAGE,
   validatePasswordResetChange,
@@ -16,14 +15,8 @@ const {
 test("builds the update-password redirect URL from the site origin", () => {
   assert.equal(
     buildPasswordResetRedirectTo("https://braket.example"),
-    "https://braket.example/update-password?recovery=1",
+    "https://braket.example/update-password",
   );
-});
-
-test("recognizes the recovery query flag", () => {
-  assert.equal(isPasswordRecoveryAttempt("1"), true);
-  assert.equal(isPasswordRecoveryAttempt("true"), false);
-  assert.equal(isPasswordRecoveryAttempt(undefined), false);
 });
 
 test("rejects a new password shorter than 8 characters", () => {

@@ -12,11 +12,7 @@ export type PasswordResetValidationResult =
   | { ok: false; message: string };
 
 export function buildPasswordResetRedirectTo(siteUrl: string) {
-  return new URL("/update-password?recovery=1", siteUrl).toString();
-}
-
-export function isPasswordRecoveryAttempt(recovery: string | undefined) {
-  return recovery === "1";
+  return new URL("/update-password", siteUrl).toString();
 }
 
 export function getPasswordResetSentMessage(email: string) {

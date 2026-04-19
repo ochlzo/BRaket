@@ -46,7 +46,6 @@ Use this rule set for login, sign-up, OTP, session refresh, and post-auth user p
 - Add the `Forgot password` trigger directly on the login password field area.
 - Keep the reset-email request form inside the existing login flow when possible.
 - Use a neutral success message after `resetPasswordForEmail(...)` so the UI does not reveal whether an email exists.
-- Include an explicit recovery marker in the reset redirect URL so the update-password page can distinguish recovery flows from ordinary signed-in sessions.
 - Keep the new-password form on a dedicated reset page and validate password length and confirmation before calling `updateUser(...)`.
 
 ## Rules To Follow
