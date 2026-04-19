@@ -18,6 +18,8 @@ Use this rule set for login, sign-up, OTP, session refresh, and post-auth user p
 - Use Supabase auth directly from the client for the interactive flow.
 - If sign-up must reject existing emails before `supabase.auth.signUp`, put the duplicate-email check in `server/auth/` and call it from the signup hook or form before the client auth request.
 - Prefer checking `auth.users` on the server for duplicate-email validation instead of duplicating that logic in the client UI.
+- Keep forgot-password email requests client-side with `supabase.auth.resetPasswordForEmail(...)` unless a server-only requirement appears.
+- In the login flow, prefer a local forgot-password panel or form instead of navigating to a separate request page.
 - Keep the UI thin and move reusable auth state/logic into a hook or helper when the form starts mixing concerns.
 
 ## Session Handling
@@ -25,6 +27,7 @@ Use this rule set for login, sign-up, OTP, session refresh, and post-auth user p
 - Keep Supabase session refresh wiring in `proxy.ts` and `lib/supabase/proxy.ts`.
 - Use `lib/supabase/server.ts` for server-side Supabase access in server components or route handlers.
 - Keep session-shaping helpers in `lib/auth/session.ts`.
+- For password recovery, send users to a dedicated reset page such as `/update-password` and finish the password change with `supabase.auth.updateUser(...)`.
 
 ## User Record Creation
 
@@ -37,6 +40,14 @@ Use this rule set for login, sign-up, OTP, session refresh, and post-auth user p
 - Keep email-availability logic in `server/auth/`.
 - Return a UI-safe message from the server check when the email already exists or the lookup fails.
 - Surface that message through the existing auth form error state instead of introducing a separate auth API route.
+
+## Forgot Password
+
+- Add the `Forgot password` trigger directly on the login password field area.
+- Keep the reset-email request form inside the existing login flow when possible.
+- Use a neutral success message after `resetPasswordForEmail(...)` so the UI does not reveal whether an email exists.
+- Include an explicit recovery marker in the reset redirect URL so the update-password page can distinguish recovery flows from ordinary signed-in sessions.
+- Keep the new-password form on a dedicated reset page and validate password length and confirmation before calling `updateUser(...)`.
 
 ## Rules To Follow
 

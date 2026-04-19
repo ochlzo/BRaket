@@ -7,7 +7,19 @@ export const metadata: Metadata = {
     "Sign in to BRaket with a password, or use a 6-digit email code as a fallback, to access talent discovery and commission opportunities for Bicol University students.",
 };
 
-export default function LoginPage() {
+type LoginPageProps = {
+  searchParams: Promise<{
+    reset?: string;
+  }>;
+};
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const { reset } = await searchParams;
+  const initialNotice =
+    reset === "success"
+      ? "Your password was updated. Sign in with your new password."
+      : undefined;
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -20,7 +32,7 @@ export default function LoginPage() {
         </p>
       </div>
 
-      <LoginForm />
+      <LoginForm initialNotice={initialNotice} />
     </div>
   );
 }

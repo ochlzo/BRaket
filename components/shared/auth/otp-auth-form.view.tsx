@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +23,7 @@ type OtpAuthFormViewProps = {
   isVerifying: boolean;
   mode: AuthMode;
   normalizedEmail: string;
+  passwordFieldAction?: ReactNode;
   requestCode: () => Promise<void>;
   role: UserRole;
   setCode: (value: string) => void;
@@ -46,6 +48,7 @@ export function OtpAuthFormView({
   isVerifying,
   mode,
   normalizedEmail,
+  passwordFieldAction,
   requestCode,
   role,
   setCode,
@@ -145,12 +148,15 @@ export function OtpAuthFormView({
             </>
           ) : (
             <div className="space-y-2">
-              <Label
-                htmlFor="password"
-                className="text-sm font-medium text-foreground"
-              >
-                Password
-              </Label>
+              <div className="flex items-center justify-between gap-3">
+                <Label
+                  htmlFor="password"
+                  className="text-sm font-medium text-foreground"
+                >
+                  Password
+                </Label>
+                {passwordFieldAction}
+              </div>
               <PasswordInput
                 id="password"
                 name="password"
