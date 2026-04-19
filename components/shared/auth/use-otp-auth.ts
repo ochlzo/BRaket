@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { checkSignupEmailAvailability } from "@/server/auth/check-signup-email-availability";
 import {
   deriveUsername,
   getAuthRedirectPath,
@@ -107,6 +108,16 @@ export function useOtpAuth(mode: AuthMode) {
       }
 
       setIsSending(true);
+      const emailAvailability = await checkSignupEmailAvailability(
+        normalizedEmail,
+      );
+
+      if (!emailAvailability.ok) {
+        setIsSending(false);
+        setError(emailAvailability.message);
+        return;
+      }
+
       const { data, error: signUpError } = await supabase.auth.signUp({
         email: normalizedEmail,
         password: nextPassword,

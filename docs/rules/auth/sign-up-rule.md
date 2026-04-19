@@ -16,6 +16,8 @@ Use this rule set for login, sign-up, OTP, session refresh, and post-auth user p
 - Keep the basic sign-up and login flow client-side unless you have a server-only requirement.
 - Do not add an API route for plain sign-up, login, or OTP verification.
 - Use Supabase auth directly from the client for the interactive flow.
+- If sign-up must reject existing emails before `supabase.auth.signUp`, put the duplicate-email check in `server/auth/` and call it from the signup hook or form before the client auth request.
+- Prefer checking `auth.users` on the server for duplicate-email validation instead of duplicating that logic in the client UI.
 - Keep the UI thin and move reusable auth state/logic into a hook or helper when the form starts mixing concerns.
 
 ## Session Handling
@@ -29,6 +31,12 @@ Use this rule set for login, sign-up, OTP, session refresh, and post-auth user p
 - If sign-up needs to create a row in your own `users` table, put the insert logic in `server/`.
 - Prefer server-side execution for any privileged write, authorization check, or follow-up business rule.
 - If the row must always exist, prefer a database trigger or other server-side guarantee over client-side follow-up logic.
+
+## Signup Email Validation
+
+- Keep email-availability logic in `server/auth/`.
+- Return a UI-safe message from the server check when the email already exists or the lookup fails.
+- Surface that message through the existing auth form error state instead of introducing a separate auth API route.
 
 ## Rules To Follow
 

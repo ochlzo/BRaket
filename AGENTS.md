@@ -21,4 +21,5 @@ Do not start coding until applicable rule docs are reviewed.
 - Follow rule docs as source-of-truth for implementation constraints.
 - Reuse existing project patterns before introducing new ones.
 - Keep edits minimal, targeted, and aligned with the applicable rules.
+- When auth flow behavior changes, update `docs/rules/auth/` in the same task.
 - If a rule is missing for a task, proceed with best judgment and keep changes reversible.
