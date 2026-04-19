@@ -12,6 +12,7 @@ Do not start coding until applicable rule docs are reviewed.
 
 ## Current Rule Set
 
+- Auth rules: `docs/rules/auth/`
 - Frontend rules: `docs/rules/frontend/`
 - Architecture rules: `docs/rules/architecture/`
 
