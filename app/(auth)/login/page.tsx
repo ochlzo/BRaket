@@ -4,7 +4,7 @@ import { LoginForm } from "@/components/shared/auth/login-form";
 export const metadata: Metadata = {
   title: "Sign In – BRaket",
   description:
-    "Sign in to BRaket and access talent discovery and commission opportunities for Bicol University students.",
+    "Sign in to BRaket with a password, or use a 6-digit email code as a fallback, to access talent discovery and commission opportunities for Bicol University students.",
 };
 
 export default function LoginPage() {
@@ -16,7 +16,7 @@ export default function LoginPage() {
           Welcome back
         </h1>
         <p className="text-sm text-[color:var(--ink-muted)]">
-          Sign in to your BRaket account to continue
+          Sign in with your password, or use a 6-digit email code if needed.
         </p>
       </div>
 

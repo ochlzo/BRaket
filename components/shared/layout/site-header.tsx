@@ -6,8 +6,13 @@ import { BrandMark } from "@/components/shared/branding/brand-mark";
 import type { NavItem } from "@/lib/content/navigation";
 import { semantic } from "@/lib/theme/semantic";
 import Image from "next/image";
+import { createClient } from "@/lib/supabase/client";
+import { clearAppSession } from "@/lib/auth/session";
 
 type Session = { type: string; username: string };
+
+let cachedSessionRaw: string | null = null;
+let cachedSession: Session | null = null;
 
 const subscribeToStorage = (onStoreChange: () => void) => {
   window.addEventListener("storage", onStoreChange);
@@ -16,11 +21,18 @@ const subscribeToStorage = (onStoreChange: () => void) => {
 
 const getClientSessionSnapshot = (): Session | null => {
   const data = localStorage.getItem("braket_session");
-  if (!data) return null;
+  if (data === cachedSessionRaw) return cachedSession;
+  cachedSessionRaw = data;
+  if (!data) {
+    cachedSession = null;
+    return null;
+  }
 
   try {
-    return JSON.parse(data) as Session;
+    cachedSession = JSON.parse(data) as Session;
+    return cachedSession;
   } catch {
+    cachedSession = null;
     return null;
   }
 };
@@ -76,7 +88,7 @@ export function SiteHeader({
               {/* Profile Avatar Trigger */}
               <button
                 type="button"
-                className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] transition-colors hover:border-[color:var(--brand-orange)] focus:outline-none"
+                className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] transition-colors hover:border-[color:var(--brand-orange)] focus:outline-none"
               >
                 <Image
                   src={
@@ -85,6 +97,8 @@ export function SiteHeader({
                       : "/images/avatar_john.png"
                   }
                   alt="Profile"
+                  width={40}
+                  height={40}
                   className="h-full w-full object-cover"
                 />
               </button>
@@ -129,9 +143,14 @@ export function SiteHeader({
                   <div className="p-1.5">
                     <button
                       type="button"
-                      onClick={() => {
-                        localStorage.removeItem("braket_session");
-                        window.location.href = "/";
+                      onClick={async () => {
+                        const supabase = createClient();
+                        try {
+                          await supabase.auth.signOut({ scope: "local" });
+                        } finally {
+                          clearAppSession();
+                          window.location.href = "/";
+                        }
                       }}
                       className="block w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-[color:var(--tone-red-base)] hover:bg-[color:var(--tone-red-soft)] hover:text-[color:var(--tone-red-deep)]"
                     >

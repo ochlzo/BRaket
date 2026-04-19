@@ -4,7 +4,7 @@ import { SignUpForm } from "@/components/shared/auth/signup-form";
 export const metadata: Metadata = {
   title: "Create Account – BRaket",
   description:
-    "Create your BRaket account and start showcasing your skills, building your portfolio, and earning through commissions at Bicol University.",
+    "Create your BRaket account with a password and confirm it with an email OTP to start showcasing your skills, building your portfolio, and earning through commissions at Bicol University.",
 };
 
 export default function SignUpPage() {
@@ -16,7 +16,7 @@ export default function SignUpPage() {
           Create your account
         </h1>
         <p className="text-sm text-[color:var(--ink-muted)]">
-          Join the BRaket community and start your journey
+          Choose your account type, set a password, then confirm with a 6-digit email code.
         </p>
       </div>
 
