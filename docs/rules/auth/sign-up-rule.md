@@ -18,6 +18,7 @@ Use this rule set for login, sign-up, OTP, session refresh, and post-auth user p
 - Use Supabase auth directly from the client for the interactive flow.
 - For Google or other OAuth providers, start the flow with `supabase.auth.signInWithOAuth(...)` from the client and finish the code exchange in a dedicated route handler such as `app/auth/callback/route.ts`.
 - Keep OAuth redirect URLs on the Supabase allow list and route any post-provider session shaping through a small auth-specific completion screen instead of scattering callback logic across random pages.
+- If Google-authenticated users must create an email/password sign-in, do the provider check on the server inside the OAuth callback flow and route missing-password users through a dedicated create-password screen before `/auth/complete`.
 - If sign-up must reject existing emails before `supabase.auth.signUp`, keep the duplicate-email check in `server/auth/` and expose it through a dedicated client-callable Server Function file before the client auth request.
 - Prefer checking `auth.users` on the server for duplicate-email validation instead of duplicating that logic in the client UI.
 - Keep forgot-password email requests client-side with `supabase.auth.resetPasswordForEmail(...)` unless a server-only requirement appears.

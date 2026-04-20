@@ -2,10 +2,12 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import {
   getGoogleOAuthEntryPath,
+  getGoogleOAuthCallbackRedirectPath,
   GOOGLE_OAUTH_FAILED_MESSAGE,
   readGoogleOAuthContext,
 } from "@/lib/auth/google-oauth";
 import { createClient } from "@/lib/supabase/server";
+import { authUserHasEmailProvider } from "@/server/auth/auth-user-has-email-provider";
 
 function buildErrorRedirect(requestUrl: URL) {
   const oauthContext = readGoogleOAuthContext(requestUrl.searchParams);
@@ -35,9 +37,33 @@ export async function GET(request: Request) {
     return NextResponse.redirect(buildErrorRedirect(requestUrl));
   }
 
-  const redirectUrl = new URL("/auth/complete", requestUrl.origin);
-  redirectUrl.searchParams.set("mode", oauthContext.mode);
-  redirectUrl.searchParams.set("role", oauthContext.role);
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
 
-  return NextResponse.redirect(redirectUrl);
+  if (userError || !user?.id) {
+    return NextResponse.redirect(buildErrorRedirect(requestUrl));
+  }
+
+  try {
+    const hasEmailProvider = await authUserHasEmailProvider(user.id);
+    const redirectUrl = new URL(
+      getGoogleOAuthCallbackRedirectPath(
+        !hasEmailProvider,
+        oauthContext.mode,
+        oauthContext.role,
+      ),
+      requestUrl.origin,
+    );
+
+    return NextResponse.redirect(redirectUrl);
+  } catch (providerError) {
+    console.error(
+      "Failed to verify Google auth email provider state.",
+      providerError,
+    );
+  }
+
+  return NextResponse.redirect(buildErrorRedirect(requestUrl));
 }

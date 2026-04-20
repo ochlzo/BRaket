@@ -6,8 +6,10 @@ const googleOAuthModule = await import(
 );
 
 const {
+  buildGoogleOAuthFlowPath,
   buildGoogleOAuthMetadataPatch,
   buildGoogleOAuthRedirectTo,
+  getGoogleOAuthCallbackRedirectPath,
   readGoogleOAuthContext,
   resolveGoogleOAuthMode,
 } = googleOAuthModule;
@@ -22,6 +24,27 @@ test("builds a signup callback URL with the selected role", () => {
   assert.equal(
     redirectTo,
     "https://braket.example/auth/callback?mode=signup&role=talent",
+  );
+});
+
+test("builds a create-password path with the oauth context", () => {
+  assert.equal(
+    buildGoogleOAuthFlowPath("/create-password", "signup", "talent"),
+    "/create-password?mode=signup&role=talent",
+  );
+});
+
+test("redirects oauth callback to create-password when email auth is missing", () => {
+  assert.equal(
+    getGoogleOAuthCallbackRedirectPath(true, "login", "client"),
+    "/create-password?mode=login&role=client",
+  );
+});
+
+test("redirects oauth callback to auth complete when email auth exists", () => {
+  assert.equal(
+    getGoogleOAuthCallbackRedirectPath(false, "signup", "talent"),
+    "/auth/complete?mode=signup&role=talent",
   );
 });
 
