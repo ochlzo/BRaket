@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { buildGoogleOAuthRedirectTo } from "@/lib/auth/google-oauth";
 import { createClient } from "@/lib/supabase/client";
-import { checkSignupEmailAvailability } from "@/server/auth/check-signup-email-availability";
+import { checkSignupEmailAvailabilityAction } from "@/server/auth/check-signup-email-availability-action";
 import {
   deriveUsername,
   getAuthRedirectPath,
@@ -16,15 +17,19 @@ import type { UserRole } from "@/lib/types";
 type Step = "password" | "code";
 
 type AuthUser = { user_metadata?: unknown } | null;
+type UseOtpAuthOptions = {
+  email?: string;
+  setEmail?: (value: string) => void;
+};
 
 function readPassword(form: HTMLFormElement, name: string) {
   return String(new FormData(form).get(name) ?? "");
 }
 
-export function useOtpAuth(mode: AuthMode) {
+export function useOtpAuth(mode: AuthMode, options: UseOtpAuthOptions = {}) {
   const router = useRouter();
   const supabase = createClient();
-  const [email, setEmail] = useState("");
+  const [uncontrolledEmail, setUncontrolledEmail] = useState("");
   const [code, setCode] = useState("");
   const [role, setRole] = useState<UserRole>("client");
   const [step, setStep] = useState<Step>("password");
@@ -32,6 +37,9 @@ export function useOtpAuth(mode: AuthMode) {
   const [error, setError] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [isStartingGoogleAuth, setIsStartingGoogleAuth] = useState(false);
+  const email = options.email ?? uncontrolledEmail;
+  const setEmail = options.setEmail ?? setUncontrolledEmail;
 
   const normalizedEmail = email.trim().toLowerCase();
   const isSignup = mode === "signup";
@@ -84,6 +92,28 @@ export function useOtpAuth(mode: AuthMode) {
     );
   };
 
+  const continueWithGoogle = async () => {
+    setError("");
+    setStatus("");
+    setIsStartingGoogleAuth(true);
+
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: buildGoogleOAuthRedirectTo(
+          window.location.origin,
+          mode,
+          role,
+        ),
+      },
+    });
+
+    if (oauthError) {
+      setError(oauthError.message);
+      setIsStartingGoogleAuth(false);
+    }
+  };
+
   const submitPassword = async (form: HTMLFormElement) => {
     setError("");
     setStatus("");
@@ -108,7 +138,7 @@ export function useOtpAuth(mode: AuthMode) {
       }
 
       setIsSending(true);
-      const emailAvailability = await checkSignupEmailAvailability(
+      const emailAvailability = await checkSignupEmailAvailabilityAction(
         normalizedEmail,
       );
 
@@ -208,8 +238,10 @@ export function useOtpAuth(mode: AuthMode) {
     error,
     isSending,
     isSignup,
+    isStartingGoogleAuth,
     isVerifying,
     normalizedEmail,
+    continueWithGoogle,
     requestCode,
     role,
     setCode,

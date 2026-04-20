@@ -2,23 +2,23 @@
 
 import { useState } from "react";
 import { ForgotPasswordForm } from "@/components/shared/auth/forgot-password-form";
-import { OtpAuthFormView } from "@/components/shared/auth/otp-auth-form.view";
-import { useOtpAuth } from "@/components/shared/auth/use-otp-auth";
+import { OtpAuthForm } from "@/components/shared/auth/otp-auth-form";
 
 type LoginFormProps = {
+  initialError?: string;
   initialNotice?: string;
 };
 
-export function LoginForm({ initialNotice }: LoginFormProps) {
-  const auth = useOtpAuth("login");
+export function LoginForm({ initialError, initialNotice }: LoginFormProps) {
+  const [email, setEmail] = useState("");
   const [isRequestingPasswordReset, setIsRequestingPasswordReset] =
     useState(false);
 
   if (isRequestingPasswordReset) {
     return (
       <ForgotPasswordForm
-        email={auth.email}
-        setEmail={auth.setEmail}
+        email={email}
+        setEmail={setEmail}
         onBack={() => setIsRequestingPasswordReset(false)}
       />
     );
@@ -26,15 +26,24 @@ export function LoginForm({ initialNotice }: LoginFormProps) {
 
   return (
     <div className="space-y-5">
+      {initialError ? (
+        <p
+          className="rounded-xl border border-[color:var(--tone-red-soft)] bg-[color:var(--tone-red-soft)] px-4 py-3 text-sm text-[color:var(--tone-red-deep)]"
+          role="alert"
+        >
+          {initialError}
+        </p>
+      ) : null}
+
       {initialNotice ? (
         <p className="rounded-xl border border-[color:var(--tone-sky-soft)] bg-[color:var(--tone-sky-soft)] px-4 py-3 text-sm text-[color:var(--tone-sky-deep)]">
           {initialNotice}
         </p>
       ) : null}
 
-      <OtpAuthFormView
+      <OtpAuthForm
+        email={email}
         mode="login"
-        {...auth}
         passwordFieldAction={
           <a
             href="#forgot-password"
@@ -47,6 +56,7 @@ export function LoginForm({ initialNotice }: LoginFormProps) {
             Forgot password
           </a>
         }
+        setEmail={setEmail}
       />
     </div>
   );
