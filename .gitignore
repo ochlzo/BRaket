@@ -45,4 +45,4 @@ next-env.d.ts
 
 /lib/generated/prisma
 
-docs/rules/superpowers
+docs/superpowers
