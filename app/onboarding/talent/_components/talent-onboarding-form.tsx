@@ -3,8 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { TalentSkillsSelector, type SelectedSkill } from "@/app/onboarding/talent/_components/talent-skills-selector";
+import { saveTalentOnboardingAction } from "@/app/onboarding/talent/_actions/save-talent-onboarding-action";
+import {
+  TalentSkillsSelector,
+  type SelectedSkill,
+} from "@/app/onboarding/talent/_components/talent-skills-selector";
 import { availableSkills } from "@/app/onboarding/talent/_data";
+import { saveAppSession } from "@/lib/auth/session";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,6 +33,8 @@ export function TalentOnboardingForm() {
   const [maxRate, setMaxRate] = useState("");
   const [selectedSkills, setSelectedSkills] = useState<SelectedSkill[]>([]);
   const [skillSearch, setSkillSearch] = useState("");
+  const [error, setError] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   const filteredSkills = availableSkills.filter(
     (skill) =>
@@ -46,7 +53,7 @@ export function TalentOnboardingForm() {
       return;
     }
 
-    setSelectedSkills((prev) => [...prev, { name, level: "intermediate" }]);
+    setSelectedSkills((prev) => [...prev, { level: "intermediate", name }]);
     setSkillSearch("");
   }
 
@@ -64,13 +71,32 @@ export function TalentOnboardingForm() {
     <div className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-8">
       <form
         className="space-y-7"
-        onSubmit={(event) => {
+        onSubmit={async (event) => {
           event.preventDefault();
-          localStorage.setItem(
-            "braket_session",
-            JSON.stringify({ type: "talent", username: "maria-santos" }),
-          );
+          setError("");
+          setIsSaving(true);
+
+          const result = await saveTalentOnboardingAction({
+            bio,
+            firstName,
+            headline,
+            lastName,
+            maxRate,
+            minRate,
+            skills: selectedSkills,
+            username,
+          });
+
+          setIsSaving(false);
+
+          if (!result.ok) {
+            setError(result.message);
+            return;
+          }
+
+          saveAppSession(result.session);
           router.push("/dashboard/talent/services/new");
+          router.refresh();
         }}
       >
         <div>
@@ -178,15 +204,15 @@ export function TalentOnboardingForm() {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label className="text-sm font-semibold" htmlFor="ob-min">
-                Min Rate (₱/hr){" "}
+                Min Rate (PHP/hr){" "}
                 <span className="text-[color:var(--tone-red-base)]">*</span>
               </Label>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-[color:var(--ink-muted)]">
-                  ₱
+                  PHP
                 </span>
                 <Input
-                  className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] pl-8 text-sm"
+                  className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] pl-12 text-sm"
                   id="ob-min"
                   min="1"
                   onChange={(event) => setMinRate(event.target.value)}
@@ -199,15 +225,15 @@ export function TalentOnboardingForm() {
             </div>
             <div className="space-y-2">
               <Label className="text-sm font-semibold" htmlFor="ob-max">
-                Max Rate (₱/hr){" "}
+                Max Rate (PHP/hr){" "}
                 <span className="text-[color:var(--tone-red-base)]">*</span>
               </Label>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-[color:var(--ink-muted)]">
-                  ₱
+                  PHP
                 </span>
                 <Input
-                  className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] pl-8 text-sm"
+                  className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] pl-12 text-sm"
                   id="ob-max"
                   min="1"
                   onChange={(event) => setMaxRate(event.target.value)}
@@ -235,12 +261,24 @@ export function TalentOnboardingForm() {
 
         <Separator />
 
+        {error ? (
+          <p
+            className="rounded-xl border border-[color:var(--tone-red-soft)] bg-[color:var(--tone-red-soft)] px-4 py-3 text-sm text-[color:var(--tone-red-deep)]"
+            role="alert"
+          >
+            {error}
+          </p>
+        ) : null}
+
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
           <Button
             className="h-12 rounded-xl bg-[color:var(--brand-orange)] px-8 text-sm font-semibold !text-white transition hover:bg-[color:var(--brand-orange-strong)]"
+            disabled={isSaving}
             type="submit"
           >
-            Complete Profile & Create First Service →
+            {isSaving
+              ? "Saving Your Profile..."
+              : "Complete Profile & Create First Service ->"}
           </Button>
         </div>
       </form>

@@ -5,6 +5,7 @@ export const APP_SESSION_KEY = "braket_session";
 export type AuthMode = "login" | "signup";
 
 export type AppSession = {
+  displayName: string;
   type: UserRole;
   username: string;
 };
@@ -20,6 +21,30 @@ export function normalizeUserRole(
   fallback: UserRole = "client",
 ) {
   return value === "talent" || value === "client" ? value : fallback;
+}
+
+function readTextMetadataValue(
+  metadata: Record<string, unknown>,
+  keys: string[],
+) {
+  for (const key of keys) {
+    const value = metadata[key];
+
+    if (typeof value === "string" && value.trim().length > 0) {
+      return value.trim();
+    }
+  }
+
+  return "";
+}
+
+export function buildDisplayName(
+  firstName: string,
+  lastName: string,
+  fallback: string,
+) {
+  const parts = [firstName.trim(), lastName.trim()].filter(Boolean);
+  return parts.join(" ") || fallback.trim();
 }
 
 type ResolveAppSessionInput = {
@@ -44,8 +69,27 @@ export function resolveAppSession({
     typeof metadata.username === "string" && metadata.username.trim()
       ? metadata.username.trim()
       : deriveUsername(email);
+  const firstName = readTextMetadataValue(metadata, [
+    "firstName",
+    "firstname",
+    "first_name",
+    "given_name",
+  ]);
+  const lastName = readTextMetadataValue(metadata, [
+    "lastName",
+    "lastname",
+    "last_name",
+    "family_name",
+  ]);
+  const fallbackDisplayName =
+    readTextMetadataValue(metadata, ["full_name", "name"]) || username;
+  const displayName = buildDisplayName(
+    firstName,
+    lastName,
+    fallbackDisplayName,
+  );
 
-  return { type: resolvedRole, username };
+  return { displayName, type: resolvedRole, username };
 }
 
 export function getAuthRedirectPath(role: UserRole, mode: AuthMode) {
