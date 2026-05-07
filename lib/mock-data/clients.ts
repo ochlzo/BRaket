@@ -1,0 +1,36 @@
+import type { ClientProfile } from "@/lib/types";
+
+export const clients: ClientProfile[] = [
+  {
+    id: "c1",
+    userId: "u10",
+    username: "startup-hub",
+    firstName: "Alex",
+    lastName: "Tan",
+    email: "alex.tan@example.com",
+    avatarUrl: "/images/avatar_alex.png",
+    bio: "Startup founder looking for talented students to help build our brand.",
+    role: "client",
+    company: "Albay Startup Hub",
+    projectsPosted: 5,
+    phone: "+63 923 789 0123",
+    socials: { facebook: "albay.startup.hub", instagram: "@albaystartup" },
+    createdAt: "2024-10-01T00:00:00Z",
+  },
+  {
+    id: "c2",
+    userId: "u11",
+    username: "cafe-bicolano",
+    firstName: "Lisa",
+    lastName: "Garcia",
+    email: "lisa.garcia@example.com",
+    avatarUrl: "/images/avatar_lisa.png",
+    bio: "Small business owner needing help with branding and digital presence.",
+    role: "client",
+    company: "Café Bicolano",
+    projectsPosted: 3,
+    phone: "+63 924 890 1234",
+    socials: { facebook: "cafe.bicolano", instagram: "@cafebicolano" },
+    createdAt: "2024-11-15T00:00:00Z",
+  },
+];

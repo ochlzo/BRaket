@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ComponentProps } from "react";
 import { Input } from "@/components/ui/input";
 
 /* ─── Icon helpers ─── */
@@ -166,17 +166,16 @@ export function IdCardIcon() {
 }
 
 /* ─── Shared password input ─── */
+type PasswordInputProps = ComponentProps<"input"> & {
+  id: string;
+  placeholder?: string;
+};
+
 export function PasswordInput({
   id,
   placeholder = "Enter your password",
-  value,
-  onChange,
-}: {
-  id: string;
-  placeholder?: string;
-  value?: string;
-  onChange?: (value: string) => void;
-}) {
+  ...props
+}: PasswordInputProps) {
   const [show, setShow] = useState(false);
   return (
     <div className="relative">
@@ -187,9 +186,8 @@ export function PasswordInput({
         id={id}
         type={show ? "text" : "password"}
         placeholder={placeholder}
-        value={value}
-        onChange={onChange ? (e) => onChange(e.target.value) : undefined}
         className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] pl-10 pr-10 text-sm placeholder:text-[color:var(--ink-soft)] focus-visible:border-[color:var(--brand-blue)] focus-visible:ring-[color:var(--brand-blue)]/20"
+        {...props}
       />
       <button
         type="button"

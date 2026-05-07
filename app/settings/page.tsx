@@ -1,157 +1,163 @@
-"use client";
-
-import { useState, useSyncExternalStore } from "react";
 import { DashboardLayout } from "@/components/shared/layout/dashboard-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { mockCurrentClientProfile, mockCurrentTalentProfile } from "@/lib/mock-data";
-import type { UserRole } from "@/lib/types";
+import { Textarea } from "@/components/ui/textarea";
+import { requireCurrentAppUser } from "@/server/users/current-user";
 
-type Tab = "profile" | "account";
-
-export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<Tab>("profile");
-  const role = useSyncExternalStore<UserRole>(
-    (onStoreChange) => {
-      if (typeof window === "undefined") return () => {};
-      const handler = () => onStoreChange();
-      window.addEventListener("storage", handler);
-      return () => window.removeEventListener("storage", handler);
-    },
-    () => {
-      const session = localStorage.getItem("braket_session");
-      if (!session) return "client";
-      try {
-        const parsed = JSON.parse(session);
-        return parsed.type === "talent" ? "talent" : "client";
-      } catch {
-        return "client";
-      }
-    },
-    () => "client",
-  );
-
-  const profileInfo = role === "client" ? mockCurrentClientProfile : mockCurrentTalentProfile;
+export default async function SettingsPage() {
+  const user = await requireCurrentAppUser();
+  const rateRange =
+    user.minRate && user.maxRate
+      ? `PHP ${user.minRate} - PHP ${user.maxRate}`
+      : "";
 
   return (
-    <DashboardLayout role={role} title="Settings" subtitle="Manage your account and profile">
-      {/* Tabs */}
-      <div className="mb-6 flex gap-2">
-        {([
-          { value: "profile" as Tab, label: "Profile" },
-          { value: "account" as Tab, label: "Account" },
-        ]).map((tab) => (
-          <button
-            key={tab.value}
-            type="button"
-            onClick={() => setActiveTab(tab.value)}
-            className={`rounded-xl px-5 py-2.5 text-sm font-semibold transition-all ${
-              activeTab === tab.value
-                ? "bg-[color:var(--brand-orange)] !text-white shadow-md"
-                : "bg-white border border-[color:var(--line-strong)] text-[color:var(--ink-muted)] hover:bg-[color:var(--surface-alt)]"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+    <DashboardLayout
+      role={user.role}
+      subtitle="Review the live profile information attached to your account."
+      title="Settings"
+    >
+      <div className="mx-auto max-w-2xl space-y-6">
+        <div className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-8">
+          <div className="space-y-1">
+            <h2 className="text-lg font-bold text-foreground">
+              Profile Information
+            </h2>
+            <p className="text-sm text-[color:var(--ink-muted)]">
+              These fields now reflect your real authenticated account instead
+              of mock data.
+            </p>
+          </div>
 
-      <div className="mx-auto max-w-2xl rounded-2xl border border-[color:var(--line-strong)] bg-white p-8">
-        {activeTab === "profile" ? (
-          <form
-            key={role}
-            className="space-y-6"
-            onSubmit={(e) => e.preventDefault()}
-          >
-            <h2 className="text-lg font-bold text-foreground">Profile Information</h2>
-            <p className="text-sm text-[color:var(--ink-muted)]">Update your public profile details.</p>
-
+          <div className="mt-6 space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="s-username" className="text-sm font-semibold">Username</Label>
-              <Input id="s-username" defaultValue={profileInfo.username} className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm" />
+              <Label htmlFor="s-username" className="text-sm font-semibold">
+                Username
+              </Label>
+              <Input
+                id="s-username"
+                readOnly
+                value={user.username}
+                className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm"
+              />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="s-first" className="text-sm font-semibold">First Name</Label>
-                <Input id="s-first" defaultValue={profileInfo.firstName} className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm" />
+                <Label htmlFor="s-first" className="text-sm font-semibold">
+                  First Name
+                </Label>
+                <Input
+                  id="s-first"
+                  readOnly
+                  value={user.firstName}
+                  className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm"
+                />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="s-last" className="text-sm font-semibold">Last Name</Label>
-                <Input id="s-last" defaultValue={profileInfo.lastName} className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm" />
+                <Label htmlFor="s-last" className="text-sm font-semibold">
+                  Last Name
+                </Label>
+                <Input
+                  id="s-last"
+                  readOnly
+                  value={user.lastName}
+                  className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm"
+                />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="s-bio" className="text-sm font-semibold">Bio</Label>
-              <Textarea id="s-bio" rows={4} defaultValue={profileInfo.bio} className="rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm" />
+              <Label htmlFor="s-email" className="text-sm font-semibold">
+                Email Address
+              </Label>
+              <Input
+                id="s-email"
+                readOnly
+                value={user.email}
+                className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm"
+              />
             </div>
 
-            {role === "talent" && (
+            <div className="space-y-2">
+              <Label htmlFor="s-bio" className="text-sm font-semibold">
+                Bio
+              </Label>
+              <Textarea
+                id="s-bio"
+                readOnly
+                rows={4}
+                value={user.bio}
+                className="rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm"
+              />
+            </div>
+
+            {user.role === "talent" ? (
               <>
                 <div className="space-y-2">
-                  <Label htmlFor="s-skills" className="text-sm font-semibold">Skills</Label>
-                  <Input id="s-skills" defaultValue={(profileInfo as typeof mockCurrentTalentProfile).skills?.map(s => s.name).join(", ")} placeholder="e.g. React, UI Design, Analytics" className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm" />
-                  <p className="text-xs text-[color:var(--ink-soft)]">Separate skills with commas.</p>
+                  <Label htmlFor="s-headline" className="text-sm font-semibold">
+                    Headline
+                  </Label>
+                  <Input
+                    id="s-headline"
+                    readOnly
+                    value={user.headline}
+                    className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm"
+                  />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="s-portfolio" className="text-sm font-semibold">Portfolio Gallery</Label>
-                  <div className="flex flex-col gap-3">
-                    <Input id="s-portfolio" type="file" multiple accept="image/*,application/pdf" className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] pt-2.5 text-sm file:mr-4 file:rounded-md file:border-0 file:bg-transparent file:text-sm file:font-semibold focus-visible:border-[color:var(--brand-blue)] focus-visible:ring-[color:var(--brand-blue)]/20" />
-                    <p className="text-xs text-[color:var(--ink-soft)]">Upload images or PDFs to showcase your previous work.</p>
-                  </div>
+                  <Label htmlFor="s-skills" className="text-sm font-semibold">
+                    Skills
+                  </Label>
+                  <Input
+                    id="s-skills"
+                    readOnly
+                    value={user.skills.map((skill) => skill.name).join(", ")}
+                    className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="s-rates" className="text-sm font-semibold">
+                    Rate Range
+                  </Label>
+                  <Input
+                    id="s-rates"
+                    readOnly
+                    value={rateRange}
+                    className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm"
+                  />
                 </div>
               </>
-            )}
+            ) : null}
 
             <Separator />
 
             <div className="flex justify-end">
               <Button
-                type="submit"
-                className="rounded-xl bg-[color:var(--brand-orange)] px-6 py-3 text-sm font-semibold !text-white transition hover:bg-[color:var(--brand-orange-strong)]"
+                disabled
+                type="button"
+                className="rounded-xl bg-[color:var(--brand-orange)] px-6 py-3 text-sm font-semibold !text-white disabled:opacity-60"
               >
-                Save Changes
+                Editing Coming Soon
               </Button>
             </div>
-          </form>
-        ) : (
-          <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
-            <h2 className="text-lg font-bold text-foreground">Change Password</h2>
-            <p className="text-sm text-[color:var(--ink-muted)]">Update your account password.</p>
+          </div>
+        </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="s-current" className="text-sm font-semibold">Current Password</Label>
-              <Input id="s-current" type="password" placeholder="Enter current password" className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm" />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="s-new" className="text-sm font-semibold">New Password</Label>
-              <Input id="s-new" type="password" placeholder="Enter new password" className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm" />
-              <p className="text-xs text-[color:var(--ink-soft)]">Minimum 8 characters</p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="s-confirm" className="text-sm font-semibold">Confirm New Password</Label>
-              <Input id="s-confirm" type="password" placeholder="Confirm new password" className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm" />
-            </div>
-
-            <Separator />
-
-            <div className="flex justify-end">
-              <Button
-                type="submit"
-                className="rounded-xl bg-[color:var(--brand-orange)] px-6 py-3 text-sm font-semibold !text-white transition hover:bg-[color:var(--brand-orange-strong)]"
-              >
-                Update Password
-              </Button>
-            </div>
-          </form>
-        )}
+        <div className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-8">
+          <div className="space-y-1">
+            <h2 className="text-lg font-bold text-foreground">
+              Account Security
+            </h2>
+            <p className="text-sm text-[color:var(--ink-muted)]">
+              Password changes still go through the existing auth recovery flow.
+            </p>
+          </div>
+        </div>
       </div>
     </DashboardLayout>
   );

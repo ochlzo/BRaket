@@ -6,24 +6,19 @@ datasource db {
   provider = "postgresql"
 }
 
-enum UserRole {
-  CLIENT @map("client")
-  TALENT @map("talent")
-}
-
 model User {
-  id        String   @id @default(cuid())
-  authId    String   @unique
-  email     String   @unique
-  name      String?
-  role      UserRole?
-  username  String?
-  lastname  String?
-  firstname String?
+  userId    String   @map("user_id")
+  authId    String   @map("auth_id")
+  email     String
+  username  String
+  lastName  String?  @map("last_name")
+  firstName String?  @map("first_name")
   address   String?
   avatarUrl String?
   bio       String?
-  isVerified Boolean @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("createdAt")
+  updatedAt DateTime @updatedAt @map("updatedAt")
+
+  @@id([userId, authId])
+  @@map("User")
 }
