@@ -162,7 +162,7 @@ export default function HowItWorksPage() {
           </div>
 
           <div className="mt-12 text-center">
-            <a className={semantic.button.brandIndigoLg} href="/browse">
+            <a className={`${semantic.button.brandIndigoLg} !text-white`} href="/browse">
               Start Browsing Talents
             </a>
           </div>

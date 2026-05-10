@@ -38,13 +38,6 @@ This file lists codebase areas that currently rely on hardcoded values, static a
 - `app/services/page.tsx`
   - `services`
 
-- `app/post-project/page.tsx`
-  - `categoryOptions`
-  - `skillSuggestions`
-  - `budgetRanges`
-  - `timelineOptions`
-  - `urgencyLevels`
-
 - `app/onboarding/talent/page.tsx`
   - `availableSkills`
   - `proficiencyLevels`

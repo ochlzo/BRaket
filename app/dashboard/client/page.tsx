@@ -19,11 +19,6 @@ const clientStats = [
     label: "Total Bookings",
     value: 0,
   },
-  {
-    bg: "from-[color:var(--tone-green-soft)] to-white",
-    label: "Projects Posted",
-    value: 0,
-  },
 ];
 
 export default async function ClientDashboardPage() {
@@ -50,21 +45,6 @@ export default async function ClientDashboardPage() {
             </p>
           </div>
         ))}
-      </div>
-
-      <div className="mb-8 flex flex-wrap gap-3">
-        <Link
-          href="/browse"
-          className="inline-flex items-center gap-2 rounded-xl bg-[color:var(--brand-orange)] px-5 py-3 text-sm font-semibold !text-white transition hover:bg-[color:var(--brand-orange-strong)]"
-        >
-          Browse Talent
-        </Link>
-        <Link
-          href="/post-project"
-          className="inline-flex items-center gap-2 rounded-xl border-2 border-[color:var(--line-strong)] bg-white px-5 py-3 text-sm font-semibold text-foreground transition hover:bg-[color:var(--surface-alt)]"
-        >
-          Post a Project
-        </Link>
       </div>
 
       <div className="rounded-2xl border border-dashed border-[color:var(--line-strong)] bg-white px-8 py-12 text-center">

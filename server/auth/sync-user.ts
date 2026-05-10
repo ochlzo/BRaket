@@ -1,11 +1,10 @@
 import { prisma } from "@/lib/prisma";
-import type { UserRole } from "@prisma/client";
+import { deriveUsername } from "@/lib/auth/session";
 
 type PendingSignup = {
   email?: string;
   firstName?: string;
   lastName?: string;
-  role?: UserRole;
 };
 
 export async function syncAuthUserToUserModel(input: {
@@ -15,22 +14,33 @@ export async function syncAuthUserToUserModel(input: {
 }) {
   const firstName = input.pending?.firstName?.trim() || undefined;
   const lastName = input.pending?.lastName?.trim() || undefined;
-  const role = input.pending?.role;
-
-  return prisma.user.upsert({
+  const existingUser = await prisma.user.findFirst({
     where: { authId: input.authId },
-    create: {
+  });
+
+  if (existingUser) {
+    await prisma.user.updateMany({
+      data: {
+        email: input.email,
+        firstName: firstName ?? undefined,
+        lastName: lastName ?? undefined,
+      },
+      where: { authId: input.authId },
+    });
+
+    return prisma.user.findFirst({
+      where: { authId: input.authId },
+    });
+  }
+
+  return prisma.user.create({
+    data: {
       authId: input.authId,
       email: input.email,
-      firstname: firstName,
-      lastname: lastName,
-      role,
-    },
-    update: {
-      email: input.email,
-      firstname: firstName ?? undefined,
-      lastname: lastName ?? undefined,
-      role: role ?? undefined,
+      firstName,
+      lastName,
+      username: deriveUsername(input.email),
+      userId: input.authId,
     },
   });
 }

@@ -23,9 +23,9 @@ export function ProfileQuickActions({
             </Link>
             <Link
               className="inline-flex items-center gap-1 rounded-md border border-[color:var(--line-strong)] bg-white px-3 py-1.5 text-[11px] font-semibold text-foreground transition hover:bg-[color:var(--surface-alt)]"
-              href="/post-project"
+              href="/how-it-works"
             >
-              📝 Post a Project
+              How it Works
             </Link>
             <Link
               className="inline-flex items-center gap-1 rounded-md border border-[color:var(--line-strong)] bg-white px-3 py-1.5 text-[11px] font-semibold text-foreground transition hover:bg-[color:var(--surface-alt)]"

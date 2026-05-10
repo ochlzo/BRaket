@@ -56,15 +56,15 @@ export function OAuthCreatePasswordForm({
 
     async function loadSession() {
       const {
-        data: { session },
-        error: sessionError,
-      } = await supabase.auth.getSession();
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
 
       if (!isActive) return;
 
       setIsChecking(false);
 
-      if (sessionError || !session) {
+      if (userError || !user) {
         setHasSession(false);
         setStatus("");
         setError(SESSION_REQUIRED_MESSAGE);
@@ -108,6 +108,38 @@ export function OAuthCreatePasswordForm({
     if (updateError) {
       setIsSaving(false);
       setError(updateError.message);
+      return;
+    }
+
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession();
+
+    if (sessionError || !session?.access_token) {
+      setIsSaving(false);
+      setError(SESSION_REQUIRED_MESSAGE);
+      return;
+    }
+
+    const linkResponse = await fetch("/api/auth/link-email-provider", {
+      body: null,
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+      },
+    });
+
+    const linkResult = (await linkResponse.json().catch(() => null)) as
+      | { message?: string; ok?: boolean }
+      | null;
+
+    if (!linkResponse.ok || !linkResult?.ok) {
+      setIsSaving(false);
+      setError(
+        linkResult?.message ??
+          "We could not finish adding email sign-in yet. Please try again.",
+      );
       return;
     }
 

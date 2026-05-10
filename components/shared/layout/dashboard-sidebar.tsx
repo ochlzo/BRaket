@@ -6,7 +6,6 @@ import {
   LayoutDashboard,
   Search,
   Settings,
-  SquarePen,
   UserRound,
   Wrench,
 } from "lucide-react";
@@ -32,7 +31,6 @@ const clientNavItems: SidebarItem[] = [
   { href: "/dashboard/profile", icon: UserRound, label: "My Profile" },
   { href: "/dashboard/client/bookings", icon: ClipboardList, label: "My Bookings" },
   { href: "/browse", icon: Search, label: "Browse Talents" },
-  { href: "/post-project", icon: SquarePen, label: "Post a Project" },
   { href: "/settings", icon: Settings, label: "Settings" },
 ];
 

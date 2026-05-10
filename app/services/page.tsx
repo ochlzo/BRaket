@@ -138,9 +138,9 @@ export default function ServicesPage() {
       <section className="px-5 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl">
           <CtaBanner
-            description="Post your project requirements and get custom proposals from talented BU students."
+            description="Browse the talent directory and compare profiles if you want a different starting point."
             gradientClassName="bg-[linear-gradient(90deg,var(--brand-indigo)_0%,var(--brand-indigo-vivid)_100%)]"
-            primaryAction={{ href: "/#cta", label: "Post a Project", variant: "whiteIndigo" }}
+            primaryAction={{ href: "/browse", label: "Browse Talents", variant: "whiteIndigo" }}
             title="Don&apos;t see what you&apos;re looking for?"
           />
         </div>

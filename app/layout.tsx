@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Plus_Jakarta_Sans, Geist } from "next/font/google";
 import "./globals.css";
-import { cn } from "@/lib/utils";
-import { Providers } from "@/app/providers";
 import { cookies } from "next/headers";
-import { createClient } from "@/lib/supabase/server";
+import { Providers } from "@/app/providers";
 import { AuthSessionHydrator } from "@/components/shared/auth/auth-session-hydrator";
+import { createClient } from "@/lib/supabase/server";
+import { cn } from "@/lib/utils";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -32,8 +32,8 @@ export default async function RootLayout({
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
   return (
     <html
       lang="en"
@@ -44,10 +44,10 @@ export default async function RootLayout({
         <Providers>
           <AuthSessionHydrator
             initialSession={{
-              accessToken: session?.access_token ?? null,
-              refreshToken: session?.refresh_token ?? null,
-              userId: session?.user?.id ?? null,
-              email: session?.user?.email ?? null,
+              accessToken: null,
+              refreshToken: null,
+              userId: user?.id ?? null,
+              email: user?.email ?? null,
             }}
           />
           {children}

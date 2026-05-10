@@ -7,7 +7,7 @@ export default function OnboardingPage() {
   return (
     <PageShell
       activeHref="/onboarding"
-      ctaHref="/post-project"
+      ctaHref="/browse"
       homeHref="/"
       items={appNavigation}
       signInHref="/login"

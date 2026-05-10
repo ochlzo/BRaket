@@ -31,30 +31,17 @@ export function UpdatePasswordForm() {
   useEffect(() => {
     let isActive = true;
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!isActive) return;
-
-      if (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") {
-        setError("");
-        setHasRecoverySession(Boolean(session));
-        setIsChecking(false);
-        setStatus(session ? READY_MESSAGE : "");
-      }
-    });
-
     const initialize = async () => {
       const {
-        data: { session },
-        error: sessionError,
-      } = await supabase.auth.getSession();
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
 
       if (!isActive) return;
 
       setIsChecking(false);
 
-      if (sessionError || !session) {
+      if (userError || !user) {
         setError(PASSWORD_RESET_SESSION_REQUIRED_MESSAGE);
         setHasRecoverySession(false);
         setStatus("");
@@ -70,7 +57,6 @@ export function UpdatePasswordForm() {
 
     return () => {
       isActive = false;
-      subscription.unsubscribe();
     };
   }, [supabase]);
 

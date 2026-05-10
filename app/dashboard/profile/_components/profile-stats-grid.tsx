@@ -39,12 +39,6 @@ export function ProfileStatsGrid({
           label: "Total Bookings",
           value: bookingsCount,
         },
-        {
-          bg: "from-[color:var(--tone-amber-soft)] to-white",
-          emoji: "📝",
-          label: "Projects Posted",
-          value: (profile as ClientProfile).projectsPosted,
-        },
       ]
     : [
         {

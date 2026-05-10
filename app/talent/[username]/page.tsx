@@ -28,8 +28,8 @@ export default async function TalentProfilePage({ params }: Props) {
   return (
     <PageShell
       activeHref="/browse"
-      ctaHref="/post-project"
-      ctaLabel="Post a Project"
+      ctaHref="/browse"
+      ctaLabel="Browse Talents"
       homeHref="/"
       items={appNavigation}
       signInHref="/login"

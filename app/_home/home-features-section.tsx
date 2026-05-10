@@ -17,9 +17,6 @@ export function HomeFeaturesSection() {
               from discovery to final delivery.
             </p>
           </div>
-          <a className={semantic.button.brandBlueMd} href="/post-project">
-            Start a Project
-          </a>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">

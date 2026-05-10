@@ -81,9 +81,9 @@ export function TalentProfileHero({
               </a>
               <a
                 className="inline-flex items-center justify-center rounded-full border-2 border-[color:var(--line-strong)] px-6 py-2.5 text-sm font-semibold text-foreground transition hover:bg-[color:var(--surface-alt)]"
-                href="/post-project"
+                href="/browse"
               >
-                Post a Project
+                Browse Talents
               </a>
             </div>
           </div>
