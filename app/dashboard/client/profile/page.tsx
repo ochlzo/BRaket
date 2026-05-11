@@ -1,20 +1,14 @@
-import { DashboardLayout } from "@/components/shared/layout/dashboard-layout";
+import { ProfilePageContent } from "@/app/dashboard/profile/_components/profile-page-content";
 import { requireCurrentAppUser } from "@/server/users/current-user";
 
-import { ClientProfilePageContent } from "./_components/client-profile-page-content";
-import { getClientProfilePageData } from "@/server/client-profile/get-client-profile";
-
 export default async function ClientProfilePage() {
-  const currentUser = await requireCurrentAppUser("client");
-  const profile = await getClientProfilePageData(currentUser);
+  const user = await requireCurrentAppUser("client");
 
   return (
-    <DashboardLayout
-      role="client"
-      subtitle="View and manage the live client profile tied to your BRaket account."
+    <ProfilePageContent
+      subtitle="View the real profile information tied to your signed-in client account."
       title="Client Profile"
-    >
-      <ClientProfilePageContent profile={profile} />
-    </DashboardLayout>
+      user={user}
+    />
   );
 }

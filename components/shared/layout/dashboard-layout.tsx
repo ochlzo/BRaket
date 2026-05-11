@@ -47,7 +47,7 @@ export function DashboardLayout({
         </header>
 
         <div
-          className={`px-8 py-5 ${noScroll ? "flex-1 min-h-0 overflow-hidden" : "pb-8"}`}
+          className={`px-8 py-5 ${noScroll ? "flex-1 overflow-hidden" : "pb-8"}`}
         >
           {children}
         </div>
