@@ -123,7 +123,7 @@ export function ClientPortfolioFeed({ portfolio }: ClientPortfolioFeedProps) {
               Project briefs and visual references attached to this client account.
             </p>
           </div>
-          <span className="pointer-events-none inline-flex w-fit items-center gap-1.5 self-start rounded-full bg-[color:var(--tone-orange-pale)] px-3 py-1.5 text-xs font-semibold text-[color:var(--tone-orange-deep)] sm:absolute sm:right-5 sm:top-5 sm:self-auto">
+          <span className="pointer-events-none absolute right-4 top-0 z-20 inline-flex w-fit items-center gap-1.5 rounded-full bg-[color:var(--tone-orange-pale)] px-3 py-1.5 text-xs font-semibold text-[color:var(--tone-orange-deep)] sm:right-5 sm:top-5">
             <ImageIcon className="size-3.5" />
             {portfolio.length} post{portfolio.length === 1 ? "" : "s"}
           </span>
