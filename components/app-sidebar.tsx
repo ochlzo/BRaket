@@ -4,7 +4,6 @@ import {
   ClipboardList,
   LayoutDashboard,
   Search,
-  Settings,
   UserRound,
   Wrench,
 } from "lucide-react";
@@ -35,7 +34,6 @@ const clientNavItems: SidebarNavItem[] = [
     label: "My Bookings",
   },
   { href: "/browse", icon: Search, label: "Browse Talents" },
-  { href: "/settings", icon: Settings, label: "Settings" },
 ];
 
 const talentNavItems: SidebarNavItem[] = [
@@ -55,7 +53,6 @@ const talentNavItems: SidebarNavItem[] = [
     icon: ClipboardList,
     label: "My Bookings",
   },
-  { href: "/settings", icon: Settings, label: "Settings" },
 ];
 
 function getSidebarSubtitle(role: UserRole) {

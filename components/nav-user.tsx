@@ -6,6 +6,7 @@ import {
   ChevronsUpDown,
   LayoutDashboard,
   LogOut,
+  Settings,
   UserRound,
 } from "lucide-react";
 
@@ -137,6 +138,10 @@ export function NavUser({ avatarUrl, role }: NavUserProps) {
               >
                 <UserRound />
                 My Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push("/settings")}>
+                <Settings />
+                Settings
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() =>

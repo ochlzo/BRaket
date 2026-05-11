@@ -1,9 +1,16 @@
 import type { ReactNode } from "react";
 import { ExternalLink, Globe, Mail, MapPin, Phone, Users } from "lucide-react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import type { ClientProfilePageData } from "@/lib/client-profile/types";
+import { ClientOrganizationDetailsEditor } from "./client-organization-details-editor";
 
 type ClientProfileDetailsProps = {
   profile: ClientProfilePageData;
@@ -36,15 +43,21 @@ function DetailRow({
 export function ClientProfileDetails({ profile }: ClientProfileDetailsProps) {
   return (
     <Card className="gap-0 rounded-none border-0 bg-transparent py-0 shadow-none ring-0 sm:gap-4 sm:rounded-xl sm:border sm:border-[color:var(--line-strong)] sm:bg-[color:var(--surface)] sm:py-4 sm:shadow-[var(--shadow-panel-soft)] sm:ring-1 sm:ring-foreground/10">
-      <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-4">
+      <CardHeader className="gap-2 sm:gap-3">
         <div>
           <CardTitle className="typo-card-title-xl">
             Organization details
           </CardTitle>
           <p className="mt-1 text-sm text-[color:var(--ink-muted)]">
-            Core account and contact information pulled from the Prisma models.
+            Basic organization details and contact information.
           </p>
         </div>
+        <CardAction className="pt-0 sm:pt-1">
+          <ClientOrganizationDetailsEditor
+            key={`${profile.organizationName}|${profile.businessAddress}|${profile.website}|${profile.email}`}
+            profile={profile}
+          />
+        </CardAction>
       </CardHeader>
       <CardContent className="space-y-4 px-4 pb-4 sm:px-5 sm:pb-5">
         <div className="grid gap-3 md:grid-cols-2">

@@ -11,11 +11,13 @@ type ClientProfileStatsProps = {
 function StatCard({
   icon,
   label,
+  mobileNote,
   value,
   note,
 }: {
   icon: ReactNode;
   label: string;
+  mobileNote?: string;
   note: string;
   value: string;
 }) {
@@ -29,6 +31,11 @@ function StatCard({
           <p className="mt-0.5 text-[10px] font-medium leading-tight text-[color:var(--ink-muted)] sm:mt-1 sm:text-sm">
             {label}
           </p>
+          {mobileNote ? (
+            <p className="mt-0.5 text-[10px] font-medium leading-tight text-[color:var(--ink-soft)] sm:hidden">
+              {mobileNote}
+            </p>
+          ) : null}
           <p className="mt-0.5 hidden text-xs text-[color:var(--ink-soft)] sm:block">
             {note}
           </p>
@@ -52,6 +59,7 @@ export function ClientProfileStats({ profile }: ClientProfileStatsProps) {
       <StatCard
         icon={<Sparkles className="size-5" />}
         label="Average rating"
+        mobileNote={`${profile.reviewCount} review${profile.reviewCount === 1 ? "" : "s"}`}
         note={`${profile.reviewCount} review${profile.reviewCount === 1 ? "" : "s"} from talents`}
         value={profile.reviewCount > 0 ? rating.toFixed(1) : "0.0"}
       />
