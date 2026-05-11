@@ -105,9 +105,7 @@ export function mapClientProfilePageData(
     avatarUrl: compactText(source.user.avatarUrl),
     backgroundImageUrl:
       compactText(source.user.backgroundimg_img_url) || DEFAULT_COVER_BACKGROUND,
-    businessAddress:
-      compactText(clientProfile?.business_address) ||
-      compactText(source.user.address),
+    businessAddress: compactText(clientProfile?.business_address),
     completedCommissionsCount:
       clientProfile?.completed_commissions_count ?? null,
     contactNum: source.user.contactNum ? String(source.user.contactNum) : "",

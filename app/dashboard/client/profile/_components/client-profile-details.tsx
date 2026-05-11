@@ -36,22 +36,66 @@ function DetailRow({
 export function ClientProfileDetails({ profile }: ClientProfileDetailsProps) {
   return (
     <Card className="border-[color:var(--line-strong)] bg-[color:var(--surface)] shadow-[var(--shadow-panel-soft)]">
-      <CardHeader className="flex-row items-start gap-4">
+      <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-4">
         <div>
-          <CardTitle className="typo-card-title-xl">Organization details</CardTitle>
+          <CardTitle className="typo-card-title-xl">
+            Organization details
+          </CardTitle>
           <p className="mt-1 text-sm text-[color:var(--ink-muted)]">
             Core account and contact information pulled from the Prisma models.
           </p>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4 px-5 pb-5">
+      <CardContent className="space-y-4 px-4 pb-4 sm:px-5 sm:pb-5">
         <div className="grid gap-3 md:grid-cols-2">
-          <DetailRow icon={<Users className="size-4" />} label="Organization" value={profile.organizationName} />
-          <DetailRow icon={<Mail className="size-4" />} label="Email" value={<a className="hover:underline" href={`mailto:${profile.email}`}>{profile.email}</a>} />
-          <DetailRow icon={<Phone className="size-4" />} label="Contact number" value={profile.contactNum} />
-          <DetailRow icon={<Globe className="size-4" />} label="Website" value={profile.website ? <a className="inline-flex items-center gap-1 hover:underline" href={profile.website} rel="noreferrer" target="_blank">{profile.website}<ExternalLink className="size-3.5" /></a> : ""} />
-          <DetailRow icon={<MapPin className="size-4" />} label="Business address" value={profile.businessAddress} />
-          <DetailRow icon={<Users className="size-4" />} label="Joined" value={profile.joinedLabel} />
+          <DetailRow
+            icon={<Users className="size-4" />}
+            label="Organization"
+            value={profile.organizationName}
+          />
+          <DetailRow
+            icon={<MapPin className="size-4" />}
+            label="Business address"
+            value={profile.businessAddress}
+          />
+          <DetailRow
+            icon={<Globe className="size-4" />}
+            label="Website"
+            value={
+              profile.website ? (
+                <a
+                  className="inline-flex items-center gap-1 hover:underline"
+                  href={profile.website}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  {profile.website}
+                  <ExternalLink className="size-3.5" />
+                </a>
+              ) : (
+                ""
+              )
+            }
+          />
+          <DetailRow
+            icon={<Mail className="size-4" />}
+            label="Email"
+            value={
+              <a className="hover:underline" href={`mailto:${profile.email}`}>
+                {profile.email}
+              </a>
+            }
+          />
+          <DetailRow
+            icon={<Phone className="size-4" />}
+            label="Contact number"
+            value={profile.contactNum}
+          />
+          <DetailRow
+            icon={<Users className="size-4" />}
+            label="Joined"
+            value={profile.joinedLabel}
+          />
         </div>
         {profile.socialLinks.length > 0 ? (
           <>

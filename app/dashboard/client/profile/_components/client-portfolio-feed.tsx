@@ -116,24 +116,24 @@ export function ClientPortfolioFeed({ portfolio }: ClientPortfolioFeedProps) {
   return (
     <>
       <Card className="border-[color:var(--line-strong)] bg-[color:var(--surface)] shadow-[var(--shadow-panel-soft)]">
-        <CardHeader className="relative pr-28">
+        <CardHeader className="relative flex flex-col gap-3 pr-0 sm:flex-row sm:items-start sm:justify-between sm:pr-28">
           <div>
             <CardTitle className="typo-card-title-xl">Client portfolio</CardTitle>
             <p className="mt-1 text-sm text-[color:var(--ink-muted)]">
               Project briefs and visual references attached to this client account.
             </p>
           </div>
-          <span className="pointer-events-none absolute right-5 top-5 inline-flex items-center gap-1.5 rounded-full bg-[color:var(--tone-orange-pale)] px-3 py-1.5 text-xs font-semibold text-[color:var(--tone-orange-deep)] sm:right-6 sm:top-6">
+          <span className="pointer-events-none inline-flex w-fit items-center gap-1.5 self-start rounded-full bg-[color:var(--tone-orange-pale)] px-3 py-1.5 text-xs font-semibold text-[color:var(--tone-orange-deep)] sm:absolute sm:right-5 sm:top-5 sm:self-auto">
             <ImageIcon className="size-3.5" />
             {portfolio.length} post{portfolio.length === 1 ? "" : "s"}
           </span>
         </CardHeader>
-        <CardContent className="space-y-4 px-5 pb-5">
+        <CardContent className="space-y-4 px-4 pb-4 sm:px-5 sm:pb-5">
           {portfolio.length > 0 ? (
             portfolio.map((item) => (
               <article
                 key={item.id}
-                className="rounded-[1.2rem] border border-[color:var(--line-strong)] bg-[color:var(--surface)] p-4 shadow-[var(--shadow-surface-soft)]"
+                className="rounded-[1.2rem] border border-[color:var(--line-strong)] bg-[color:var(--surface)] p-3 shadow-[var(--shadow-surface-soft)] sm:p-4"
               >
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                   <div>
@@ -141,11 +141,11 @@ export function ClientPortfolioFeed({ portfolio }: ClientPortfolioFeedProps) {
                       <CalendarDays className="mr-1 inline size-3.5" />
                       {formatDate(item.createdAt)}
                     </p>
-                    <h3 className="mt-1 text-lg font-bold tracking-[-0.03em] text-[color:var(--foreground)]">
+                    <h3 className="mt-1 text-base font-bold tracking-[-0.03em] text-[color:var(--foreground)] sm:text-lg">
                       {item.title}
                     </h3>
                   </div>
-                  <p className="text-sm text-[color:var(--ink-muted)]">
+                  <p className="text-xs text-[color:var(--ink-muted)] sm:text-sm">
                     {item.media.length} media item{item.media.length === 1 ? "" : "s"}
                   </p>
                 </div>
@@ -158,7 +158,7 @@ export function ClientPortfolioFeed({ portfolio }: ClientPortfolioFeedProps) {
               </article>
             ))
           ) : (
-            <div className="rounded-[1.2rem] border border-dashed border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-5 py-10 text-center">
+            <div className="rounded-[1.2rem] border border-dashed border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 py-8 text-center sm:px-5 sm:py-10">
               <p className="text-base font-semibold text-[color:var(--foreground)]">
                 No portfolio posts yet
               </p>

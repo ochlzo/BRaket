@@ -37,7 +37,7 @@ export async function getClientProfilePageData(
     return mapClientProfilePageData({
       clientProfile: null,
       user: {
-        address: currentUser.location || null,
+        address: null,
         authId: currentUser.authId,
         avatarUrl: currentUser.avatarUrl || null,
         backgroundimg_img_url: null,
@@ -60,7 +60,7 @@ export async function getClientProfilePageData(
   return mapClientProfilePageData({
     clientProfile: user.ClientProfile,
     user: {
-      address: user.address ?? null,
+      address: null,
       authId: user.authId,
       avatarUrl: user.avatarUrl ?? null,
       backgroundimg_img_url: user.backgroundimg_img_url ?? null,

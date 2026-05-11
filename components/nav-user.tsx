@@ -12,6 +12,7 @@ import {
 import {
   Avatar,
   AvatarFallback,
+  AvatarImage,
 } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -48,7 +49,12 @@ function getInitials(value: string, fallback: string) {
   return initials || fallback.slice(0, 1).toUpperCase();
 }
 
-export function NavUser({ role }: { role: UserRole }) {
+type NavUserProps = {
+  avatarUrl: string | null;
+  role: UserRole;
+};
+
+export function NavUser({ avatarUrl, role }: NavUserProps) {
   const { isMobile } = useSidebar();
   const router = useRouter();
   const session = useSyncExternalStore(
@@ -85,7 +91,11 @@ export function NavUser({ role }: { role: UserRole }) {
             }
           >
             <Avatar className="h-9 w-9">
-              <AvatarFallback>{initials}</AvatarFallback>
+              {avatarUrl ? (
+                <AvatarImage alt={displayName} src={avatarUrl} />
+              ) : (
+                <AvatarFallback>{initials}</AvatarFallback>
+              )}
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-medium">{displayName}</span>
@@ -105,7 +115,11 @@ export function NavUser({ role }: { role: UserRole }) {
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-3 px-2 py-2 text-left text-sm">
                   <Avatar className="h-9 w-9">
-                    <AvatarFallback>{initials}</AvatarFallback>
+                    {avatarUrl ? (
+                      <AvatarImage alt={displayName} src={avatarUrl} />
+                    ) : (
+                      <AvatarFallback>{initials}</AvatarFallback>
+                    )}
                   </Avatar>
                   <div className="grid flex-1 leading-tight">
                     <span className="truncate font-medium">{displayName}</span>

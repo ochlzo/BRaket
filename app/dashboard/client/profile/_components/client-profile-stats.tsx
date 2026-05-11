@@ -21,9 +21,9 @@ function StatCard({
 }) {
   return (
     <Card className="border-[color:var(--line-strong)] bg-[color:var(--surface)] shadow-[var(--shadow-panel-soft)]">
-      <CardContent className="flex items-center justify-between gap-4 px-4 py-4">
+      <CardContent className="flex items-center justify-between gap-3 px-4 py-4 sm:gap-4">
         <div>
-          <p className="text-3xl font-extrabold tracking-[-0.05em] text-[color:var(--foreground)]">
+          <p className="text-2xl font-extrabold tracking-[-0.05em] text-[color:var(--foreground)] sm:text-3xl">
             {value}
           </p>
           <p className="mt-1 text-sm font-medium text-[color:var(--ink-muted)]">
@@ -31,7 +31,7 @@ function StatCard({
           </p>
           <p className="mt-0.5 text-xs text-[color:var(--ink-soft)]">{note}</p>
         </div>
-        <div className="flex size-12 items-center justify-center rounded-2xl bg-[color:var(--surface-alt)] text-[color:var(--brand-orange)]">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-[color:var(--surface-alt)] text-[color:var(--brand-orange)] sm:size-12">
           {icon}
         </div>
       </CardContent>

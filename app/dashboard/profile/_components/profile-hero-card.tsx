@@ -60,11 +60,15 @@ export function ProfileHeroCard({
       <div className="relative px-5 pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-4">
-            <Avatar className="-mt-8 h-16 w-16 shrink-0 rounded-xl border-[3px] border-white bg-white shadow-md">
+            <Avatar className="-mt-8 h-16 w-16 shrink-0 rounded-none border-[3px] border-white bg-white shadow-md after:rounded-none">
               {profile.avatarUrl ? (
-                <AvatarImage alt={fullName} src={profile.avatarUrl} />
+                <AvatarImage
+                  alt={fullName}
+                  className="rounded-none"
+                  src={profile.avatarUrl}
+                />
               ) : (
-                <AvatarFallback className="rounded-[0.7rem] text-sm font-black text-[color:var(--ink-muted)]">
+                <AvatarFallback className="rounded-none text-sm font-black text-[color:var(--ink-muted)]">
                   {avatarFallback}
                 </AvatarFallback>
               )}

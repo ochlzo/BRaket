@@ -62,7 +62,12 @@ function getSidebarSubtitle(role: UserRole) {
   return role === "client" ? "Client Dashboard" : "Talent Dashboard";
 }
 
-export function AppSidebar({ role }: { role: UserRole }) {
+type AppSidebarProps = {
+  avatarUrl: string | null;
+  role: UserRole;
+};
+
+export function AppSidebar({ avatarUrl, role }: AppSidebarProps) {
   const items = role === "client" ? clientNavItems : talentNavItems;
 
   return (
@@ -77,7 +82,7 @@ export function AppSidebar({ role }: { role: UserRole }) {
         <NavMain items={items} />
       </SidebarContent>
       <SidebarFooter className="border-t border-[color:var(--line)] px-4 py-4">
-        <NavUser role={role} />
+        <NavUser avatarUrl={avatarUrl} role={role} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
