@@ -146,7 +146,6 @@ export async function saveTalentOnboardingAction(
   if (existingUser) {
     await prisma.user.updateMany({
       data: {
-        bio,
         email: user.email.trim().toLowerCase(),
         firstName,
         lastName,
@@ -158,7 +157,6 @@ export async function saveTalentOnboardingAction(
     await prisma.user.create({
       data: {
         authId: user.id,
-        bio,
         email: user.email.trim().toLowerCase(),
         firstName,
         lastName,
