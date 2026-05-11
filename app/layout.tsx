@@ -4,6 +4,7 @@ import "./globals.css";
 import { cookies } from "next/headers";
 import { Providers } from "@/app/providers";
 import { AuthSessionHydrator } from "@/components/shared/auth/auth-session-hydrator";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 
@@ -42,15 +43,17 @@ export default async function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <Providers>
-          <AuthSessionHydrator
-            initialSession={{
-              accessToken: null,
-              refreshToken: null,
-              userId: user?.id ?? null,
-              email: user?.email ?? null,
-            }}
-          />
-          {children}
+          <TooltipProvider>
+            <AuthSessionHydrator
+              initialSession={{
+                accessToken: null,
+                refreshToken: null,
+                userId: user?.id ?? null,
+                email: user?.email ?? null,
+              }}
+            />
+            {children}
+          </TooltipProvider>
         </Providers>
       </body>
     </html>
