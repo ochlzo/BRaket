@@ -39,7 +39,7 @@ model ClientProfile {
   business_address          String?
   website                   String?
   about                     String?
-  Industry                  String?
+  industry                  String?
   client_type               ClientType
   client_avg_rating         Float?
   client_review_count       Int?
