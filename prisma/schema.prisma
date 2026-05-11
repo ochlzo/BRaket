@@ -33,7 +33,7 @@ model User {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model ClientProfile {
-  client_profile_id         String
+  client_profile_id         String     @unique
   user_id                   String     @unique
   organization_name         String
   business_address          String?
@@ -48,12 +48,37 @@ model ClientProfile {
   createdAt                 DateTime   @default(now())
   updatedAt                 DateTime
   User                      User       @relation(fields: [user_id], references: [userId], onDelete: Cascade)
+  ClientPortfolio           ClientPortfolio[]
 
   @@id([client_profile_id, user_id])
 }
 
+model ClientPortfolio {
+  client_portfolio_id     String
+  client_profile_id       String
+  title     String
+  desciption String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
+  ClientProfile   ClientProfile  @relation(fields: [client_profile_id], references: [client_profile_id], onDelete: Cascade)
+  ClientPortfolioMedia ClientPortfolioMedia[]
+
+  @@id([client_portfolio_id])
+}
+
+model ClientPortfolioMedia {
+  cportfolio_media_id     String
+  client_portfolio_id     String
+  media_url     String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
+  ClientPortfolio ClientPortfolio @relation(fields: [client_portfolio_id], references: [client_portfolio_id], onDelete: Cascade)
+  
+  @@id([cportfolio_media_id])
+}
+
 model TalentProfile {
-  talent_profile_id         String
+  talent_profile_id         String      @unique
   user_id                   String      @unique
   headline                  String
   college                   String
@@ -68,8 +93,33 @@ model TalentProfile {
   createdAt                 DateTime @default(now())
   updatedAt                 DateTime
   User                      User       @relation(fields: [user_id], references: [userId], onDelete: Cascade)
+  TalentPortfolio           TalentPortfolio[]
 
   @@id([talent_profile_id, user_id])
+}
+
+model TalentPortfolio {
+  talent_portfolio_id     String
+  talent_profile_id       String
+  title     String
+  desciption String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
+  TalentProfile   TalentProfile  @relation(fields: [talent_profile_id], references: [talent_profile_id], onDelete: Cascade)
+  TalentPortfolioMedia TalentPortfolioMedia[]
+
+  @@id([talent_portfolio_id])
+}
+
+model TalentPortfolioMedia {
+  tportfolio_media_id     String
+  talent_portfolio_id     String
+  media_url     String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
+  TalentPortfolio TalentPortfolio @relation(fields: [talent_portfolio_id], references: [talent_portfolio_id], onDelete: Cascade)
+  
+  @@id([tportfolio_media_id])
 }
 
 enum ClientType {

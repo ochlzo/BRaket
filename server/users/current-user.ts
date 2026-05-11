@@ -211,28 +211,30 @@ export async function getCurrentAppUser(): Promise<CurrentAppUser | null> {
     pickTextValue(metadata, ["avatar_url", "avatarUrl", "picture"]) ||
     buildAvatarUrl(displayName || username);
   const headline = pickTextValue(metadata, ["headline"]);
-  const bio = existingUser?.bio || pickTextValue(metadata, ["bio"]);
+  const bio = pickTextValue(metadata, ["bio"]);
   const location =
     existingUser?.address ||
     pickTextValue(metadata, ["location", "address"]);
   const minRate = parseRateValue(metadata.minRate);
   const maxRate = parseRateValue(metadata.maxRate);
   const skills = parseSkillsValue(metadata.skills);
+  const baseUserData = {
+    authId,
+    avatarUrl,
+    email,
+    firstName: authFirstName || null,
+    lastName: authLastName || null,
+    userId: authId,
+    username,
+  };
 
   let dbUser = existingUser;
 
   if (!dbUser) {
-    dbUser = await prisma.user.create({
-      data: {
-        authId,
-        avatarUrl,
-        bio: bio || null,
-        email,
-        firstName: authFirstName || null,
-        lastName: authLastName || null,
-        userId: authId,
-        username,
-      },
+    dbUser = await prisma.user.upsert({
+      create: baseUserData,
+      update: baseUserData,
+      where: { authId },
     });
   } else {
     const updateData: Prisma.UserUpdateInput = {};
@@ -257,10 +259,6 @@ export async function getCurrentAppUser(): Promise<CurrentAppUser | null> {
       updateData.avatarUrl = avatarUrl;
     }
 
-    if (!dbUser.bio && bio) {
-      updateData.bio = bio;
-    }
-
     if (!dbUser.address && location) {
       updateData.address = location;
     }
@@ -283,7 +281,7 @@ export async function getCurrentAppUser(): Promise<CurrentAppUser | null> {
   const currentUser = {
     authId: dbUser.authId,
     avatarUrl,
-    bio: dbUser.bio ?? bio ?? "",
+    bio: bio || "",
     createdAt: dbUser.createdAt.toISOString(),
     displayName,
     email: dbUser.email,

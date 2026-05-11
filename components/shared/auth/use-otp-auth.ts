@@ -12,7 +12,6 @@ import {
   saveAppSession,
   type AuthMode,
 } from "@/lib/auth/session";
-import type { UserRole } from "@/lib/types";
 
 type Step = "password" | "code";
 
@@ -31,7 +30,6 @@ export function useOtpAuth(mode: AuthMode, options: UseOtpAuthOptions = {}) {
   const supabase = createClient();
   const [uncontrolledEmail, setUncontrolledEmail] = useState("");
   const [code, setCode] = useState("");
-  const [role, setRole] = useState<UserRole>("client");
   const [step, setStep] = useState<Step>("password");
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
@@ -47,7 +45,7 @@ export function useOtpAuth(mode: AuthMode, options: UseOtpAuthOptions = {}) {
   const completeSession = (user: AuthUser) => {
     const session = resolveAppSession({
       email: normalizedEmail,
-      fallbackRole: role,
+      fallbackRole: "client",
       mode,
       userMetadata: user?.user_metadata as Record<string, unknown> | null,
     });
@@ -103,7 +101,7 @@ export function useOtpAuth(mode: AuthMode, options: UseOtpAuthOptions = {}) {
         redirectTo: buildGoogleOAuthRedirectTo(
           window.location.origin,
           mode,
-          role,
+          "client",
         ),
       },
     });
@@ -153,7 +151,7 @@ export function useOtpAuth(mode: AuthMode, options: UseOtpAuthOptions = {}) {
         password: nextPassword,
         options: {
           data: {
-            role,
+            role: "client",
             username: deriveUsername(normalizedEmail),
           },
         },
@@ -243,10 +241,8 @@ export function useOtpAuth(mode: AuthMode, options: UseOtpAuthOptions = {}) {
     normalizedEmail,
     continueWithGoogle,
     requestCode,
-    role,
     setCode,
     setEmail,
-    setRole,
     setStep,
     resetToPassword,
     status,

@@ -16,6 +16,7 @@ Use this rule set for login, sign-up, OTP, session refresh, and post-auth user p
 - Keep the basic sign-up and login flow client-side unless you have a server-only requirement.
 - Do not add an API route for plain sign-up, login, or OTP verification.
 - Use Supabase auth directly from the client for the interactive flow.
+- Treat new signups as `client` by default and do not expose a local account-type picker in the auth form.
 - After signup completes, redirect directly to `/dashboard/client`; keep talent onboarding outside the auth completion path.
 - For Google or other OAuth providers, start the flow with `supabase.auth.signInWithOAuth(...)` from the client and finish the code exchange in a dedicated route handler such as `app/auth/callback/route.ts`.
 - Keep OAuth redirect URLs on the Supabase allow list and route any post-provider session shaping through a small auth-specific completion screen instead of scattering callback logic across random pages.

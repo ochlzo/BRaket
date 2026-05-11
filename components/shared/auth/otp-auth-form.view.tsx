@@ -11,7 +11,6 @@ import {
   PasswordInput,
 } from "@/components/shared/auth/auth-form.shared";
 import type { AuthMode } from "@/lib/auth/session";
-import type { UserRole } from "@/lib/types";
 
 type OtpAuthFormViewProps = {
   code: string;
@@ -25,18 +24,12 @@ type OtpAuthFormViewProps = {
   normalizedEmail: string;
   passwordFieldAction?: ReactNode;
   requestCode: () => Promise<void>;
-  role: UserRole;
   setCode: (value: string) => void;
   setEmail: (value: string) => void;
-  setRole: (value: UserRole) => void;
   resetToPassword: () => void;
   status: string;
   step: "password" | "code";
 };
-
-function roleLabel(role: UserRole) {
-  return role === "talent" ? "Talent" : "Client";
-}
 
 export function OtpAuthFormView({
   code,
@@ -50,10 +43,8 @@ export function OtpAuthFormView({
   normalizedEmail,
   passwordFieldAction,
   requestCode,
-  role,
   setCode,
   setEmail,
-  setRole,
   resetToPassword,
   status,
   step,

@@ -68,11 +68,11 @@ export function ProfileStatsGrid({
       ];
 
   return (
-    <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="flex flex-col gap-2.5 sm:flex-row">
       {stats.map((stat) => (
         <div
           key={stat.label}
-          className={`flex items-center justify-between rounded-xl border border-[color:var(--line-strong)] bg-gradient-to-br ${stat.bg} px-3 py-2 transition-all hover:-translate-y-0.5 hover:shadow-sm`}
+          className={`flex flex-1 items-center justify-between rounded-xl border border-[color:var(--line-strong)] bg-gradient-to-br ${stat.bg} px-3 py-2 transition-all hover:-translate-y-0.5 hover:shadow-sm`}
         >
           <div>
             <p className="text-xl font-extrabold leading-none tracking-[-0.03em] text-foreground">

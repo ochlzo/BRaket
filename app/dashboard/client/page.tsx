@@ -1,6 +1,5 @@
-import Link from "next/link";
-
 import { DashboardLayout } from "@/components/shared/layout/dashboard-layout";
+import { ProfileQuickActions } from "@/app/dashboard/profile/_components/profile-quick-actions";
 import { requireCurrentAppUser } from "@/server/users/current-user";
 
 const clientStats = [
@@ -28,10 +27,10 @@ export default async function ClientDashboardPage() {
   return (
     <DashboardLayout
       role="client"
-      subtitle="Your live account is ready. Project activity will appear here as you start using BRaket."
-      title={`Welcome back, ${titleName}`}
+      subtitle="Your client dashboard will show bookings, requests, and updates as they come in."
+      title={`Welcome, ${titleName}`}
     >
-      <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:w-[70%]">
+      <div className="mb-8 grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {clientStats.map((stat) => (
           <div
             key={stat.label}
@@ -45,6 +44,10 @@ export default async function ClientDashboardPage() {
             </p>
           </div>
         ))}
+      </div>
+
+      <div className="mb-8">
+        <ProfileQuickActions isClient />
       </div>
 
       <div className="rounded-2xl border border-dashed border-[color:var(--line-strong)] bg-white px-8 py-12 text-center">

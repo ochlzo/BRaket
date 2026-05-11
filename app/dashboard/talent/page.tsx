@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { ProfileQuickActions } from "@/app/dashboard/profile/_components/profile-quick-actions";
 import { DashboardLayout } from "@/components/shared/layout/dashboard-layout";
 import { requireCurrentAppUser } from "@/server/users/current-user";
 
@@ -58,6 +59,10 @@ export default async function TalentDashboardPage() {
             </p>
           </div>
         ))}
+      </div>
+
+      <div className="mb-8">
+        <ProfileQuickActions isClient={false} />
       </div>
 
       <div className="rounded-2xl border border-dashed border-[color:var(--line-strong)] bg-white px-8 py-12 text-center">

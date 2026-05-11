@@ -1,8 +1,4 @@
-import {
-  ProfileAccountFooter,
-} from "@/app/dashboard/profile/_components/profile-account-footer";
 import { ProfileHeroCard } from "@/app/dashboard/profile/_components/profile-hero-card";
-import { ProfileQuickActions } from "@/app/dashboard/profile/_components/profile-quick-actions";
 import { ProfileStatsGrid } from "@/app/dashboard/profile/_components/profile-stats-grid";
 import { ProfileTalentDetails } from "@/app/dashboard/profile/_components/profile-talent-details";
 import { ProfileVerificationPanel } from "@/app/dashboard/profile/_components/profile-verification-panel";
@@ -78,10 +74,12 @@ export default async function ProfilePage() {
           profile={profile}
           talentProfile={talentProfile}
         />
-        <ProfileVerificationPanel
-          authId={user.authId}
-          isVerified={user.isVerified}
-        />
+        {!isClient ? (
+          <ProfileVerificationPanel
+            authId={user.authId}
+            isVerified={user.isVerified}
+          />
+        ) : null}
         <ProfileStatsGrid
           activeBookings={activeBookings}
           bookingsCount={bookingsCount}
@@ -92,12 +90,6 @@ export default async function ProfilePage() {
           talentServicesCount={talentServicesCount}
         />
         {talentProfile ? <ProfileTalentDetails talentProfile={talentProfile} /> : null}
-        <ProfileQuickActions isClient={isClient} />
-        <ProfileAccountFooter
-          joinDate={joinDate}
-          profileId={profile.id}
-          role={user.role}
-        />
       </div>
     </DashboardLayout>
   );

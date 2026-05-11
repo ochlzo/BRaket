@@ -49,8 +49,21 @@ const talentNavItems: SidebarNavItem[] = [
   { href: "/settings", icon: Settings, label: "Settings" },
 ];
 
+function getSidebarSubtitle(role: UserRole) {
+  return role === "client" ? "Client Dashboard" : "Talent Dashboard";
+}
+
+function getProfileLabel(role: UserRole) {
+  return role === "client" ? "Client Profile" : "Talent Profile";
+}
+
 export function AppSidebar({ role }: { role: UserRole }) {
-  const items = role === "client" ? clientNavItems : talentNavItems;
+  const items = (role === "client" ? clientNavItems : talentNavItems).map(
+    (item) =>
+      item.href === "/dashboard/profile"
+        ? { ...item, label: getProfileLabel(role) }
+        : item,
+  );
 
   return (
     <Sidebar
@@ -58,7 +71,7 @@ export function AppSidebar({ role }: { role: UserRole }) {
       className="border-r border-[color:var(--line-strong)] bg-white"
     >
       <SidebarHeader className="border-b border-[color:var(--line)] px-6 py-4">
-        <BrandMark href="/" />
+        <BrandMark href="/" subtitle={getSidebarSubtitle(role)} />
       </SidebarHeader>
       <SidebarContent className="px-3 py-4">
         <NavMain items={items} />

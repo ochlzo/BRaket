@@ -23,7 +23,7 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
           Create your account
         </h1>
         <p className="text-sm text-[color:var(--ink-muted)]">
-          Continue with Google or choose your account type and use email.
+          Continue with Google or use email to create a client account.
         </p>
       </div>
 
