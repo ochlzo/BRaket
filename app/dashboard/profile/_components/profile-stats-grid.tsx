@@ -1,11 +1,10 @@
-import type { ClientProfile, TalentProfile } from "@/lib/types";
+import type { TalentProfile } from "@/lib/types";
 
 type ProfileStatsGridProps = {
   activeBookings: number;
   bookingsCount: number;
   completedBookings: number;
   isClient: boolean;
-  profile: ClientProfile | TalentProfile;
   talentProfile: TalentProfile | null;
   talentServicesCount: number;
 };
@@ -15,7 +14,6 @@ export function ProfileStatsGrid({
   bookingsCount,
   completedBookings,
   isClient,
-  profile,
   talentProfile,
   talentServicesCount,
 }: ProfileStatsGridProps) {

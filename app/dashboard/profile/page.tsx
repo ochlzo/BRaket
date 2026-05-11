@@ -85,7 +85,6 @@ export default async function ProfilePage() {
           bookingsCount={bookingsCount}
           completedBookings={completedBookings}
           isClient={isClient}
-          profile={profile}
           talentProfile={talentProfile}
           talentServicesCount={talentServicesCount}
         />
