@@ -19,14 +19,14 @@ function DetailRow({
   value: ReactNode;
 }) {
   return (
-    <div className="flex items-start gap-3 rounded-2xl border border-[color:var(--line)] bg-[color:var(--surface-alt)] px-4 py-3">
+    <div className="flex items-start gap-3 rounded-none border-0 bg-transparent px-0 py-0 sm:rounded-2xl sm:border sm:border-[color:var(--line)] sm:bg-[color:var(--surface-alt)] sm:px-4 sm:py-3">
       <div className="mt-0.5 text-[color:var(--brand-orange)]">{icon}</div>
       <div className="min-w-0">
         <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[color:var(--ink-muted)]">
           {label}
         </p>
         <div className="mt-1 text-sm font-semibold text-[color:var(--foreground)]">
-          {value || "Not provided"}
+          {value || "-"}
         </div>
       </div>
     </div>
@@ -35,7 +35,7 @@ function DetailRow({
 
 export function ClientProfileDetails({ profile }: ClientProfileDetailsProps) {
   return (
-    <Card className="border-[color:var(--line-strong)] bg-[color:var(--surface)] shadow-[var(--shadow-panel-soft)]">
+    <Card className="gap-0 rounded-none border-0 bg-transparent py-0 shadow-none ring-0 sm:gap-4 sm:rounded-xl sm:border sm:border-[color:var(--line-strong)] sm:bg-[color:var(--surface)] sm:py-4 sm:shadow-[var(--shadow-panel-soft)] sm:ring-1 sm:ring-foreground/10">
       <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-4">
         <div>
           <CardTitle className="typo-card-title-xl">

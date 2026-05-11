@@ -16,7 +16,7 @@ export function ClientProfilePageContent({
   user,
 }: ClientProfilePageContentProps) {
   return (
-    <div className="space-y-4 pb-4 sm:space-y-6 sm:pb-6">
+    <div className="bg-[color:var(--surface)] -mx-4 space-y-4 pb-4 sm:mx-0 sm:bg-transparent sm:space-y-6 sm:pb-6">
       <ClientProfileHero profile={profile} user={user} />
       <ClientProfileStats profile={profile} />
       <ClientProfileDetails profile={profile} />

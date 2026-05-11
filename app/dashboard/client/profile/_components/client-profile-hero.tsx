@@ -39,7 +39,7 @@ export function ClientProfileHero({ profile, user }: ClientProfileHeroProps) {
   const avatarFallback = getInitials(user.displayName, user.username);
 
   return (
-    <article className="overflow-hidden rounded-[1.2rem] border border-[color:var(--line-strong)] bg-[color:var(--surface)] shadow-[var(--shadow-panel-elevated)] sm:rounded-[1.4rem]">
+    <article className="overflow-hidden rounded-none border-0 bg-transparent shadow-none sm:rounded-[1.4rem] sm:border sm:border-[color:var(--line-strong)] sm:bg-[color:var(--surface)] sm:shadow-[var(--shadow-panel-elevated)]">
       <div
         className="relative min-h-32 overflow-hidden sm:min-h-40"
         style={coverBackgroundStyle(profile.backgroundImageUrl)}

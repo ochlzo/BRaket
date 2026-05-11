@@ -115,7 +115,7 @@ export function ClientPortfolioFeed({ portfolio }: ClientPortfolioFeedProps) {
 
   return (
     <>
-      <Card className="border-[color:var(--line-strong)] bg-[color:var(--surface)] shadow-[var(--shadow-panel-soft)]">
+      <Card className="gap-0 rounded-none border-0 bg-transparent py-0 shadow-none ring-0 sm:gap-4 sm:rounded-xl sm:border sm:border-[color:var(--line-strong)] sm:bg-[color:var(--surface)] sm:py-4 sm:shadow-[var(--shadow-panel-soft)] sm:ring-1 sm:ring-foreground/10">
         <CardHeader className="relative flex flex-col gap-3 pr-0 sm:flex-row sm:items-start sm:justify-between sm:pr-28">
           <div>
             <CardTitle className="typo-card-title-xl">Client portfolio</CardTitle>
@@ -133,7 +133,7 @@ export function ClientPortfolioFeed({ portfolio }: ClientPortfolioFeedProps) {
             portfolio.map((item) => (
               <article
                 key={item.id}
-                className="rounded-[1.2rem] border border-[color:var(--line-strong)] bg-[color:var(--surface)] p-3 shadow-[var(--shadow-surface-soft)] sm:p-4"
+                className="rounded-none border-0 bg-transparent p-0 shadow-none sm:rounded-[1.2rem] sm:border sm:border-[color:var(--line-strong)] sm:bg-[color:var(--surface)] sm:p-4 sm:shadow-[var(--shadow-surface-soft)]"
               >
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                   <div>
@@ -158,7 +158,7 @@ export function ClientPortfolioFeed({ portfolio }: ClientPortfolioFeedProps) {
               </article>
             ))
           ) : (
-            <div className="rounded-[1.2rem] border border-dashed border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 py-8 text-center sm:px-5 sm:py-10">
+            <div className="rounded-none border-0 bg-transparent px-0 py-4 text-center sm:rounded-[1.2rem] sm:border sm:border-dashed sm:border-[color:var(--line-strong)] sm:bg-[color:var(--surface-alt)] sm:px-5 sm:py-10">
               <p className="text-base font-semibold text-[color:var(--foreground)]">
                 No portfolio posts yet
               </p>
