@@ -39,8 +39,6 @@ model ClientProfile {
   business_address          String?
   website                   String?
   about                     String?
-  industry                  String?
-  client_type               ClientType
   client_avg_rating         Float?
   client_review_count       Int?
   client_reputation_score Float?
@@ -120,10 +118,4 @@ model TalentPortfolioMedia {
   TalentPortfolio TalentPortfolio @relation(fields: [talent_portfolio_id], references: [talent_portfolio_id], onDelete: Cascade)
   
   @@id([tportfolio_media_id])
-}
-
-enum ClientType {
-  individual
-  team
-  organization
 }

@@ -16,6 +16,34 @@ export function deriveUsername(email: string) {
   return slug.replace(/^-+|-+$/g, "") || "user";
 }
 
+export function buildDicebearNotionistsAvatarUrl(seed: string) {
+  return `https://api.dicebear.com/9.x/notionists/svg?seed=${encodeURIComponent(seed)}`;
+}
+
+type ResolveCanonicalUsernameInput = {
+  authEmail: string;
+  authUsername?: string | null;
+  dbUsername?: string | null;
+};
+
+function readUsername(value: string | null | undefined) {
+  return typeof value === "string" && value.trim().length > 0
+    ? value.trim()
+    : "";
+}
+
+export function resolveCanonicalUsername({
+  authEmail,
+  authUsername,
+  dbUsername,
+}: ResolveCanonicalUsernameInput) {
+  return (
+    readUsername(dbUsername) ||
+    readUsername(authUsername) ||
+    deriveUsername(authEmail)
+  );
+}
+
 export function normalizeUserRole(
   value: unknown,
   fallback: UserRole = "client",

@@ -5,21 +5,27 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import {
+  buildDicebearNotionistsAvatarUrl,
   buildDisplayName,
-  deriveUsername,
   getAuthRedirectPath,
   normalizeUserRole,
+  resolveCanonicalUsername,
 } from "@/lib/auth/session";
+import { resolveNamePartsFromMetadata } from "@/lib/auth/name-parts";
 import { prisma } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
-import type { SkillLevel, UserRole } from "@/lib/types";
+import type { UserRole } from "@/lib/types";
+import {
+  getCacheKey,
+  type CurrentUserSkill,
+  parseRateValue,
+  parseSkillsValue,
+  pickTextValue,
+  readCachedCurrentAppUser,
+  writeCachedCurrentAppUser,
+} from "@/server/users/current-user-helpers";
 
-const CURRENT_USER_CACHE_TTL_MS = 30_000;
-
-export type CurrentUserSkill = {
-  level: SkillLevel;
-  name: string;
-};
+export { clearCurrentAppUserCache } from "@/server/users/current-user-helpers";
 
 export type CurrentAppUser = {
   authId: string;
@@ -41,116 +47,6 @@ export type CurrentAppUser = {
   username: string;
 };
 
-type CurrentAppUserCacheEntry = {
-  expiresAt: number;
-  user: CurrentAppUser;
-};
-
-const globalForCurrentUserCache = globalThis as unknown as {
-  currentAppUserCache: Map<string, CurrentAppUserCacheEntry> | undefined;
-};
-
-const currentAppUserCache =
-  globalForCurrentUserCache.currentAppUserCache ?? new Map();
-
-if (process.env.NODE_ENV !== "production") {
-  globalForCurrentUserCache.currentAppUserCache = currentAppUserCache;
-}
-
-function pickTextValue(source: Record<string, unknown>, keys: string[]) {
-  for (const key of keys) {
-    const value = source[key];
-
-    if (typeof value === "string" && value.trim().length > 0) {
-      return value.trim();
-    }
-  }
-
-  return "";
-}
-
-function parseRateValue(value: unknown) {
-  if (typeof value === "number" && Number.isFinite(value) && value > 0) {
-    return value;
-  }
-
-  if (typeof value === "string") {
-    const parsed = Number(value);
-
-    if (Number.isFinite(parsed) && parsed > 0) {
-      return parsed;
-    }
-  }
-
-  return null;
-}
-
-function parseSkillsValue(value: unknown): CurrentUserSkill[] {
-  if (!Array.isArray(value)) {
-    return [];
-  }
-
-  return value.flatMap((entry) => {
-    if (!entry || typeof entry !== "object") {
-      return [];
-    }
-
-    const maybeSkill = entry as Record<string, unknown>;
-    const name =
-      typeof maybeSkill.name === "string" ? maybeSkill.name.trim() : "";
-
-    if (!name) {
-      return [];
-    }
-
-    const level = maybeSkill.level;
-    const normalizedLevel: SkillLevel =
-      level === "beginner" || level === "expert" || level === "intermediate"
-        ? level
-        : "intermediate";
-
-    return [{ level: normalizedLevel, name }];
-  });
-}
-
-function buildAvatarUrl(seed: string) {
-  return `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(seed)}`;
-}
-
-function getCacheKey(authId: string, sessionId: string) {
-  return `${authId}:${sessionId}`;
-}
-
-function readCachedCurrentAppUser(cacheKey: string) {
-  const cached = currentAppUserCache.get(cacheKey);
-
-  if (!cached) {
-    return null;
-  }
-
-  if (cached.expiresAt <= Date.now()) {
-    currentAppUserCache.delete(cacheKey);
-    return null;
-  }
-
-  return cached.user;
-}
-
-function writeCachedCurrentAppUser(cacheKey: string, user: CurrentAppUser) {
-  currentAppUserCache.set(cacheKey, {
-    expiresAt: Date.now() + CURRENT_USER_CACHE_TTL_MS,
-    user,
-  });
-}
-
-export function clearCurrentAppUserCache(authId: string) {
-  for (const cacheKey of currentAppUserCache.keys()) {
-    if (cacheKey.startsWith(`${authId}:`)) {
-      currentAppUserCache.delete(cacheKey);
-    }
-  }
-}
-
 export async function getCurrentAppUser(): Promise<CurrentAppUser | null> {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
@@ -166,7 +62,7 @@ export async function getCurrentAppUser(): Promise<CurrentAppUser | null> {
   const authId = data.claims.sub;
   const email = data.claims.email.trim().toLowerCase();
   const cacheKey = getCacheKey(authId, data.claims.session_id);
-  const cachedUser = readCachedCurrentAppUser(cacheKey);
+  const cachedUser = readCachedCurrentAppUser<CurrentAppUser>(cacheKey);
 
   if (cachedUser) {
     return cachedUser;
@@ -177,22 +73,26 @@ export async function getCurrentAppUser(): Promise<CurrentAppUser | null> {
     where: { authId },
   });
   const role = normalizeUserRole(metadata.role);
-  const username =
-    pickTextValue(metadata, ["username"]) ||
-    existingUser?.username ||
-    deriveUsername(email);
-  const authFirstName = pickTextValue(metadata, [
-    "firstName",
-    "firstname",
-    "first_name",
-    "given_name",
-  ]);
-  const authLastName = pickTextValue(metadata, [
-    "lastName",
-    "lastname",
-    "last_name",
-    "family_name",
-  ]);
+  const nameParts = resolveNamePartsFromMetadata(metadata);
+  const username = resolveCanonicalUsername({
+    authEmail: email,
+    authUsername: pickTextValue(metadata, ["username"]),
+    dbUsername: existingUser?.username,
+  });
+  const authFirstName =
+    pickTextValue(metadata, [
+      "firstName",
+      "firstname",
+      "first_name",
+      "given_name",
+    ]) || nameParts.firstName;
+  const authLastName =
+    pickTextValue(metadata, [
+      "lastName",
+      "lastname",
+      "last_name",
+      "family_name",
+    ]) || nameParts.lastName;
   const fallbackDisplayName =
     pickTextValue(metadata, ["full_name", "name"]) ||
     buildDisplayName(
@@ -206,10 +106,15 @@ export async function getCurrentAppUser(): Promise<CurrentAppUser | null> {
     existingUser?.lastName ?? authLastName,
     fallbackDisplayName,
   );
+  const authAvatarUrl = pickTextValue(metadata, [
+    "avatar_url",
+    "avatarUrl",
+    "picture",
+  ]);
   const avatarUrl =
     existingUser?.avatarUrl ||
-    pickTextValue(metadata, ["avatar_url", "avatarUrl", "picture"]) ||
-    buildAvatarUrl(displayName || username);
+    authAvatarUrl ||
+    buildDicebearNotionistsAvatarUrl(existingUser?.userId ?? authId);
   const headline = pickTextValue(metadata, ["headline"]);
   const bio = pickTextValue(metadata, ["bio"]);
   const location =
@@ -231,47 +136,54 @@ export async function getCurrentAppUser(): Promise<CurrentAppUser | null> {
   let dbUser = existingUser;
 
   if (!dbUser) {
-    dbUser = await prisma.user.upsert({
-      create: baseUserData,
-      update: baseUserData,
+    await prisma.user.createMany({
+      data: [baseUserData],
+      skipDuplicates: true,
+    });
+    dbUser = await prisma.user.findFirst({
       where: { authId },
     });
-  } else {
-    const updateData: Prisma.UserUpdateInput = {};
+  }
 
-    if (dbUser.email !== email) {
-      updateData.email = email;
-    }
+  if (!dbUser) {
+    return null;
+  }
 
-    if (dbUser.username !== username) {
-      updateData.username = username;
-    }
+  const updateData: Prisma.UserUpdateInput = {};
 
-    if (!dbUser.firstName && authFirstName) {
-      updateData.firstName = authFirstName;
-    }
+  if (dbUser.email !== email) {
+    updateData.email = email;
+  }
 
-    if (!dbUser.lastName && authLastName) {
-      updateData.lastName = authLastName;
-    }
+  if (dbUser.username !== username) {
+    updateData.username = username;
+  }
 
-    if (!dbUser.avatarUrl && avatarUrl) {
-      updateData.avatarUrl = avatarUrl;
-    }
+  if (!dbUser.firstName && authFirstName) {
+    updateData.firstName = authFirstName;
+  }
 
-    if (!dbUser.address && location) {
-      updateData.address = location;
-    }
+  if (!dbUser.lastName && authLastName) {
+    updateData.lastName = authLastName;
+  }
 
-    if (Object.keys(updateData).length > 0) {
-      await prisma.user.updateMany({
-        data: updateData,
-        where: { authId: dbUser.authId },
-      });
-      dbUser = await prisma.user.findFirst({
-        where: { authId },
-      });
-    }
+  if (!dbUser.avatarUrl) {
+    updateData.avatarUrl =
+      authAvatarUrl || buildDicebearNotionistsAvatarUrl(dbUser.userId);
+  }
+
+  if (!dbUser.address && location) {
+    updateData.address = location;
+  }
+
+  if (Object.keys(updateData).length > 0) {
+    await prisma.user.updateMany({
+      data: updateData,
+      where: { authId: dbUser.authId },
+    });
+    dbUser = await prisma.user.findFirst({
+      where: { authId },
+    });
   }
 
   if (!dbUser) {

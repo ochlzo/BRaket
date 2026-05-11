@@ -1,7 +1,11 @@
-import Image from "next/image";
 import Link from "next/link";
 
 import type { ClientProfile, TalentProfile } from "@/lib/types";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
 
 import {
   CalendarIcon,
@@ -23,6 +27,17 @@ function getFullName(profile: ClientProfile | TalentProfile) {
   return fullName || profile.username;
 }
 
+function getInitials(value: string, fallback: string) {
+  const initials = value
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+
+  return initials || fallback.slice(0, 1).toUpperCase();
+}
+
 export function ProfileHeroCard({
   isClient,
   isVerified,
@@ -31,6 +46,7 @@ export function ProfileHeroCard({
   talentProfile,
 }: ProfileHeroCardProps) {
   const fullName = getFullName(profile);
+  const avatarFallback = getInitials(fullName, profile.username);
   const bio =
     profile.bio || "Add a short bio so clients understand what you do best.";
 
@@ -44,15 +60,15 @@ export function ProfileHeroCard({
       <div className="relative px-5 pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-4">
-            <div className="-mt-8 h-16 w-16 shrink-0 overflow-hidden rounded-xl border-[3px] border-white bg-white shadow-md">
-              <Image
-                alt={fullName}
-                className="h-full w-full object-cover"
-                height={128}
-                src={profile.avatarUrl}
-                width={128}
-              />
-            </div>
+            <Avatar className="-mt-8 h-16 w-16 shrink-0 rounded-xl border-[3px] border-white bg-white shadow-md">
+              {profile.avatarUrl ? (
+                <AvatarImage alt={fullName} src={profile.avatarUrl} />
+              ) : (
+                <AvatarFallback className="rounded-[0.7rem] text-sm font-black text-[color:var(--ink-muted)]">
+                  {avatarFallback}
+                </AvatarFallback>
+              )}
+            </Avatar>
             <div className="mt-1.5 flex flex-col justify-center">
               <div className="flex items-center gap-1.5">
                 <h2 className="text-lg font-extrabold leading-none tracking-[-0.03em] text-foreground">
