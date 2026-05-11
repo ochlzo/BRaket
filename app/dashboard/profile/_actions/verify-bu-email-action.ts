@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
+import { getDashboardProfilePath } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { clearCurrentAppUserCache } from "@/server/users/current-user";
 
@@ -65,6 +66,7 @@ export async function verifyBuEmailAction(): Promise<VerifyBuEmailResult> {
   }
 
   clearCurrentAppUserCache(user.id);
+  revalidatePath(getDashboardProfilePath("talent"));
   revalidatePath("/dashboard/profile");
 
   return {

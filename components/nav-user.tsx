@@ -32,6 +32,7 @@ import {
   getClientAppSessionSnapshot,
   subscribeToAppSession,
 } from "@/lib/auth/client-session";
+import { getDashboardProfilePath } from "@/lib/auth/session";
 import { clearAppSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/client";
 import type { UserRole } from "@/lib/types";
@@ -117,7 +118,9 @@ export function NavUser({ role }: { role: UserRole }) {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => router.push("/dashboard/profile")}>
+              <DropdownMenuItem
+                onClick={() => router.push(getDashboardProfilePath(role))}
+              >
                 <UserRound />
                 My Profile
               </DropdownMenuItem>

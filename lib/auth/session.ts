@@ -100,6 +100,12 @@ export function getAuthRedirectPath(role: UserRole, mode: AuthMode) {
   return role === "talent" ? "/dashboard/talent" : "/dashboard/client";
 }
 
+export function getDashboardProfilePath(role: UserRole) {
+  return role === "talent"
+    ? "/dashboard/talent/profile"
+    : "/dashboard/client/profile";
+}
+
 export function saveAppSession(session: AppSession) {
   if (typeof window === "undefined") return;
   localStorage.setItem(APP_SESSION_KEY, JSON.stringify(session));

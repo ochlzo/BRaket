@@ -19,11 +19,16 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { getDashboardProfilePath } from "@/lib/auth/session";
 import type { UserRole } from "@/lib/types";
 
 const clientNavItems: SidebarNavItem[] = [
   { href: "/dashboard/client", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/dashboard/profile", icon: UserRound, label: "My Profile" },
+  {
+    href: getDashboardProfilePath("client"),
+    icon: UserRound,
+    label: "Client Profile",
+  },
   {
     href: "/dashboard/client/bookings",
     icon: ClipboardList,
@@ -35,7 +40,11 @@ const clientNavItems: SidebarNavItem[] = [
 
 const talentNavItems: SidebarNavItem[] = [
   { href: "/dashboard/talent", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/dashboard/profile", icon: UserRound, label: "My Profile" },
+  {
+    href: getDashboardProfilePath("talent"),
+    icon: UserRound,
+    label: "Talent Profile",
+  },
   {
     href: "/dashboard/talent/services",
     icon: Wrench,
@@ -53,17 +62,8 @@ function getSidebarSubtitle(role: UserRole) {
   return role === "client" ? "Client Dashboard" : "Talent Dashboard";
 }
 
-function getProfileLabel(role: UserRole) {
-  return role === "client" ? "Client Profile" : "Talent Profile";
-}
-
 export function AppSidebar({ role }: { role: UserRole }) {
-  const items = (role === "client" ? clientNavItems : talentNavItems).map(
-    (item) =>
-      item.href === "/dashboard/profile"
-        ? { ...item, label: getProfileLabel(role) }
-        : item,
-  );
+  const items = role === "client" ? clientNavItems : talentNavItems;
 
   return (
     <Sidebar

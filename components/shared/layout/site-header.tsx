@@ -8,6 +8,7 @@ import {
   getClientAppSessionSnapshot,
   subscribeToAppSession,
 } from "@/lib/auth/client-session";
+import { getDashboardProfilePath } from "@/lib/auth/session";
 import { clearAppSession } from "@/lib/auth/session";
 import type { NavItem } from "@/lib/content/navigation";
 import { semantic } from "@/lib/theme/semantic";
@@ -95,7 +96,7 @@ export function SiteHeader({
                   <div className="h-px bg-[color:var(--line-strong)]" />
                   <div className="p-1.5">
                     <Link
-                      href="/dashboard/profile"
+                      href={getDashboardProfilePath(session.type)}
                       className="block rounded-lg px-3 py-2 text-sm font-medium text-[color:var(--ink-body)] hover:bg-[color:var(--surface-alt)] hover:text-foreground"
                     >
                       My Profile

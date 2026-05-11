@@ -30,7 +30,7 @@ Use this rule set for login, sign-up, OTP, session refresh, and post-auth user p
 
 ## Session Handling
 
-- Keep Supabase session refresh wiring in `proxy.ts` and `lib/supabase/proxy.ts`.
+- Keep Supabase session refresh wiring in `middleware.ts` and `lib/supabase/proxy.ts`.
 - Use `lib/supabase/server.ts` for server-side Supabase access in server components or route handlers.
 - Keep session-shaping helpers in `lib/auth/session.ts`.
 - For password recovery, send users to a dedicated reset page such as `/update-password` and finish the password change with `supabase.auth.updateUser(...)`.
