@@ -6,7 +6,6 @@ import type {
 } from "@/lib/types";
 import { DashboardLayout } from "@/components/shared/layout/dashboard-layout";
 import { ProfileHeroCard } from "@/app/dashboard/profile/_components/profile-hero-card";
-import { ProfileStatsGrid } from "@/app/dashboard/profile/_components/profile-stats-grid";
 import { ProfileTalentDetails } from "@/app/dashboard/profile/_components/profile-talent-details";
 import { ProfileVerificationPanel } from "@/app/dashboard/profile/_components/profile-verification-panel";
 
@@ -63,10 +62,6 @@ export function ProfilePageContent({
     month: "long",
     year: "numeric",
   });
-  const activeBookings = 0;
-  const bookingsCount = 0;
-  const completedBookings = 0;
-  const talentServicesCount = 0;
 
   const profile: ClientProfile | TalentProfile = isClient
     ? {
@@ -113,14 +108,6 @@ export function ProfilePageContent({
             isVerified={user.isVerified}
           />
         ) : null}
-        <ProfileStatsGrid
-          activeBookings={activeBookings}
-          bookingsCount={bookingsCount}
-          completedBookings={completedBookings}
-          isClient={isClient}
-          talentProfile={talentProfile}
-          talentServicesCount={talentServicesCount}
-        />
         {talentProfile ? <ProfileTalentDetails talentProfile={talentProfile} /> : null}
       </div>
     </DashboardLayout>
