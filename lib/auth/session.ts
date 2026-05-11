@@ -94,7 +94,7 @@ export function resolveAppSession({
 
 export function getAuthRedirectPath(role: UserRole, mode: AuthMode) {
   if (mode === "signup") {
-    return role === "talent" ? "/onboarding/talent" : "/dashboard/client";
+    return "/dashboard/client";
   }
 
   return role === "talent" ? "/dashboard/talent" : "/dashboard/client";

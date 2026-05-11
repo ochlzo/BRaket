@@ -66,30 +66,6 @@ export function OtpAuthFormView({
         void handleSubmit(e.currentTarget);
       }}
     >
-      {isSignup && (
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-foreground">
-            Account type
-          </Label>
-          <div className="flex rounded-xl bg-[color:var(--surface-alt)] p-1">
-            {(["client", "talent"] as UserRole[]).map((item) => (
-              <button
-                key={item}
-                type="button"
-                onClick={() => setRole(item)}
-                className={`flex-1 rounded-lg py-2 text-sm font-medium transition-all ${
-                  role === item
-                    ? "bg-white text-foreground shadow-sm"
-                    : "text-[color:var(--ink-muted)] hover:text-foreground"
-                }`}
-              >
-                {roleLabel(item)}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
       <div className="space-y-2">
         <Label
           htmlFor={`${mode}-email`}

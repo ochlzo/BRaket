@@ -7,18 +7,73 @@ datasource db {
 }
 
 model User {
-  userId    String   @map("user_id")
-  authId    String   @map("auth_id")
-  email     String
-  username  String
-  lastName  String?  @map("last_name")
-  firstName String?  @map("first_name")
-  address   String?
-  avatarUrl String?
-  bio       String?
-  createdAt DateTime @default(now()) @map("createdAt")
-  updatedAt DateTime @updatedAt @map("updatedAt")
+  userId        String         @unique @map("user_id")
+  authId        String         @unique @map("auth_id")
+  email         String         @unique
+  contactNum    Int?           @unique
+  username      String?        @unique
+  lastName      String?        @map("last_name")
+  firstName     String?        @map("first_name")
+  address       String?
+  avatarUrl     String?
+  backgroundimg_img_url  String?
+  facebook_url  String?
+  instagram_url String?
+  x_url         String?
+  github_url    String?
+  linkedin_url  String?
+  createdAt     DateTime       @default(now()) @map("createdAt")
+  updatedAt     DateTime       @updatedAt @map("updatedAt")
+  ClientProfile ClientProfile?
+  TalentProfile TalentProfile?
 
   @@id([userId, authId])
   @@map("User")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model ClientProfile {
+  client_profile_id         String
+  user_id                   String     @unique
+  organization_name         String
+  business_address          String?
+  website                   String?
+  about                     String?
+  Industry                  String?
+  client_type               ClientType
+  client_avg_rating         Float?
+  client_review_count       Int?
+  client_reputation_score Float?
+  completed_commissions_count Int?
+  createdAt                 DateTime   @default(now())
+  updatedAt                 DateTime
+  User                      User       @relation(fields: [user_id], references: [userId], onDelete: Cascade)
+
+  @@id([client_profile_id, user_id])
+}
+
+model TalentProfile {
+  talent_profile_id         String
+  user_id                   String      @unique
+  headline                  String
+  college                   String
+  course                    String
+  year_level                Int
+  website                   String?
+  avg_rating                Float?
+  talent_review_count       Int @default(0)
+  completed_commissions_count  Int @default(0)
+  talent_reputation_score   Float?
+  is_verified               Boolean @default(false)
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime
+  User                      User       @relation(fields: [user_id], references: [userId], onDelete: Cascade)
+
+  @@id([talent_profile_id, user_id])
+}
+
+enum ClientType {
+  individual
+  team
+  organization
 }
