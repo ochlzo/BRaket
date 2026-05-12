@@ -14,6 +14,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ClientProfilePortfolioItem } from "@/lib/client-profile/types";
 import { ClientPortfolioComposer } from "./client-portfolio-composer";
+import { ClientPortfolioCollage } from "./client-portfolio-collage";
 
 type ClientPortfolioFeedProps = {
   portfolio: ClientProfilePortfolioItem[];
@@ -30,109 +31,6 @@ function formatDate(value: string) {
     month: "short",
     year: "numeric",
   }).format(new Date(value));
-}
-
-function PortfolioImageGrid({
-  item,
-  onPreview,
-}: {
-  item: ClientProfilePortfolioItem;
-  onPreview: (media: { alt: string; src: string }) => void;
-}) {
-  const media = item.media.slice(0, 3);
-
-  if (media.length === 0) {
-    return (
-      <div className="flex aspect-[16/9] items-center justify-center rounded-[1.1rem] border border-dashed border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-center">
-        <div>
-          <ImageIcon className="mx-auto size-5 text-[color:var(--brand-orange)]" />
-          <p className="mt-2 text-sm font-semibold text-[color:var(--foreground)]">
-            No media attached
-          </p>
-          <p className="mt-1 text-xs text-[color:var(--ink-muted)]">
-            This brief only has text right now.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (media.length === 1) {
-    return (
-      <button
-        className="block w-full group relative aspect-[16/9] overflow-hidden rounded-[1.1rem] bg-[color:var(--surface-alt)]"
-        onClick={() => onPreview({ alt: item.title, src: media[0].url })}
-        type="button"
-      >
-        <Image
-          alt={item.title}
-          className="object-cover transition duration-300 group-hover:scale-[1.03]"
-          fill
-          sizes="(max-width: 768px) 100vw, 70vw"
-          src={media[0].url}
-        />
-      </button>
-    );
-  }
-
-  if (media.length === 2) {
-    return (
-      <div className="grid gap-2 sm:grid-cols-2">
-        {media.map((entry) => (
-          <button
-            key={entry.id}
-            className="block w-full group relative aspect-[4/3] overflow-hidden rounded-[1.1rem] bg-[color:var(--surface-alt)]"
-            onClick={() => onPreview({ alt: item.title, src: entry.url })}
-            type="button"
-          >
-            <Image
-              alt={item.title}
-              className="object-cover transition duration-300 group-hover:scale-[1.03]"
-              fill
-              sizes="(max-width: 768px) 100vw, 35vw"
-              src={entry.url}
-            />
-          </button>
-        ))}
-      </div>
-    );
-  }
-
-  return (
-    <div className="grid gap-2 sm:grid-cols-[1.15fr_0.85fr]">
-      <button
-        className="block w-full group relative aspect-[4/3] overflow-hidden rounded-[1.1rem] bg-[color:var(--surface-alt)]"
-        onClick={() => onPreview({ alt: item.title, src: media[0].url })}
-        type="button"
-      >
-        <Image
-          alt={item.title}
-          className="object-cover transition duration-300 group-hover:scale-[1.03]"
-          fill
-          sizes="(max-width: 768px) 100vw, 55vw"
-          src={media[0].url}
-        />
-      </button>
-      <div className="grid gap-2">
-        {media.slice(1).map((entry) => (
-          <button
-            key={entry.id}
-            className="block w-full group relative aspect-[4/3] overflow-hidden rounded-[1.1rem] bg-[color:var(--surface-alt)]"
-            onClick={() => onPreview({ alt: item.title, src: entry.url })}
-            type="button"
-          >
-            <Image
-              alt={item.title}
-              className="object-cover transition duration-300 group-hover:scale-[1.03]"
-              fill
-              sizes="(max-width: 768px) 100vw, 30vw"
-              src={entry.url}
-            />
-          </button>
-        ))}
-      </div>
-    </div>
-  );
 }
 
 export function ClientPortfolioFeed({ portfolio }: ClientPortfolioFeedProps) {
@@ -178,7 +76,7 @@ export function ClientPortfolioFeed({ portfolio }: ClientPortfolioFeedProps) {
                   </div>
                 </div>
 
-                <PortfolioImageGrid
+                <ClientPortfolioCollage
                   item={item}
                   onPreview={(next) => setViewer(next)}
                 />
