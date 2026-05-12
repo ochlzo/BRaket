@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ClientProfilePortfolioItem } from "@/lib/client-profile/types";
+import { ClientPortfolioComposer } from "./client-portfolio-composer";
 
 type ClientPortfolioFeedProps = {
   portfolio: ClientProfilePortfolioItem[];
@@ -59,7 +60,7 @@ function PortfolioImageGrid({
   if (media.length === 1) {
     return (
       <button
-        className="group relative aspect-[16/9] overflow-hidden rounded-[1.1rem] bg-[color:var(--surface-alt)]"
+        className="block w-full group relative aspect-[16/9] overflow-hidden rounded-[1.1rem] bg-[color:var(--surface-alt)]"
         onClick={() => onPreview({ alt: item.title, src: media[0].url })}
         type="button"
       >
@@ -80,7 +81,7 @@ function PortfolioImageGrid({
         {media.map((entry) => (
           <button
             key={entry.id}
-            className="group relative aspect-[4/3] overflow-hidden rounded-[1.1rem] bg-[color:var(--surface-alt)]"
+            className="block w-full group relative aspect-[4/3] overflow-hidden rounded-[1.1rem] bg-[color:var(--surface-alt)]"
             onClick={() => onPreview({ alt: item.title, src: entry.url })}
             type="button"
           >
@@ -100,7 +101,7 @@ function PortfolioImageGrid({
   return (
     <div className="grid gap-2 sm:grid-cols-[1.15fr_0.85fr]">
       <button
-        className="group relative aspect-[4/3] overflow-hidden rounded-[1.1rem] bg-[color:var(--surface-alt)]"
+        className="block w-full group relative aspect-[4/3] overflow-hidden rounded-[1.1rem] bg-[color:var(--surface-alt)]"
         onClick={() => onPreview({ alt: item.title, src: media[0].url })}
         type="button"
       >
@@ -116,7 +117,7 @@ function PortfolioImageGrid({
         {media.slice(1).map((entry) => (
           <button
             key={entry.id}
-            className="group relative aspect-[4/3] overflow-hidden rounded-[1.1rem] bg-[color:var(--surface-alt)]"
+            className="block w-full group relative aspect-[4/3] overflow-hidden rounded-[1.1rem] bg-[color:var(--surface-alt)]"
             onClick={() => onPreview({ alt: item.title, src: entry.url })}
             type="button"
           >
@@ -140,7 +141,7 @@ export function ClientPortfolioFeed({ portfolio }: ClientPortfolioFeedProps) {
   return (
     <>
       <Card className="gap-0 rounded-none border-0 bg-transparent py-0 shadow-none ring-0 sm:gap-4 sm:rounded-xl sm:border sm:border-[color:var(--line-strong)] sm:bg-[color:var(--surface)] sm:py-4 sm:shadow-[var(--shadow-panel-soft)] sm:ring-1 sm:ring-foreground/10">
-        <CardHeader className="relative flex flex-col gap-3 pr-0 sm:flex-row sm:items-start sm:justify-between sm:pr-28">
+        <CardHeader className="relative flex flex-col gap-3 pr-0 sm:flex-row sm:items-start sm:justify-between sm:pr-52">
           <div>
             <CardTitle className="typo-card-title-xl">
               Client portfolio
@@ -150,10 +151,13 @@ export function ClientPortfolioFeed({ portfolio }: ClientPortfolioFeedProps) {
               account.
             </p>
           </div>
-          <span className="pointer-events-none absolute right-4 top-0 z-20 inline-flex w-fit items-center gap-1.5 rounded-full bg-[color:var(--tone-orange-pale)] px-3 py-1.5 text-xs font-semibold text-[color:var(--tone-orange-deep)] sm:right-5 sm:top-5">
-            <ImageIcon className="size-3.5" />
-            {portfolio.length} post{portfolio.length === 1 ? "" : "s"}
-          </span>
+          <div className="absolute right-4 top-0 z-20 flex items-center gap-2 sm:right-5 sm:top-5">
+            <span className="pointer-events-none inline-flex w-fit items-center gap-1.5 rounded-full bg-[color:var(--tone-orange-pale)] px-3 py-1.5 text-xs font-semibold text-[color:var(--tone-orange-deep)]">
+              <ImageIcon className="size-3.5" />
+              {portfolio.length} post{portfolio.length === 1 ? "" : "s"}
+            </span>
+            <ClientPortfolioComposer />
+          </div>
         </CardHeader>
         <CardContent className="space-y-4 px-4 pb-4 sm:px-5 sm:pb-5">
           {portfolio.length > 0 ? (
@@ -168,14 +172,10 @@ export function ClientPortfolioFeed({ portfolio }: ClientPortfolioFeedProps) {
                       <CalendarDays className="mr-1 inline size-3.5" />
                       {formatDate(item.createdAt)}
                     </p>
-                    <h3 className="mt-1 text-base font-bold tracking-[-0.03em] text-[color:var(--foreground)] sm:text-lg">
+                    <h3 className="mt-1 text-base font-bold tracking-[-0.03em] text-[color:var(--foreground)] sm:text-lg pt-2">
                       {item.title}
                     </h3>
                   </div>
-                  <p className="text-xs text-[color:var(--ink-muted)] sm:text-sm">
-                    {item.media.length} media item
-                    {item.media.length === 1 ? "" : "s"}
-                  </p>
                 </div>
 
                 <PortfolioImageGrid

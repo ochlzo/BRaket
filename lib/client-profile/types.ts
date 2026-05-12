@@ -35,6 +35,12 @@ export type ClientProfileEditorValues = {
   xUrl: string;
 };
 
+export type CreateClientPortfolioPostState = {
+  message: string;
+  ok: boolean;
+  successToken?: string;
+};
+
 export type UpdateClientProfileState = {
   fieldErrors?: Partial<Record<keyof ClientProfileEditorValues, string>>;
   message: string;
