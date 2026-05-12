@@ -24,6 +24,7 @@ type ProfilePageUser = {
   location: string;
   maxRate: number | null;
   minRate: number | null;
+  initials: string;
   role: UserRole;
   skills: { level: SkillLevel; name: string }[];
   username: string;
@@ -46,6 +47,7 @@ function buildBaseProfile(user: ProfilePageUser) {
     firstName: user.firstName || fullName,
     id: user.id,
     lastName: user.lastName,
+    initials: user.initials,
     role: user.role,
     userId: user.authId,
     username: user.username,

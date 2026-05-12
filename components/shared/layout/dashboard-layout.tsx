@@ -29,7 +29,11 @@ export async function DashboardLayout({
 
   return (
     <SidebarProvider>
-      <AppSidebar avatarUrl={currentUser?.avatarUrl ?? null} role={role} />
+      <AppSidebar
+        avatarUrl={currentUser?.avatarUrl ?? null}
+        initials={currentUser?.initials ?? ""}
+        role={role}
+      />
 
       <SidebarInset
         className={`flex flex-col bg-[color:var(--surface-alt)] ${noScroll ? "h-screen overflow-hidden" : "min-h-screen"}`}

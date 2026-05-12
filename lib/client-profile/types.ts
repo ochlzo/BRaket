@@ -47,6 +47,11 @@ export type UpdateClientProfileState = {
   ok: boolean;
 };
 
+export type UpdateClientProfileImagesState = {
+  message: string;
+  ok: boolean;
+};
+
 export type ClientProfilePageData = {
   about: string;
   averageRating: number | null;
@@ -90,6 +95,7 @@ export type ClientProfilePageSource = {
     instagram_url: string | null;
     lastName: string | null;
     linkedin_url: string | null;
+    initials: string | null;
     userId: string;
     username: string | null;
     x_url: string | null;

@@ -1,7 +1,8 @@
+import { ClientProfileImageEditor } from "./client-profile-image-editor";
 import type { ClientProfilePageData } from "@/lib/client-profile/types";
 import type { CurrentAppUser } from "@/server/users/current-user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MoreHorizontal, PencilLine } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 
 type ClientProfileHeroProps = {
   profile: ClientProfilePageData;
@@ -20,20 +21,7 @@ function coverBackgroundStyle(value: string) {
   };
 }
 
-function getInitials(value: string, fallback: string) {
-  const initials = value
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("");
-
-  return initials || fallback.slice(0, 1).toUpperCase();
-}
-
 export function ClientProfileHero({ profile, user }: ClientProfileHeroProps) {
-  const avatarFallback = getInitials(user.displayName, user.username);
-
   return (
     <article className="overflow-hidden rounded-none border-0 bg-transparent shadow-none sm:rounded-[1.4rem] sm:border sm:border-[color:var(--line-strong)] sm:bg-[color:var(--surface)] sm:shadow-[var(--shadow-panel-elevated)]">
       <div
@@ -63,25 +51,24 @@ export function ClientProfileHero({ profile, user }: ClientProfileHeroProps) {
                   />
                 ) : (
                   <AvatarFallback className="rounded-none text-lg font-black text-[color:var(--ink-muted)]">
-                    {avatarFallback}
+                    {user.initials || "?"}
                   </AvatarFallback>
                 )}
               </Avatar>
-              <button
-                aria-label="Edit profile"
-                className="absolute bottom-0 right-0 z-20 inline-flex h-7 w-7 translate-x-[35%] translate-y-[35%] items-center justify-center rounded-full border border-white/70 bg-[color:var(--brand-orange)] text-white shadow-[var(--shadow-brand-orange-md)] transition-colors hover:bg-[color:var(--brand-orange-strong)] sm:h-8 sm:w-8"
-                title="Edit profile"
-                type="button"
-              >
-                <PencilLine className="size-4" />
-              </button>
+              <ClientProfileImageEditor
+                initials={user.initials}
+                avatarUrl={user.avatarUrl}
+                backgroundImageUrl={profile.backgroundImageUrl}
+                displayName={user.displayName}
+                triggerClassName="absolute bottom-0 right-0 z-20 h-7 w-7 translate-x-[35%] translate-y-[35%] rounded-full border border-white/70 bg-[color:var(--brand-orange)] text-white shadow-[var(--shadow-brand-orange-md)] hover:bg-[color:var(--brand-orange-strong)] sm:h-8 sm:w-8"
+              />
             </div>
             <div className="pb-1">
               <h1 className="mt-1 text-xl font-bold tracking-[-0.03em] text-[color:var(--foreground)] sm:typo-card-title-2xl">
                 {user.displayName}
               </h1>
               <p className="mt-1 text-xs font-medium text-[color:var(--ink-muted)] sm:text-sm">
-                {user.username} - {user.email}
+                {user.username}
               </p>
             </div>
           </div>

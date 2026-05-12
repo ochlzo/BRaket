@@ -16,6 +16,7 @@ model User {
   firstName     String?        @map("first_name")
   address       String?
   avatarUrl     String?
+  initials      String?
   backgroundimg_img_url  String?
   facebook_url  String?
   instagram_url String?

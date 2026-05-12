@@ -23,6 +23,7 @@ test("maps client profile records into a page model", () => {
       instagram_url: "@braketclient",
       lastName: "Candelaria",
       linkedin_url: "braket-client-studio",
+      initials: "JC",
       userId: "user-1",
       username: "jbbc2023",
       x_url: "@braketclient",

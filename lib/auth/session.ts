@@ -75,6 +75,21 @@ export function buildDisplayName(
   return parts.join(" ") || fallback.trim();
 }
 
+export function buildAvatarInitials(
+  displayName: string | null | undefined,
+  email: string,
+) {
+  const initials = typeof displayName === "string" ? displayName.trim() : "";
+  const derivedInitials = initials
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+
+  return derivedInitials || email.trim().slice(0, 1).toUpperCase() || "?";
+}
+
 type ResolveAppSessionInput = {
   email: string;
   fallbackRole?: UserRole;

@@ -28,23 +28,13 @@ import { clearAppSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/client";
 import type { UserRole } from "@/lib/types";
 
-function getInitials(value: string, fallback: string) {
-  const initials = value
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("");
-
-  return initials || fallback.slice(0, 1).toUpperCase();
-}
-
 type NavUserProps = {
   avatarUrl: string | null;
+  initials: string;
   role: UserRole;
 };
 
-export function NavUser({ avatarUrl, role }: NavUserProps) {
+export function NavUser({ avatarUrl, initials, role }: NavUserProps) {
   const { isMobile } = useSidebar();
   const router = useRouter();
   const session = useSyncExternalStore(
@@ -55,7 +45,6 @@ export function NavUser({ avatarUrl, role }: NavUserProps) {
   const displayName =
     session?.displayName ?? (role === "talent" ? "Talent User" : "Client User");
   const username = session?.username ?? role;
-  const initials = getInitials(displayName, username);
 
   const handleSignOut = async () => {
     const supabase = createClient();
@@ -84,7 +73,7 @@ export function NavUser({ avatarUrl, role }: NavUserProps) {
               {avatarUrl ? (
                 <AvatarImage alt={displayName} src={avatarUrl} />
               ) : (
-                <AvatarFallback>{initials}</AvatarFallback>
+                <AvatarFallback>{initials || "?"}</AvatarFallback>
               )}
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
@@ -108,7 +97,7 @@ export function NavUser({ avatarUrl, role }: NavUserProps) {
                     {avatarUrl ? (
                       <AvatarImage alt={displayName} src={avatarUrl} />
                     ) : (
-                      <AvatarFallback>{initials}</AvatarFallback>
+                      <AvatarFallback>{initials || "?"}</AvatarFallback>
                     )}
                   </Avatar>
                   <div className="grid flex-1 leading-tight">

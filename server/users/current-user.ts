@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import {
-  buildDicebearNotionistsAvatarUrl,
+  buildAvatarInitials,
   buildDisplayName,
   getAuthRedirectPath,
   normalizeUserRole,
@@ -42,6 +42,7 @@ export type CurrentAppUser = {
   location: string;
   maxRate: number | null;
   minRate: number | null;
+  initials: string;
   role: UserRole;
   skills: CurrentUserSkill[];
   username: string;
@@ -64,7 +65,11 @@ export async function getCurrentAppUser(): Promise<CurrentAppUser | null> {
   const cacheKey = getCacheKey(authId, data.claims.session_id);
   const cachedUser = readCachedCurrentAppUser<CurrentAppUser>(cacheKey);
 
-  if (cachedUser) {
+  if (
+    cachedUser &&
+    typeof cachedUser.initials === "string" &&
+    cachedUser.initials.trim().length > 0
+  ) {
     return cachedUser;
   }
 
@@ -93,8 +98,14 @@ export async function getCurrentAppUser(): Promise<CurrentAppUser | null> {
       "last_name",
       "family_name",
     ]) || nameParts.lastName;
+  const authDisplayName = pickTextValue(metadata, [
+    "display_name",
+    "displayName",
+    "full_name",
+    "name",
+  ]);
   const fallbackDisplayName =
-    pickTextValue(metadata, ["full_name", "name"]) ||
+    authDisplayName ||
     buildDisplayName(
       existingUser?.firstName ?? "",
       existingUser?.lastName ?? "",
@@ -111,10 +122,15 @@ export async function getCurrentAppUser(): Promise<CurrentAppUser | null> {
     "avatarUrl",
     "picture",
   ]);
-  const avatarUrl =
-    existingUser?.avatarUrl ||
-    authAvatarUrl ||
-    buildDicebearNotionistsAvatarUrl(existingUser?.userId ?? authId);
+  const initials = buildAvatarInitials(
+    authDisplayName ||
+      buildDisplayName(
+        existingUser?.firstName ?? authFirstName,
+        existingUser?.lastName ?? authLastName,
+        "",
+      ),
+    email,
+  );
   const headline = pickTextValue(metadata, ["headline"]);
   const bio = pickTextValue(metadata, ["bio"]);
   const location =
@@ -125,10 +141,11 @@ export async function getCurrentAppUser(): Promise<CurrentAppUser | null> {
   const skills = parseSkillsValue(metadata.skills);
   const baseUserData = {
     authId,
-    avatarUrl,
+    avatarUrl: authAvatarUrl || null,
     email,
     firstName: authFirstName || null,
     lastName: authLastName || null,
+    initials,
     userId: authId,
     username,
   };
@@ -176,9 +193,8 @@ export async function getCurrentAppUser(): Promise<CurrentAppUser | null> {
     updateData.lastName = authLastName;
   }
 
-  if (!dbUser.avatarUrl) {
-    updateData.avatarUrl =
-      authAvatarUrl || buildDicebearNotionistsAvatarUrl(dbUser.userId);
+  if (!dbUser.initials) {
+    updateData.initials = initials;
   }
 
   if (!dbUser.address && location) {
@@ -201,7 +217,7 @@ export async function getCurrentAppUser(): Promise<CurrentAppUser | null> {
 
   const currentUser = {
     authId: dbUser.authId,
-    avatarUrl,
+    avatarUrl: dbUser.avatarUrl ?? "",
     bio: bio || "",
     createdAt: dbUser.createdAt.toISOString(),
     displayName,
@@ -214,6 +230,7 @@ export async function getCurrentAppUser(): Promise<CurrentAppUser | null> {
     location: dbUser.address ?? location ?? "",
     maxRate,
     minRate,
+    initials: dbUser.initials ?? initials,
     role,
     skills,
     username: dbUser.username ?? username,

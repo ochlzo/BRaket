@@ -4,6 +4,7 @@ import test from "node:test";
 const sessionModule = await import(new URL("./session.ts", import.meta.url).href);
 
 const {
+  buildAvatarInitials,
   buildDicebearNotionistsAvatarUrl,
   getAuthRedirectPath,
   resolveCanonicalUsername,
@@ -35,4 +36,9 @@ test("builds the notionists avatar url from a seed", () => {
     buildDicebearNotionistsAvatarUrl("Vivian"),
     "https://api.dicebear.com/9.x/notionists/svg?seed=Vivian",
   );
+});
+
+test("builds initials from display name or email", () => {
+  assert.equal(buildAvatarInitials("Vivian Santos", "vivian@example.com"), "VS");
+  assert.equal(buildAvatarInitials("", "vivian@example.com"), "V");
 });

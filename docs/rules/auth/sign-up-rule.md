@@ -40,7 +40,7 @@ Use this rule set for login, sign-up, OTP, session refresh, and post-auth user p
 - If sign-up needs to create a row in your own `users` table, put the insert logic in `server/`.
 - Prefer server-side execution for any privileged write, authorization check, or follow-up business rule.
 - If the row must always exist, prefer a database trigger or other server-side guarantee over client-side follow-up logic.
-- If `avatarUrl` is blank on signup, populate it server-side with a persisted DiceBear Notionists URL instead of leaving it empty.
+- If `avatarUrl` is blank on signup, keep it empty server-side and persist a separate `initials` field from the auth display name or email so avatar fallbacks can render from stored initials instead of a synthetic URL.
 - Account-scoped dashboard and settings pages must resolve the authenticated user from Supabase + your real app user record; do not fall back to mock "current user" data for signed-in experiences.
 - When onboarding enriches the user profile, persist the canonical profile fields server-side and keep auth metadata in sync only as a transport/helper layer.
 - BU email verification must be handled through a dedicated Server Function that validates the signed-in Supabase user and only marks verification after confirming a `@bicol-u.edu.ph` email.

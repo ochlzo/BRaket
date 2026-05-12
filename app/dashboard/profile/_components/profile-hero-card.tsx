@@ -27,17 +27,6 @@ function getFullName(profile: ClientProfile | TalentProfile) {
   return fullName || profile.username;
 }
 
-function getInitials(value: string, fallback: string) {
-  const initials = value
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("");
-
-  return initials || fallback.slice(0, 1).toUpperCase();
-}
-
 export function ProfileHeroCard({
   isClient,
   isVerified,
@@ -46,7 +35,6 @@ export function ProfileHeroCard({
   talentProfile,
 }: ProfileHeroCardProps) {
   const fullName = getFullName(profile);
-  const avatarFallback = getInitials(fullName, profile.username);
   const bio =
     profile.bio || "Add a short bio so clients understand what you do best.";
 
@@ -69,7 +57,7 @@ export function ProfileHeroCard({
                 />
               ) : (
                 <AvatarFallback className="rounded-none text-sm font-black text-[color:var(--ink-muted)]">
-                  {avatarFallback}
+                  {profile.initials || "?"}
                 </AvatarFallback>
               )}
             </Avatar>

@@ -1,10 +1,15 @@
 import { prisma } from "@/lib/prisma";
-import { deriveUsername } from "@/lib/auth/session";
+import {
+  buildAvatarInitials,
+  buildDisplayName,
+  deriveUsername,
+} from "@/lib/auth/session";
 
 type PendingSignup = {
   email?: string;
   firstName?: string;
   lastName?: string;
+  displayName?: string;
 };
 
 export async function syncAuthUserToUserModel(input: {
@@ -14,6 +19,10 @@ export async function syncAuthUserToUserModel(input: {
 }) {
   const firstName = input.pending?.firstName?.trim() || undefined;
   const lastName = input.pending?.lastName?.trim() || undefined;
+  const displayName =
+    input.pending?.displayName?.trim() ||
+    buildDisplayName(firstName ?? "", lastName ?? "", "");
+  const initials = buildAvatarInitials(displayName, input.email);
   const existingUser = await prisma.user.findFirst({
     where: { authId: input.authId },
   });
@@ -24,6 +33,7 @@ export async function syncAuthUserToUserModel(input: {
         email: input.email,
         firstName: firstName ?? undefined,
         lastName: lastName ?? undefined,
+        initials: existingUser.initials ?? initials,
       },
       where: { authId: input.authId },
     });
@@ -39,6 +49,7 @@ export async function syncAuthUserToUserModel(input: {
       email: input.email,
       firstName,
       lastName,
+      initials,
       username: deriveUsername(input.email),
       userId: input.authId,
     },

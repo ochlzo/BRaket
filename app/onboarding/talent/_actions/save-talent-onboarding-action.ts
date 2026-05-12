@@ -2,7 +2,11 @@
 
 import { cookies } from "next/headers";
 
-import { buildDisplayName, type AppSession } from "@/lib/auth/session";
+import {
+  buildAvatarInitials,
+  buildDisplayName,
+  type AppSession,
+} from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
 import { clearCurrentAppUserCache } from "@/server/users/current-user";
@@ -117,6 +121,7 @@ export async function saveTalentOnboardingAction(
   }
 
   const displayName = buildDisplayName(firstName, lastName, username);
+  const initials = buildAvatarInitials(displayName, user.email);
   const { error: updateError } = await supabase.auth.updateUser({
     data: {
       bio,
@@ -149,6 +154,7 @@ export async function saveTalentOnboardingAction(
         email: user.email.trim().toLowerCase(),
         firstName,
         lastName,
+        initials,
         username,
       },
       where: { authId: user.id },
@@ -160,6 +166,7 @@ export async function saveTalentOnboardingAction(
         email: user.email.trim().toLowerCase(),
         firstName,
         lastName,
+        initials,
         userId: user.id,
         username,
       },
