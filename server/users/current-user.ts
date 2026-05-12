@@ -136,13 +136,22 @@ export async function getCurrentAppUser(): Promise<CurrentAppUser | null> {
   let dbUser = existingUser;
 
   if (!dbUser) {
-    await prisma.user.createMany({
-      data: [baseUserData],
-      skipDuplicates: true,
-    });
-    dbUser = await prisma.user.findFirst({
-      where: { authId },
-    });
+    try {
+      dbUser = await prisma.user.create({
+        data: baseUserData,
+      });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002"
+      ) {
+        dbUser = await prisma.user.findFirst({
+          where: { authId },
+        });
+      } else {
+        throw error;
+      }
+    }
   }
 
   if (!dbUser) {
