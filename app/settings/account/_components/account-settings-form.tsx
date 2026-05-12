@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 
 import { updateAccountSettingsAction } from "../_actions/update-account-settings-action";
+import { AccountEmailField } from "./account-email-field";
 import { AccountSocialLinksSection } from "./account-social-links-section";
 import {
   buildVisibleSocialLinkFields,
@@ -336,12 +337,9 @@ export function AccountSettingsForm({
             value={values.username}
           />
 
-          <AccountTextField
-            disabled
-            label="Email"
-            name="email"
-            onChange={() => undefined}
-            readOnly
+          <AccountEmailField
+            error={fieldErrors.email}
+            isEditing={isEditing}
             value={values.email}
           />
 
