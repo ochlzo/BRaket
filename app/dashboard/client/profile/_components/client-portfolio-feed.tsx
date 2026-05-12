@@ -63,7 +63,13 @@ function PortfolioImageGrid({
         onClick={() => onPreview({ alt: item.title, src: media[0].url })}
         type="button"
       >
-        <Image alt={item.title} className="object-cover transition duration-300 group-hover:scale-[1.03]" fill sizes="(max-width: 768px) 100vw, 70vw" src={media[0].url} />
+        <Image
+          alt={item.title}
+          className="object-cover transition duration-300 group-hover:scale-[1.03]"
+          fill
+          sizes="(max-width: 768px) 100vw, 70vw"
+          src={media[0].url}
+        />
       </button>
     );
   }
@@ -78,7 +84,13 @@ function PortfolioImageGrid({
             onClick={() => onPreview({ alt: item.title, src: entry.url })}
             type="button"
           >
-            <Image alt={item.title} className="object-cover transition duration-300 group-hover:scale-[1.03]" fill sizes="(max-width: 768px) 100vw, 35vw" src={entry.url} />
+            <Image
+              alt={item.title}
+              className="object-cover transition duration-300 group-hover:scale-[1.03]"
+              fill
+              sizes="(max-width: 768px) 100vw, 35vw"
+              src={entry.url}
+            />
           </button>
         ))}
       </div>
@@ -92,7 +104,13 @@ function PortfolioImageGrid({
         onClick={() => onPreview({ alt: item.title, src: media[0].url })}
         type="button"
       >
-        <Image alt={item.title} className="object-cover transition duration-300 group-hover:scale-[1.03]" fill sizes="(max-width: 768px) 100vw, 55vw" src={media[0].url} />
+        <Image
+          alt={item.title}
+          className="object-cover transition duration-300 group-hover:scale-[1.03]"
+          fill
+          sizes="(max-width: 768px) 100vw, 55vw"
+          src={media[0].url}
+        />
       </button>
       <div className="grid gap-2">
         {media.slice(1).map((entry) => (
@@ -102,7 +120,13 @@ function PortfolioImageGrid({
             onClick={() => onPreview({ alt: item.title, src: entry.url })}
             type="button"
           >
-            <Image alt={item.title} className="object-cover transition duration-300 group-hover:scale-[1.03]" fill sizes="(max-width: 768px) 100vw, 30vw" src={entry.url} />
+            <Image
+              alt={item.title}
+              className="object-cover transition duration-300 group-hover:scale-[1.03]"
+              fill
+              sizes="(max-width: 768px) 100vw, 30vw"
+              src={entry.url}
+            />
           </button>
         ))}
       </div>
@@ -118,9 +142,12 @@ export function ClientPortfolioFeed({ portfolio }: ClientPortfolioFeedProps) {
       <Card className="gap-0 rounded-none border-0 bg-transparent py-0 shadow-none ring-0 sm:gap-4 sm:rounded-xl sm:border sm:border-[color:var(--line-strong)] sm:bg-[color:var(--surface)] sm:py-4 sm:shadow-[var(--shadow-panel-soft)] sm:ring-1 sm:ring-foreground/10">
         <CardHeader className="relative flex flex-col gap-3 pr-0 sm:flex-row sm:items-start sm:justify-between sm:pr-28">
           <div>
-            <CardTitle className="typo-card-title-xl">Client portfolio</CardTitle>
+            <CardTitle className="typo-card-title-xl">
+              Client portfolio
+            </CardTitle>
             <p className="mt-1 text-sm text-[color:var(--ink-muted)]">
-              Project briefs and visual references attached to this client account.
+              Project briefs and visual references attached to this client
+              account.
             </p>
           </div>
           <span className="pointer-events-none absolute right-4 top-0 z-20 inline-flex w-fit items-center gap-1.5 rounded-full bg-[color:var(--tone-orange-pale)] px-3 py-1.5 text-xs font-semibold text-[color:var(--tone-orange-deep)] sm:right-5 sm:top-5">
@@ -146,11 +173,15 @@ export function ClientPortfolioFeed({ portfolio }: ClientPortfolioFeedProps) {
                     </h3>
                   </div>
                   <p className="text-xs text-[color:var(--ink-muted)] sm:text-sm">
-                    {item.media.length} media item{item.media.length === 1 ? "" : "s"}
+                    {item.media.length} media item
+                    {item.media.length === 1 ? "" : "s"}
                   </p>
                 </div>
 
-                <PortfolioImageGrid item={item} onPreview={(next) => setViewer(next)} />
+                <PortfolioImageGrid
+                  item={item}
+                  onPreview={(next) => setViewer(next)}
+                />
 
                 <p className="mt-4 text-sm leading-7 text-[color:var(--ink-body)]">
                   {item.description || "No project description provided yet."}
@@ -163,14 +194,18 @@ export function ClientPortfolioFeed({ portfolio }: ClientPortfolioFeedProps) {
                 No portfolio posts yet
               </p>
               <p className="mx-auto mt-2 max-w-xl text-sm leading-7 text-[color:var(--ink-muted)]">
-                Add the first project brief, image set, or work sample to make the client profile feel active and ready for talents to browse.
+                Add sample work or organization details to make this client
+                account more engaging.
               </p>
             </div>
           )}
         </CardContent>
       </Card>
 
-      <Dialog open={Boolean(viewer)} onOpenChange={(open) => !open && setViewer(null)}>
+      <Dialog
+        open={Boolean(viewer)}
+        onOpenChange={(open) => !open && setViewer(null)}
+      >
         <DialogContent className="max-w-[min(1100px,calc(100%-1.5rem))] border-[color:var(--line-strong)] bg-[color:var(--surface)] p-0 shadow-[var(--shadow-lg)]">
           {viewer ? (
             <>

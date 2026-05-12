@@ -24,6 +24,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { buildOrganizationDetailsEditorValues } from "@/lib/client-profile/organization-details";
 import type { ClientProfilePageData } from "@/lib/client-profile/types";
+import { semantic } from "@/lib/theme/semantic";
+import { toneStyles } from "@/lib/theme/tailwind";
+import { cn } from "@/lib/utils";
 import { updateClientOrganizationDetailsAction } from "@/server/client-profile/update-client-organization-details";
 import type { UpdateOrganizationDetailsState } from "@/lib/client-profile/organization-details";
 
@@ -56,13 +59,18 @@ function Field({
   return (
     <div className="space-y-1.5">
       <Label
-        className="text-xs font-bold uppercase tracking-[0.14em] text-[color:var(--ink-muted)]"
+        className={`text-xs font-bold uppercase tracking-[0.14em] ${semantic.text.muted}`}
         htmlFor={name}
       >
         {label}
       </Label>
       <Input
-        className="h-10 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm focus-visible:bg-white disabled:bg-[color:var(--surface-alt)] disabled:text-[color:var(--ink-muted)] disabled:opacity-100"
+        className={cn(
+          "h-10 rounded-xl bg-[color:var(--surface-alt)] text-sm focus-visible:bg-white disabled:bg-[color:var(--surface-alt)] disabled:opacity-100",
+          semantic.border.strong,
+          semantic.text.heading,
+          `disabled:${semantic.text.muted}`,
+        )}
         disabled={disabled}
         id={name}
         name={name}
@@ -72,7 +80,7 @@ function Field({
         readOnly={disabled}
       />
       {error ? (
-        <p className="text-xs font-medium text-[color:var(--tone-red-deep)]">
+        <p className={`text-xs font-medium ${toneStyles.red.text}`}>
           {error}
         </p>
       ) : null}
@@ -107,7 +115,10 @@ export function ClientOrganizationDetailsEditor({
         render={
           <Button
             aria-label="Edit organization details"
-            className="rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface)] text-[color:var(--brand-orange)] shadow-[var(--shadow-surface-soft)] hover:bg-[color:var(--surface-alt)]"
+            className={cn(
+              "rounded-full bg-[color:var(--surface)] text-[color:var(--brand-orange)] shadow-[var(--shadow-surface-soft)] hover:bg-[color:var(--surface-alt)]",
+              semantic.border.strong,
+            )}
             onClick={() => setFormValues(editorValues)}
             size="icon-sm"
             title="Edit organization details"
@@ -119,7 +130,12 @@ export function ClientOrganizationDetailsEditor({
         <span className="sr-only">Edit organization details</span>
       </DialogTrigger>
 
-      <DialogContent className="max-h-[calc(100vh-1rem)] max-w-[min(42rem,calc(100%-1rem))] overflow-hidden border-[color:var(--line-strong)] bg-[color:var(--surface)] p-0 shadow-[var(--shadow-lg)]">
+      <DialogContent
+        className={cn(
+          semantic.panel.card,
+          "max-h-[calc(100vh-1rem)] max-w-[min(42rem,calc(100%-1rem))] overflow-hidden p-0 shadow-[var(--shadow-lg)]",
+        )}
+      >
         <DialogClose
           render={
             <button
@@ -135,11 +151,15 @@ export function ClientOrganizationDetailsEditor({
           action={formAction}
           className="flex max-h-[calc(100vh-1rem)] flex-col"
         >
-          <DialogHeader className="border-b border-[color:var(--line-strong)] px-5 py-4">
-            <DialogTitle className="text-xl font-bold tracking-[-0.04em]">
+          <DialogHeader className={`border-b px-5 py-4 ${semantic.border.strong}`}>
+            <DialogTitle
+              className={`text-xl font-bold tracking-[-0.04em] ${semantic.text.heading}`}
+            >
               Edit organization details
             </DialogTitle>
-            <DialogDescription className="max-w-xl text-sm text-[color:var(--ink-muted)]">
+            <DialogDescription
+              className={`max-w-xl text-sm ${semantic.text.muted}`}
+            >
               Update the organization name, business address, and website. Email
               and Contact Number stays read-only because it is managed through
               the account change-email flow.
@@ -189,8 +209,8 @@ export function ClientOrganizationDetailsEditor({
               <p
                 className={`mt-4 rounded-xl px-4 py-3 text-sm font-medium ${
                   state.ok
-                    ? "bg-[color:var(--tone-green-soft)] text-[color:var(--tone-green-deep)]"
-                    : "bg-[color:var(--tone-red-soft)] text-[color:var(--tone-red-deep)]"
+                    ? `${toneStyles.green.card} ${toneStyles.green.text}`
+                    : `${toneStyles.red.card} ${toneStyles.red.text}`
                 }`}
                 role={state.ok ? "status" : "alert"}
               >
@@ -199,7 +219,7 @@ export function ClientOrganizationDetailsEditor({
             ) : null}
           </div>
 
-          <div className="border-t border-[color:var(--line-strong)] bg-[color:var(--surface)] px-5 py-4">
+          <div className={`border-t bg-[color:var(--surface)] px-5 py-4 ${semantic.border.strong}`}>
             <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
               <DialogClose
                 render={
