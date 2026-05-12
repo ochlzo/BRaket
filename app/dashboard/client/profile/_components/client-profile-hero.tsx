@@ -1,8 +1,7 @@
-import { ClientProfileEditor } from "./client-profile-editor";
 import type { ClientProfilePageData } from "@/lib/client-profile/types";
 import type { CurrentAppUser } from "@/server/users/current-user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, PencilLine } from "lucide-react";
 
 type ClientProfileHeroProps = {
   profile: ClientProfilePageData;
@@ -68,17 +67,16 @@ export function ClientProfileHero({ profile, user }: ClientProfileHeroProps) {
                   </AvatarFallback>
                 )}
               </Avatar>
-              <ClientProfileEditor
-                iconOnly
-                profile={profile}
-                triggerClassName="absolute bottom-0 right-0 z-20 h-7 w-7 translate-x-[35%] translate-y-[35%] rounded-full border border-white/70 bg-[color:var(--brand-orange)] text-white shadow-[var(--shadow-brand-orange-md)] hover:bg-[color:var(--brand-orange-strong)] sm:h-8 sm:w-8"
-                triggerLabel="Edit profile"
-              />
+              <button
+                aria-label="Edit profile"
+                className="absolute bottom-0 right-0 z-20 inline-flex h-7 w-7 translate-x-[35%] translate-y-[35%] items-center justify-center rounded-full border border-white/70 bg-[color:var(--brand-orange)] text-white shadow-[var(--shadow-brand-orange-md)] transition-colors hover:bg-[color:var(--brand-orange-strong)] sm:h-8 sm:w-8"
+                title="Edit profile"
+                type="button"
+              >
+                <PencilLine className="size-4" />
+              </button>
             </div>
             <div className="pb-1">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[color:var(--ink-muted)]">
-                Client profile
-              </p>
               <h1 className="mt-1 text-xl font-bold tracking-[-0.03em] text-[color:var(--foreground)] sm:typo-card-title-2xl">
                 {user.displayName}
               </h1>

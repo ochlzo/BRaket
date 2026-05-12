@@ -2,19 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useSyncExternalStore } from "react";
-import {
-  ChevronsUpDown,
-  LayoutDashboard,
-  LogOut,
-  Settings,
-  UserRound,
-} from "lucide-react";
+import { ChevronsUpDown, LogOut, Settings } from "lucide-react";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,7 +24,6 @@ import {
   getClientAppSessionSnapshot,
   subscribeToAppSession,
 } from "@/lib/auth/client-session";
-import { getDashboardProfilePath } from "@/lib/auth/session";
 import { clearAppSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/client";
 import type { UserRole } from "@/lib/types";
@@ -133,23 +122,9 @@ export function NavUser({ avatarUrl, role }: NavUserProps) {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem
-                onClick={() => router.push(getDashboardProfilePath(role))}
-              >
-                <UserRound />
-                My Profile
-              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => router.push("/settings")}>
                 <Settings />
                 Settings
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() =>
-                  router.push(role === "talent" ? "/dashboard/talent" : "/dashboard/client")
-                }
-              >
-                <LayoutDashboard />
-                Dashboard
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
