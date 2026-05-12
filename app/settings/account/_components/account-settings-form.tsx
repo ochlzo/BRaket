@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { FormEvent } from "react";
 import { Check, Pencil, RotateCcw } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -48,12 +49,21 @@ export function AccountSettingsForm({
   const [fieldErrors, setFieldErrors] = useState<
     Partial<Record<AccountSettingsFieldName, string>>
   >({});
-  const [message, setMessage] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const shouldAutoSubmitRef = useRef(false);
 
   useEffect(() => { if (!shouldAutoSubmitRef.current || !isEditing || isSaving) return; shouldAutoSubmitRef.current = false; formRef.current?.requestSubmit(); }, [isEditing, isSaving, values.email]);
+
+  function showToast(type: "error" | "success", message: string) {
+    const toastFn = type === "error" ? toast.error : toast.success;
+    const toastId = toastFn(message, {
+      action: {
+        label: "x",
+        onClick: () => toast.dismiss(toastId),
+      },
+    });
+  }
 
   function updateField(field: keyof AccountSettingsFormValues, value: string) {
     setValues((current) => ({
@@ -99,14 +109,12 @@ export function AccountSettingsForm({
     setValues(committedValuesRef.current);
     setVisibleFields(committedVisibleFieldsRef.current);
     setFieldErrors({});
-    setMessage("");
     setIsEditing(false);
     shouldAutoSubmitRef.current = false;
   }
 
   async function handleSave(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setMessage("");
     setFieldErrors({});
     setIsSaving(true);
 
@@ -114,7 +122,7 @@ export function AccountSettingsForm({
 
     if (!localValidation.ok) {
       setFieldErrors(localValidation.fieldErrors ?? {});
-      setMessage(localValidation.message);
+      showToast("error", localValidation.message);
       setIsSaving(false);
       return;
     }
@@ -126,7 +134,7 @@ export function AccountSettingsForm({
 
     if (!result.ok) {
       setFieldErrors(result.fieldErrors ?? {});
-      setMessage(result.message);
+      showToast("error", result.message);
       return;
     }
 
@@ -140,7 +148,7 @@ export function AccountSettingsForm({
     }
 
     setFieldErrors({});
-    setMessage(result.message);
+    showToast("success", result.message);
     setIsEditing(false);
     router.refresh();
   }
@@ -190,7 +198,6 @@ export function AccountSettingsForm({
               <Button
                 className="rounded-xl"
                 onClick={() => {
-                  setMessage("");
                   setFieldErrors({});
                   setIsEditing(true);
                 }}
@@ -203,18 +210,6 @@ export function AccountSettingsForm({
             )}
           </div>
         </div>
-
-        {message ? (
-          <div
-            className={`mt-5 rounded-2xl px-4 py-3 text-sm font-medium ${
-              fieldErrors && Object.keys(fieldErrors).length > 0
-                ? "bg-[color:var(--tone-red-soft)] text-[color:var(--tone-red-deep)]"
-                : "bg-[color:var(--tone-green-soft)] text-[color:var(--tone-green-deep)]"
-            }`}
-          >
-            {message}
-          </div>
-        ) : null}
 
         <div className="mt-6 space-y-5">
           <div className="grid gap-4 sm:grid-cols-2">

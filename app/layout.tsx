@@ -4,6 +4,7 @@ import "./globals.css";
 import { cookies } from "next/headers";
 import { Providers } from "@/app/providers";
 import { AuthSessionHydrator } from "@/components/shared/auth/auth-session-hydrator";
+import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
@@ -53,6 +54,7 @@ export default async function RootLayout({
               }}
             />
             {children}
+            <Toaster position="top-center" />
           </TooltipProvider>
         </Providers>
       </body>
