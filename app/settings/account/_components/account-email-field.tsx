@@ -17,6 +17,7 @@ import { type ChangeEmailUserContext } from "./use-change-email-dialog";
 type AccountEmailFieldProps = {
   currentUser: ChangeEmailUserContext;
   error?: string;
+  onEmailCommitted: (email: string) => void;
   isEditing: boolean;
   value: string;
 };
@@ -24,6 +25,7 @@ type AccountEmailFieldProps = {
 export function AccountEmailField({
   currentUser,
   error,
+  onEmailCommitted,
   isEditing,
   value,
 }: AccountEmailFieldProps) {
@@ -86,6 +88,7 @@ export function AccountEmailField({
             key={changeEmailDialogKey}
             currentEmail={value}
             currentUser={currentUser}
+            onEmailCommitted={onEmailCommitted}
             onOpenChange={handleChangeEmailOpenChange}
           />
         </DialogContent>

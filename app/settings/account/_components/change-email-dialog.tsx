@@ -18,17 +18,20 @@ import {
 type ChangeEmailDialogProps = {
   currentEmail: string;
   currentUser: ChangeEmailUserContext;
+  onEmailCommitted: (email: string) => void;
   onOpenChange: (open: boolean) => void;
 };
 
 export function ChangeEmailDialog({
   currentEmail,
   currentUser,
+  onEmailCommitted,
   onOpenChange,
 }: ChangeEmailDialogProps) {
   const dialog = useChangeEmailDialog({
     currentEmail,
     currentUser,
+    onEmailCommitted,
     onOpenChange,
   });
 
@@ -134,6 +137,18 @@ export function ChangeEmailDialog({
               {dialog.isSubmittingPassword ? "Checking..." : "Confirm"}
             </Button>
           </DialogFooter>
+        </div>
+      ) : dialog.step === "updating" ? (
+        <div className="flex flex-col items-center gap-4 py-4 text-center">
+          <div className="h-10 w-10 animate-spin rounded-full border-2 border-[color:var(--line-strong)] border-t-[color:var(--brand-orange)]" />
+          <div className="space-y-1">
+            <p className="text-sm font-semibold text-foreground">
+              Updating email
+            </p>
+            <p className="text-sm text-[color:var(--ink-muted)]">
+              This can take a few moments.
+            </p>
+          </div>
         </div>
       ) : (
         <div className="grid gap-4">

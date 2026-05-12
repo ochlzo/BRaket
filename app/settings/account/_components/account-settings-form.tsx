@@ -1,14 +1,14 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { FormEvent } from "react";
 import { Check, Pencil, RotateCcw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-
 import { updateAccountSettingsAction } from "../_actions/update-account-settings-action";
+import { commitEmailChange } from "./commit-email-change";
 import { AccountEmailField } from "./account-email-field";
 import {
   AccountAddressField,
@@ -24,18 +24,11 @@ import {
   type AccountSettingsFormValues,
   type AccountSocialLinkField,
 } from "../_lib/account-settings";
-import type { UserRole } from "@/lib/types";
+import type { ChangeEmailUserContext } from "./use-change-email-dialog";
 
 type AccountSettingsFormProps = {
   initialValues: AccountSettingsFormValues;
-  currentUser: {
-    authId: string;
-    firstName: string;
-    id: string;
-    lastName: string;
-    role: UserRole;
-    username: string;
-  };
+  currentUser: ChangeEmailUserContext;
 };
 
 export function AccountSettingsForm({
@@ -43,6 +36,7 @@ export function AccountSettingsForm({
   initialValues,
 }: AccountSettingsFormProps) {
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
   const committedValuesRef = useRef(initialValues);
   const committedVisibleFieldsRef = useRef(
     buildVisibleSocialLinkFields(initialValues),
@@ -57,6 +51,9 @@ export function AccountSettingsForm({
   const [message, setMessage] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const shouldAutoSubmitRef = useRef(false);
+
+  useEffect(() => { if (!shouldAutoSubmitRef.current || !isEditing || isSaving) return; shouldAutoSubmitRef.current = false; formRef.current?.requestSubmit(); }, [isEditing, isSaving, values.email]);
 
   function updateField(field: keyof AccountSettingsFormValues, value: string) {
     setValues((current) => ({
@@ -104,6 +101,7 @@ export function AccountSettingsForm({
     setFieldErrors({});
     setMessage("");
     setIsEditing(false);
+    shouldAutoSubmitRef.current = false;
   }
 
   async function handleSave(event: FormEvent<HTMLFormElement>) {
@@ -152,7 +150,7 @@ export function AccountSettingsForm({
     : "Switch to edit mode to update your account details.";
 
   return (
-    <form className="space-y-6" onSubmit={handleSave}>
+    <form ref={formRef} className="space-y-6" onSubmit={handleSave}>
       <div className="rounded-3xl border border-[color:var(--line-strong)] bg-white p-6 sm:p-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
@@ -255,6 +253,7 @@ export function AccountSettingsForm({
           <AccountEmailField
             currentUser={currentUser}
             error={fieldErrors.email}
+            onEmailCommitted={(email) => { commitEmailChange({ committedValuesRef, email, setFieldErrors, setValues }); shouldAutoSubmitRef.current = true; }}
             isEditing={isEditing}
             value={values.email}
           />

@@ -21,14 +21,16 @@ export type ChangeEmailUserContext = {
 type UseChangeEmailDialogArgs = {
   currentEmail: string;
   currentUser: ChangeEmailUserContext;
+  onEmailCommitted: (email: string) => void;
   onOpenChange: (open: boolean) => void;
 };
 
-type ChangeEmailStep = "email" | "password" | "otp";
+type ChangeEmailStep = "email" | "password" | "otp" | "updating";
 
 export function useChangeEmailDialog({
   currentEmail,
   currentUser,
+  onEmailCommitted,
   onOpenChange,
 }: UseChangeEmailDialogArgs) {
   const router = useRouter();
@@ -56,7 +58,9 @@ export function useChangeEmailDialog({
       ? "Review your current email, then enter a new one to continue."
       : step === "password"
         ? "Enter your password to continue to the next step."
-        : `Enter the OTP that was sent to ${normalizedNewEmail} finish the change.`;
+        : step === "otp"
+          ? `Enter the OTP that was sent to ${normalizedNewEmail} finish the change.`
+          : "Updating email...";
 
   function resetDialog() {
     setStep("email");
@@ -93,9 +97,11 @@ export function useChangeEmailDialog({
         payload.message ||
           "We could not finish updating your email yet. Please try again.",
       );
+      setStep("otp");
       return false;
     }
 
+    onEmailCommitted(normalizedNewEmail);
     closeDialog();
     router.refresh();
     return true;
@@ -219,6 +225,7 @@ export function useChangeEmailDialog({
       return;
     }
 
+    setStep("updating");
     await finalizeChange(data.session.access_token);
     setIsSubmittingOtp(false);
   }

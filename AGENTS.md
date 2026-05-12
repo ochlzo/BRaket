@@ -23,3 +23,7 @@ Do not start coding until applicable rule docs are reviewed.
 - Keep edits minimal, targeted, and aligned with the applicable rules.
 - When auth flow behavior changes, update `docs/rules/auth/` in the same task.
 - If a rule is missing for a task, proceed with best judgment and keep changes reversible.
+
+## STRICT GLOBAL RULE
+
+- When coding, AS MUCH AS POSSIBLE - KEEP THE FILE UNDER 300 LINES OF CODE.
