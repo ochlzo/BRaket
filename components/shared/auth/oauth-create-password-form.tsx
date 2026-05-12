@@ -116,17 +116,25 @@ export function OAuthCreatePasswordForm({
       error: sessionError,
     } = await supabase.auth.getSession();
 
-    if (sessionError || !session?.access_token) {
+    if (
+      sessionError ||
+      !session?.access_token ||
+      !session.refresh_token
+    ) {
       setIsSaving(false);
       setError(SESSION_REQUIRED_MESSAGE);
       return;
     }
 
     const linkResponse = await fetch("/api/auth/link-email-provider", {
-      body: null,
+      body: JSON.stringify({
+        accessToken: session.access_token,
+        refreshToken: session.refresh_token,
+      }),
       method: "POST",
       headers: {
         Authorization: `Bearer ${session.access_token}`,
+        "Content-Type": "application/json",
       },
     });
 
