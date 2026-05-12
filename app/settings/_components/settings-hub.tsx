@@ -16,7 +16,7 @@ const settingsSections = [
     label: "Account",
   },
   {
-    description: "Manage bio, headline, skills, and portfolio details.",
+    description: "Manage bio, and portfolio details.",
     icon: BriefcaseBusiness,
     isActive: false,
     label: "Profile & Portfolio",
@@ -79,23 +79,21 @@ export function SettingsHub() {
             const className =
               "group block rounded-2xl border border-[color:var(--line-strong)] px-4 py-3 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--brand-orange)]/30";
 
-            return (
-              section.isActive ? (
-                <Link
-                  key={section.label}
-                  className={`${className} bg-[color:var(--surface-alt)] hover:border-[color:var(--brand-orange)] hover:bg-white`}
-                  href={section.href}
-                >
-                  {content}
-                </Link>
-              ) : (
-                <div
-                  key={section.label}
-                  className={`${className} cursor-default bg-[color:var(--surface-alt)] opacity-90`}
-                >
-                  {content}
-                </div>
-              )
+            return section.isActive ? (
+              <Link
+                key={section.label}
+                className={`${className} bg-[color:var(--surface-alt)] hover:border-[color:var(--brand-orange)] hover:bg-white`}
+                href={section.href}
+              >
+                {content}
+              </Link>
+            ) : (
+              <div
+                key={section.label}
+                className={`${className} cursor-default bg-[color:var(--surface-alt)] opacity-90`}
+              >
+                {content}
+              </div>
             );
           })}
         </div>

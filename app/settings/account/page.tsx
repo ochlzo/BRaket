@@ -1,6 +1,9 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 import { DashboardLayout } from "@/components/shared/layout/dashboard-layout";
+import { buttonVariants } from "@/components/ui/button";
 import { requireCurrentAppUser } from "@/server/users/current-user";
 import { getAccountSettingsPageData } from "@/server/account-settings/get-account-settings-page-data";
 
@@ -20,7 +23,19 @@ export default async function AccountSettingsPage() {
       subtitle="Edit the account details linked to your login."
       title="Account"
     >
-      <AccountSettingsForm initialValues={initialValues} />
+      <div className="space-y-4">
+        <Link
+          className={`${buttonVariants({
+            size: "sm",
+            variant: "outline",
+          })} rounded-full md:hidden`}
+          href="/settings"
+        >
+          <ArrowLeft />
+          Back
+        </Link>
+        <AccountSettingsForm initialValues={initialValues} />
+      </div>
     </DashboardLayout>
   );
 }
