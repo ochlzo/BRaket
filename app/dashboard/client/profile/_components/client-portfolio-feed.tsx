@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import type { ClientProfilePortfolioItem } from "@/lib/client-profile/types";
 import { ClientPortfolioComposer } from "./client-portfolio-composer";
 import { ClientPortfolioCollage } from "./client-portfolio-collage";
@@ -56,35 +57,40 @@ export function ClientPortfolioFeed({ portfolio }: ClientPortfolioFeedProps) {
             </span>
             <ClientPortfolioComposer />
           </div>
+          <Separator className="mt-1 sm:hidden" />
         </CardHeader>
         <CardContent className="space-y-4 px-4 pb-4 sm:px-5 sm:pb-5">
+          <div className="pb-1 sm:hidden" />
           {portfolio.length > 0 ? (
-            portfolio.map((item) => (
-              <article
-                key={item.id}
-                className="rounded-none border-0 bg-transparent p-0 shadow-none sm:rounded-[1.2rem] sm:border sm:border-[color:var(--line-strong)] sm:bg-[color:var(--surface)] sm:p-4 sm:shadow-[var(--shadow-surface-soft)]"
-              >
-                <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--ink-muted)]">
-                      <CalendarDays className="mr-1 inline size-3.5" />
-                      {formatDate(item.createdAt)}
-                    </p>
-                    <h3 className="mt-1 text-base font-bold tracking-[-0.03em] text-[color:var(--foreground)] sm:text-lg pt-2">
-                      {item.title}
-                    </h3>
+            portfolio.map((item, index) => (
+              <div key={item.id} className="pb-4 last:pb-0">
+                <article className="mx-auto w-full max-w-[40rem] rounded-none border-0 bg-transparent p-0 shadow-none sm:rounded-[1.2rem] sm:border sm:border-[color:var(--line-strong)] sm:bg-[color:var(--surface)] sm:p-4 sm:shadow-[var(--shadow-surface-soft)]">
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--ink-muted)]">
+                        <CalendarDays className="mr-1 inline size-3.5" />
+                        {formatDate(item.createdAt)}
+                      </p>
+                      <h3 className="mt-1 pt-2 text-base font-bold tracking-[-0.03em] text-[color:var(--foreground)] sm:text-lg">
+                        {item.title}
+                      </h3>
+                    </div>
                   </div>
-                </div>
 
-                <ClientPortfolioCollage
-                  item={item}
-                  onPreview={(next) => setViewer(next)}
-                />
+                  <ClientPortfolioCollage
+                    item={item}
+                    onPreview={(next) => setViewer(next)}
+                  />
 
-                <p className="mt-4 text-sm leading-7 text-[color:var(--ink-body)]">
-                  {item.description || "No project description provided yet."}
-                </p>
-              </article>
+                  <p className="mt-4 text-sm leading-7 text-[color:var(--ink-body)]">
+                    {item.description || "No project description provided yet."}
+                  </p>
+                </article>
+
+                {index < portfolio.length - 1 ? (
+                  <Separator className="mt-4 sm:hidden" />
+                ) : null}
+              </div>
             ))
           ) : (
             <div className="rounded-none border-0 bg-transparent px-0 py-4 text-center sm:rounded-[1.2rem] sm:border sm:border-dashed sm:border-[color:var(--line-strong)] sm:bg-[color:var(--surface-alt)] sm:px-5 sm:py-10">
