@@ -10,7 +10,7 @@ model User {
   userId        String         @unique @map("user_id")
   authId        String         @unique @map("auth_id")
   email         String         @unique
-  contactNum    Int?           @unique
+  contactNum    String?        @unique @db.VarChar(11)
   username      String?        @unique
   lastName      String?        @map("last_name")
   firstName     String?        @map("first_name")

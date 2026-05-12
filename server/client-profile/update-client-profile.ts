@@ -26,7 +26,7 @@ function readText(formData: FormData, key: keyof ClientProfileEditorValues) {
 
 function normalizePhoneNumber(value: string) {
   const digits = value.replace(/[^\d]/g, "");
-  return digits ? Number.parseInt(digits, 10) : null;
+  return digits || null;
 }
 
 function normalizeHref(value: string) {

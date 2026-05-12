@@ -1,11 +1,7 @@
 import Link from "next/link";
 
 import type { ClientProfile, TalentProfile } from "@/lib/types";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import {
   CalendarIcon,
@@ -105,7 +101,7 @@ export function ProfileHeroCard({
             </span>
           ) : null}
           <span className="flex items-center gap-1">
-            <CalendarIcon /> Joined {joinDate}
+            <CalendarIcon /> {joinDate}
           </span>
           <span className="inline-flex items-center gap-0.5 rounded-full bg-[color:var(--tone-sky-soft)] px-2 py-px text-[10px] font-bold text-[color:var(--tone-sky-deep)]">
             {isClient ? "Client" : "Talent"}

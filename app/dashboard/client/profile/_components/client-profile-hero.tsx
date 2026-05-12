@@ -156,21 +156,21 @@ export function ClientProfileHero({ profile, user }: ClientProfileHeroProps) {
         </p>
 
         {socialItems.length > 0 ? (
-          <div className="overflow-x-auto pb-1">
-            <div className="flex min-w-max items-center gap-2 whitespace-nowrap">
+          <div className="flex justify-center overflow-x-auto pb-1 sm:justify-end">
+            <div className="flex w-max items-center gap-1.5 whitespace-nowrap sm:ml-auto sm:gap-2">
               {socialItems.map(({ displayName, href, icon: Icon, label }) => (
                 <a
                   key={label}
                   aria-label={`${label}: ${displayName}`}
-                  className="inline-flex shrink-0 items-center gap-2 rounded-full border border-[color:var(--line)] bg-[color:var(--surface-alt)] px-3 py-1.5 text-xs font-semibold text-[color:var(--ink-muted)] transition hover:border-[color:var(--line-strong)] hover:text-[color:var(--foreground)]"
+                  className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[color:var(--line)] bg-[color:var(--surface-alt)] px-2 py-1 text-[10px] font-semibold text-[color:var(--ink-muted)] transition hover:border-[color:var(--line-strong)] hover:text-[color:var(--foreground)] sm:gap-2 sm:px-3 sm:py-1.5 sm:text-xs"
                   href={href}
                   rel="noreferrer"
                   target="_blank"
                 >
-                  <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-[color:var(--surface)] text-[color:var(--ink-muted)]">
-                    <Icon className="size-3.5" />
+                  <span className="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-[color:var(--surface)] text-[color:var(--ink-muted)] sm:size-6">
+                    <Icon className="size-3" />
                   </span>
-                  <span className="max-w-32 truncate">{displayName}</span>
+                  <span className="max-w-24 truncate sm:max-w-32">{displayName}</span>
                 </a>
               ))}
             </div>

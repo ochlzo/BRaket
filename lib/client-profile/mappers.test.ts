@@ -14,7 +14,7 @@ test("maps client profile records into a page model", () => {
       authId: "auth-1",
       avatarUrl: "https://example.com/avatar.jpg",
       backgroundimg_img_url: "linear-gradient(120deg, #ff6b35 0%, #4fc3f7 100%)",
-      contactNum: 639174821945,
+      contactNum: "639174821945",
       createdAt: new Date("2026-05-01T00:00:00.000Z"),
       email: "client@example.com",
       facebook_url: "braket.client",

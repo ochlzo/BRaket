@@ -9,7 +9,9 @@ import type {
 export const DEFAULT_COVER_BACKGROUND =
   "linear-gradient(120deg, var(--brand-orange) 0%, var(--brand-orange-accent) 40%, var(--brand-blue) 100%)";
 
-type PortfolioSource = NonNullable<ClientProfilePageSource["clientProfile"]>["ClientPortfolio"];
+type PortfolioSource = NonNullable<
+  ClientProfilePageSource["clientProfile"]
+>["ClientPortfolio"];
 
 function compactText(value: string | null | undefined) {
   return typeof value === "string" ? value.trim() : "";
@@ -61,7 +63,9 @@ function normalizeWebsiteUrl(value: string | null | undefined) {
   return `https://${url.replace(/^\/\//, "")}`;
 }
 
-function buildPortfolioItems(items: PortfolioSource): ClientProfilePortfolioItem[] {
+function buildPortfolioItems(
+  items: PortfolioSource,
+): ClientProfilePortfolioItem[] {
   return items.map((item) => ({
     createdAt: item.createdAt.toISOString(),
     description: compactText(item.desciption),
@@ -85,10 +89,10 @@ export function mapClientProfilePageData(
   const organizationName =
     compactText(source.clientProfile?.organization_name) ||
     displayName(firstName, lastName, username);
-  const joinedLabel = `Joined ${source.user.createdAt.toLocaleDateString(
-    "en-US",
-    { month: "long", year: "numeric" },
-  )}`;
+  const joinedLabel = `Joined ${source.user.createdAt.toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+  })}`;
   const clientProfile = source.clientProfile;
   const socialLinks = [
     socialLinkFromRaw("Facebook", source.user.facebook_url),
@@ -104,11 +108,12 @@ export function mapClientProfilePageData(
     authId: source.user.authId,
     avatarUrl: compactText(source.user.avatarUrl),
     backgroundImageUrl:
-      compactText(source.user.backgroundimg_img_url) || DEFAULT_COVER_BACKGROUND,
+      compactText(source.user.backgroundimg_img_url) ||
+      DEFAULT_COVER_BACKGROUND,
     businessAddress: compactText(clientProfile?.business_address),
     completedCommissionsCount:
       clientProfile?.completed_commissions_count ?? null,
-    contactNum: source.user.contactNum ? String(source.user.contactNum) : "",
+    contactNum: compactText(source.user.contactNum),
     displayName: displayName(firstName, lastName, username),
     email,
     firstName,
@@ -119,7 +124,9 @@ export function mapClientProfilePageData(
     lastName,
     linkedinUrl: compactText(source.user.linkedin_url),
     organizationName,
-    portfolio: clientProfile ? buildPortfolioItems(clientProfile.ClientPortfolio) : [],
+    portfolio: clientProfile
+      ? buildPortfolioItems(clientProfile.ClientPortfolio)
+      : [],
     reputationScore: clientProfile?.client_reputation_score ?? null,
     reviewCount: clientProfile?.client_review_count ?? 0,
     socialLinks,

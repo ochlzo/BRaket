@@ -86,7 +86,7 @@ export type ClientProfilePageSource = {
     authId: string;
     avatarUrl: string | null;
     backgroundimg_img_url: string | null;
-    contactNum: number | null;
+    contactNum: string | null;
     createdAt: Date;
     email: string;
     facebook_url: string | null;
