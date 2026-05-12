@@ -34,7 +34,17 @@ export default async function AccountSettingsPage() {
           <ArrowLeft />
           Back
         </Link>
-        <AccountSettingsForm initialValues={initialValues} />
+        <AccountSettingsForm
+          currentUser={{
+            authId: user.authId,
+            firstName: user.firstName,
+            id: user.id,
+            lastName: user.lastName,
+            role: user.role,
+            username: user.username,
+          }}
+          initialValues={initialValues}
+        />
       </div>
     </DashboardLayout>
   );

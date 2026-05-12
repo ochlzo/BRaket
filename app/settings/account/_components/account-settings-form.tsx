@@ -6,13 +6,15 @@ import type { FormEvent } from "react";
 import { Check, Pencil, RotateCcw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Textarea } from "@/components/ui/textarea";
 
 import { updateAccountSettingsAction } from "../_actions/update-account-settings-action";
 import { AccountEmailField } from "./account-email-field";
+import {
+  AccountAddressField,
+  AccountContactNumberField,
+  AccountTextField,
+} from "./account-form-fields";
 import { AccountSocialLinksSection } from "./account-social-links-section";
 import {
   buildVisibleSocialLinkFields,
@@ -22,109 +24,22 @@ import {
   type AccountSettingsFormValues,
   type AccountSocialLinkField,
 } from "../_lib/account-settings";
+import type { UserRole } from "@/lib/types";
 
 type AccountSettingsFormProps = {
   initialValues: AccountSettingsFormValues;
+  currentUser: {
+    authId: string;
+    firstName: string;
+    id: string;
+    lastName: string;
+    role: UserRole;
+    username: string;
+  };
 };
 
-function fieldWrapperClassName(error?: string) {
-  return error
-    ? "h-11 rounded-xl border-[color:var(--tone-red-base)] bg-white text-sm"
-    : "h-11 rounded-xl border-[color:var(--line-strong)] bg-white text-sm";
-}
-
-function textareaClassName(error?: string) {
-  return error
-    ? "rounded-xl border-[color:var(--tone-red-base)] bg-white text-sm"
-    : "rounded-xl border-[color:var(--line-strong)] bg-white text-sm";
-}
-
-function AccountTextField({
-  disabled = false,
-  error,
-  label,
-  name,
-  onChange,
-  placeholder,
-  readOnly = false,
-  type = "text",
-  value,
-}: {
-  disabled?: boolean;
-  error?: string;
-  label: string;
-  name: Exclude<AccountSettingsFieldName, "contactNum"> | "email";
-  onChange: (value: string) => void;
-  placeholder?: string;
-  readOnly?: boolean;
-  type?: string;
-  value: string;
-}) {
-  return (
-    <div className="space-y-2">
-      <Label className="text-sm font-semibold" htmlFor={name}>
-        {label}
-      </Label>
-      <Input
-        aria-invalid={Boolean(error)}
-        autoComplete={name}
-        className={fieldWrapperClassName(error)}
-        disabled={disabled}
-        id={name}
-        name={name}
-        onChange={(event) => onChange(event.target.value)}
-        placeholder={placeholder}
-        readOnly={readOnly}
-        type={type}
-        value={value}
-      />
-      {error ? (
-        <p className="text-xs font-medium text-[color:var(--tone-red-base)]">
-          {error}
-        </p>
-      ) : null}
-    </div>
-  );
-}
-
-function AccountAddressField({
-  error,
-  readOnly = false,
-  onChange,
-  value,
-}: {
-  error?: string;
-  readOnly?: boolean;
-  onChange: (value: string) => void;
-  value: string;
-}) {
-  return (
-    <div className="space-y-2">
-      <Label className="text-sm font-semibold" htmlFor="address">
-        Address
-      </Label>
-      <Textarea
-        aria-invalid={Boolean(error)}
-        autoComplete="street-address"
-        className={textareaClassName(error)}
-        id="address"
-        name="address"
-        onChange={(event) => onChange(event.target.value)}
-        placeholder="Street, city, province"
-        rows={3}
-        readOnly={readOnly}
-        value={value}
-      />
-      {error ? (
-        <p className="text-xs font-medium text-[color:var(--tone-red-base)]">
-          {error}
-        </p>
-      ) : null}
-    </div>
-  );
-}
-
 export function AccountSettingsForm({
+  currentUser,
   initialValues,
 }: AccountSettingsFormProps) {
   const router = useRouter();
@@ -338,41 +253,19 @@ export function AccountSettingsForm({
           />
 
           <AccountEmailField
+            currentUser={currentUser}
             error={fieldErrors.email}
             isEditing={isEditing}
             value={values.email}
           />
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label className="text-sm font-semibold" htmlFor="contactNum">
-                Contact Number
-              </Label>
-              <Input
-                aria-invalid={Boolean(fieldErrors.contactNum)}
-                autoComplete="tel"
-                className={fieldWrapperClassName(fieldErrors.contactNum)}
-                id="contactNum"
-                inputMode="numeric"
-                maxLength={11}
-                name="contactNum"
-                onChange={(event) =>
-                  updateField(
-                    "contactNum",
-                    event.target.value.replace(/[^\d]/g, "").slice(0, 11),
-                  )
-                }
-                placeholder="09123456789"
-                readOnly={!isEditing}
-                type="text"
-                value={values.contactNum}
-              />
-              {fieldErrors.contactNum ? (
-                <p className="text-xs font-medium text-[color:var(--tone-red-base)]">
-                  {fieldErrors.contactNum}
-                </p>
-              ) : null}
-            </div>
+            <AccountContactNumberField
+              error={fieldErrors.contactNum}
+              onChange={(value) => updateField("contactNum", value)}
+              readOnly={!isEditing}
+              value={values.contactNum}
+            />
             <AccountAddressField
               error={fieldErrors.address}
               readOnly={!isEditing}
