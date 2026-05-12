@@ -1,11 +1,8 @@
 import { ClientProfileEditor } from "./client-profile-editor";
 import type { ClientProfilePageData } from "@/lib/client-profile/types";
 import type { CurrentAppUser } from "@/server/users/current-user";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { MoreHorizontal } from "lucide-react";
 
 type ClientProfileHeroProps = {
   profile: ClientProfilePageData;
@@ -47,7 +44,14 @@ export function ClientProfileHero({ profile, user }: ClientProfileHeroProps) {
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(18,24,35,.08),rgba(18,24,35,.4))]" />
       </div>
 
-      <div className="space-y-4 px-4 pb-4 pt-1 sm:space-y-5 sm:px-6 sm:pb-6">
+      <div className="relative space-y-4 px-4 pb-4 pt-1 sm:space-y-5 sm:px-6 sm:pb-6">
+        <button
+          aria-label="Profile menu"
+          className="absolute right-1 top-0 z-20 inline-flex size-8 items-center justify-center rounded-full text-[color:var(--ink-muted)] transition-colors hover:bg-[color:var(--surface-alt)] hover:text-[color:var(--foreground)] sm:right-3 sm:top-2"
+          type="button"
+        >
+          <MoreHorizontal className="size-5" />
+        </button>
         <div className="-mt-7 flex flex-col gap-3 sm:-mt-10 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex items-start gap-3 sm:items-end sm:gap-4">
             <div className="relative shrink-0 overflow-visible">
