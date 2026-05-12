@@ -2,7 +2,14 @@ import { ClientProfileImageEditor } from "./client-profile-image-editor";
 import type { ClientProfilePageData } from "@/lib/client-profile/types";
 import type { CurrentAppUser } from "@/server/users/current-user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MoreHorizontal } from "lucide-react";
+import {
+  Facebook,
+  Github,
+  Instagram,
+  Linkedin,
+  MoreHorizontal,
+  Twitter,
+} from "lucide-react";
 
 type ClientProfileHeroProps = {
   profile: ClientProfilePageData;
@@ -21,7 +28,76 @@ function coverBackgroundStyle(value: string) {
   };
 }
 
+function compactText(value: string | null | undefined) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function socialHandleFromRaw(value: string, label: string) {
+  if (/^https?:\/\//i.test(value)) {
+    try {
+      const url = new URL(value);
+      const segments = url.pathname.split("/").filter(Boolean);
+
+      if (label === "LinkedIn" && segments[0] === "in" && segments[1]) {
+        return segments[1];
+      }
+
+      if (label === "Facebook" && url.pathname.includes("profile.php")) {
+        return url.searchParams.get("id") || segments[segments.length - 1] || "";
+      }
+
+      return segments[segments.length - 1] || url.hostname.replace(/^www\./, "");
+    } catch {
+      return value;
+    }
+  }
+
+  return value.replace(/^@/, "");
+}
+
 export function ClientProfileHero({ profile, user }: ClientProfileHeroProps) {
+  const socialLinkByLabel = new Map(
+    profile.socialLinks.map((item) => [item.label, item.href]),
+  );
+  const socialItems = [
+    {
+      href: socialLinkByLabel.get("Facebook"),
+      icon: Facebook,
+      label: "Facebook",
+      value: compactText(profile.facebookUrl),
+    },
+    {
+      href: socialLinkByLabel.get("Instagram"),
+      icon: Instagram,
+      label: "Instagram",
+      value: compactText(profile.instagramUrl),
+    },
+    {
+      href: socialLinkByLabel.get("X"),
+      icon: Twitter,
+      label: "X",
+      value: compactText(profile.xUrl),
+    },
+    {
+      href: socialLinkByLabel.get("GitHub"),
+      icon: Github,
+      label: "GitHub",
+      value: compactText(profile.githubUrl),
+    },
+    {
+      href: socialLinkByLabel.get("LinkedIn"),
+      icon: Linkedin,
+      label: "LinkedIn",
+      value: compactText(profile.linkedinUrl),
+    },
+  ]
+    .filter((item) => item.value)
+    .map((item) => ({
+      ...item,
+      displayName: socialHandleFromRaw(item.value, item.label),
+    }))
+    .filter((item) => item.displayName.length > 0);
+
   return (
     <article className="overflow-hidden rounded-none border-0 bg-transparent shadow-none sm:rounded-[1.4rem] sm:border sm:border-[color:var(--line-strong)] sm:bg-[color:var(--surface)] sm:shadow-[var(--shadow-panel-elevated)]">
       <div
@@ -78,6 +154,28 @@ export function ClientProfileHero({ profile, user }: ClientProfileHeroProps) {
           {profile.about ||
             "Add a short description so talents understand the kind of work you post and the projects you want to commission."}
         </p>
+
+        {socialItems.length > 0 ? (
+          <div className="overflow-x-auto pb-1">
+            <div className="flex min-w-max items-center gap-2 whitespace-nowrap">
+              {socialItems.map(({ displayName, href, icon: Icon, label }) => (
+                <a
+                  key={label}
+                  aria-label={`${label}: ${displayName}`}
+                  className="inline-flex shrink-0 items-center gap-2 rounded-full border border-[color:var(--line)] bg-[color:var(--surface-alt)] px-3 py-1.5 text-xs font-semibold text-[color:var(--ink-muted)] transition hover:border-[color:var(--line-strong)] hover:text-[color:var(--foreground)]"
+                  href={href}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-[color:var(--surface)] text-[color:var(--ink-muted)]">
+                    <Icon className="size-3.5" />
+                  </span>
+                  <span className="max-w-32 truncate">{displayName}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        ) : null}
       </div>
     </article>
   );
