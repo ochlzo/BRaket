@@ -47,6 +47,11 @@ export type UpdateClientProfileState = {
   ok: boolean;
 };
 
+export type UpdateClientProfileAboutState = {
+  message: string;
+  ok: boolean;
+};
+
 export type UpdateClientProfileImagesState = {
   message: string;
   ok: boolean;

@@ -1,7 +1,18 @@
+"use client";
+
 import { ClientProfileImageEditor } from "./client-profile-image-editor";
+import { ClientProfileBioEditor } from "./client-profile-bio-editor";
 import type { ClientProfilePageData } from "@/lib/client-profile/types";
 import type { CurrentAppUser } from "@/server/users/current-user";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Facebook,
   Github,
@@ -43,10 +54,14 @@ function socialHandleFromRaw(value: string, label: string) {
       }
 
       if (label === "Facebook" && url.pathname.includes("profile.php")) {
-        return url.searchParams.get("id") || segments[segments.length - 1] || "";
+        return (
+          url.searchParams.get("id") || segments[segments.length - 1] || ""
+        );
       }
 
-      return segments[segments.length - 1] || url.hostname.replace(/^www\./, "");
+      return (
+        segments[segments.length - 1] || url.hostname.replace(/^www\./, "")
+      );
     } catch {
       return value;
     }
@@ -56,6 +71,9 @@ function socialHandleFromRaw(value: string, label: string) {
 }
 
 export function ClientProfileHero({ profile, user }: ClientProfileHeroProps) {
+  const router = useRouter();
+  const [bioEditorOpen, setBioEditorOpen] = useState(false);
+  const [bioEditorSession, setBioEditorSession] = useState(0);
   const socialLinkByLabel = new Map(
     profile.socialLinks.map((item) => [item.label, item.href]),
   );
@@ -108,13 +126,38 @@ export function ClientProfileHero({ profile, user }: ClientProfileHeroProps) {
       </div>
 
       <div className="relative space-y-4 px-4 pb-4 pt-1 sm:space-y-5 sm:px-6 sm:pb-6">
-        <button
-          aria-label="Profile menu"
-          className="absolute right-1 top-0 z-20 inline-flex size-8 items-center justify-center rounded-full text-[color:var(--ink-muted)] transition-colors hover:bg-[color:var(--surface-alt)] hover:text-[color:var(--foreground)] sm:right-3 sm:top-2"
-          type="button"
-        >
-          <MoreHorizontal className="size-5" />
-        </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <button
+                aria-label="Profile menu"
+                className="absolute right-1 top-0 z-20 inline-flex size-8 items-center justify-center rounded-full text-[color:var(--ink-muted)] transition-colors hover:bg-[color:var(--surface-alt)] hover:text-[color:var(--foreground)] sm:right-3 sm:top-2"
+                type="button"
+              />
+            }
+          >
+            <MoreHorizontal className="size-5" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="min-w-56">
+            <DropdownMenuItem onClick={() => router.push("/settings/account")}>
+              Edit personal details
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                setBioEditorSession((value) => value + 1);
+                setBioEditorOpen(true);
+              }}
+            >
+              Edit bio
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <ClientProfileBioEditor
+          key={bioEditorSession}
+          about={profile.about}
+          open={bioEditorOpen}
+          onOpenChange={setBioEditorOpen}
+        />
         <div className="-mt-7 flex flex-col gap-3 sm:-mt-10 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex items-start gap-3 sm:items-end sm:gap-4">
             <div className="relative shrink-0 overflow-visible">
@@ -151,8 +194,7 @@ export function ClientProfileHero({ profile, user }: ClientProfileHeroProps) {
         </div>
 
         <p className="max-w-4xl text-sm leading-6 text-[color:var(--ink-body)] sm:text-base sm:leading-7">
-          {profile.about ||
-            "Add a short description so talents understand the kind of work you post and the projects you want to commission."}
+          {profile.about || "No bio."}
         </p>
 
         {socialItems.length > 0 ? (
@@ -170,7 +212,9 @@ export function ClientProfileHero({ profile, user }: ClientProfileHeroProps) {
                   <span className="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-[color:var(--surface)] text-[color:var(--ink-muted)] sm:size-6">
                     <Icon className="size-3" />
                   </span>
-                  <span className="max-w-24 truncate sm:max-w-32">{displayName}</span>
+                  <span className="max-w-24 truncate sm:max-w-32">
+                    {displayName}
+                  </span>
                 </a>
               ))}
             </div>

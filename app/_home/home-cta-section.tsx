@@ -9,7 +9,7 @@ export function HomeCtaSection() {
           gradientClassName="bg-[linear-gradient(90deg,var(--tone-orange-base)_0%,var(--brand-blue)_100%)]"
           primaryAction={{
             href: "/signup",
-            label: "Get Started Today",
+            label: "Get Started",
             variant: "whiteOrange",
           }}
           secondaryAction={{
