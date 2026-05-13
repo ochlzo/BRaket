@@ -1,4 +1,4 @@
-import { TalentOnboardingForm } from "@/app/onboarding/talent/_components/talent-onboarding-form";
+import { TalentOnboardingFlow } from "@/app/onboarding/talent/_components/talent-onboarding-flow";
 import { TalentOnboardingHeader } from "@/app/onboarding/talent/_components/talent-onboarding-header";
 import { getSkillOptions } from "@/app/onboarding/talent/_lib/get-skill-options";
 import { requireCurrentAppUser } from "@/server/users/current-user";
@@ -12,7 +12,7 @@ export default async function OnboardingPage() {
       <section>
         <div className="mx-auto max-w-2xl">
           <TalentOnboardingHeader />
-          <TalentOnboardingForm
+          <TalentOnboardingFlow
             availableSkills={skillOptions}
             currentUser={{
               firstName: currentUser.firstName,

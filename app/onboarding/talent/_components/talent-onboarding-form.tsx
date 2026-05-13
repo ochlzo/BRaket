@@ -1,34 +1,19 @@
 "use client";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
+import { toast } from "sonner";
+
 import {
   TalentSkillsSelector,
   type SelectedSkill,
 } from "@/app/onboarding/talent/_components/talent-skills-selector";
 import { TalentFormFooter } from "@/app/onboarding/talent/_components/talent-form-footer";
 import { TalentFormSectionHeading } from "@/app/onboarding/talent/_components/talent-form-section-heading";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+  TalentBasicInfoFields,
+  TalentStudentDetailsFields,
+} from "@/app/onboarding/talent/_components/talent-profile-form-fields";
+import { Separator } from "@/components/ui/separator";
 import type { SkillLevel } from "@/lib/types";
-
-const isTesting =
-  process.env._TESTING === "true" ||
-  process.env.NEXT_PUBLIC__TESTING === "true" ||
-  process.env.NEXT_PUBLIC_TESTING === "true";
-const yearLevelOptions = [
-  { label: "1st year", value: "1" },
-  { label: "2nd year", value: "2" },
-  { label: "3rd year", value: "3" },
-  { label: "4th year", value: "4" },
-];
 
 type TalentOnboardingFormProps = {
   availableSkills: string[];
@@ -37,11 +22,13 @@ type TalentOnboardingFormProps = {
     lastName: string;
     username: string;
   };
+  onComplete: () => void;
 };
 
 export function TalentOnboardingForm({
   availableSkills,
   currentUser,
+  onComplete,
 }: TalentOnboardingFormProps) {
   const [headline, setHeadline] = useState("");
   const [website, setWebsite] = useState("");
@@ -51,7 +38,6 @@ export function TalentOnboardingForm({
   const [yearLevel, setYearLevel] = useState("");
   const [selectedSkills, setSelectedSkills] = useState<SelectedSkill[]>([]);
   const [skillSearch, setSkillSearch] = useState("");
-  const [notice, setNotice] = useState("");
 
   const filteredSkills = availableSkills.filter(
     (skill) =>
@@ -61,20 +47,6 @@ export function TalentOnboardingForm({
           selectedSkill.name.toLowerCase() === skill.toLowerCase(),
       ),
   );
-
-  const bioLength = bio.length;
-  const bioLengthClassName =
-    bioLength < 150 || bioLength > 500
-      ? "text-[color:var(--tone-red-base)]"
-      : "text-[color:var(--ink-soft)]";
-  const headlineLength = headline.length;
-  const headlineLengthClassName =
-    headlineLength < 25 || headlineLength > 70
-      ? "text-[color:var(--tone-red-base)]"
-      : "text-[color:var(--ink-soft)]";
-  const fullName = [currentUser.firstName, currentUser.lastName]
-    .filter(Boolean)
-    .join(" ");
 
   function addSkill(name: string) {
     if (selectedSkills.length >= 10) {
@@ -108,172 +80,66 @@ export function TalentOnboardingForm({
     );
   }
 
+  function showValidationToast(message: string) {
+    const toastId = toast.error(message, {
+      action: {
+        label: "x",
+        onClick: () => toast.dismiss(toastId),
+      },
+    });
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!event.currentTarget.reportValidity()) {
+      return;
+    }
+
+    if (!yearLevel) {
+      showValidationToast("Select your year level before continuing.");
+      return;
+    }
+
+    if (selectedSkills.length < 3) {
+      showValidationToast("Select at least 3 skills before continuing.");
+      return;
+    }
+
+    onComplete();
+  }
+
   return (
     <div className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-4 sm:p-8">
       <form
         className="space-y-5 sm:space-y-7"
-        onSubmit={(event) => {
-          event.preventDefault();
-          setNotice("Talent onboarding is UI-only for now.");
-        }}
+        onSubmit={handleSubmit}
       >
         <div>
           <TalentFormSectionHeading step={1} title="Basic Information" />
-
-          <div className="space-y-4 sm:space-y-5">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-1.5 sm:space-y-2">
-                <Label className="text-sm font-semibold" htmlFor="ob-username">
-                  Username{" "}
-                  <span className="text-[color:var(--tone-red-base)]">*</span>
-                </Label>
-                <Input
-                  className="h-10 rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 text-sm text-[color:var(--ink-muted)] sm:h-11 sm:rounded-xl"
-                  id="ob-username"
-                  placeholder="e.g. maria-santos"
-                  readOnly
-                  required
-                  value={currentUser.username}
-                />
-              </div>
-              <div className="space-y-1.5 sm:space-y-2">
-                <Label className="text-sm font-semibold" htmlFor="ob-fullname">
-                  Full Name{" "}
-                  <span className="text-[color:var(--tone-red-base)]">*</span>
-                </Label>
-                <Input
-                  className="h-10 rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 text-sm text-[color:var(--ink-muted)] sm:h-11 sm:rounded-xl"
-                  id="ob-fullname"
-                  placeholder="Maria Santos"
-                  readOnly
-                  required
-                  value={fullName}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1.5 sm:space-y-2">
-              <Label className="text-sm font-semibold" htmlFor="ob-website">
-                Website
-              </Label>
-              <Input
-                className="h-10 rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 text-sm sm:h-11 sm:rounded-xl"
-                id="ob-website"
-                onChange={(event) => setWebsite(event.target.value)}
-                placeholder="https://yourportfolio.com"
-                type="url"
-                value={website}
-              />
-            </div>
-
-            <div className="space-y-1.5 sm:space-y-2">
-              <Label className="text-sm font-semibold" htmlFor="ob-headline">
-                Headline{" "}
-                <span className="text-[color:var(--tone-red-base)]">*</span>
-              </Label>
-              <Input
-                className="h-10 rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 text-sm sm:h-11 sm:rounded-xl"
-                id="ob-headline"
-                maxLength={70}
-                minLength={25}
-                onChange={(event) => setHeadline(event.target.value)}
-                placeholder="e.g. UI/UX Designer & Prototyping Specialist"
-                required
-                value={headline}
-              />
-              {!isTesting ? (
-                <p className={`text-xs ${headlineLengthClassName}`}>
-                  {headlineLength}/70 characters (minimum 25)
-                </p>
-              ) : null}
-            </div>
-
-            <div className="space-y-1.5 sm:space-y-2">
-              <Label className="text-sm font-semibold" htmlFor="ob-bio">
-                Bio <span className="text-[color:var(--tone-red-base)]">*</span>
-              </Label>
-              <Textarea
-                className="min-h-28 rounded-2xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 py-3 text-sm sm:rounded-xl"
-                id="ob-bio"
-                onChange={(event) => setBio(event.target.value)}
-                placeholder="Tell clients about yourself, your experience, and what makes you unique..."
-                required
-                rows={4}
-                value={bio}
-              />
-              {!isTesting ? (
-                <p className={`text-xs ${bioLengthClassName}`}>
-                  {bioLength}/500 characters (minimum 150)
-                </p>
-              ) : null}
-            </div>
-          </div>
+          <TalentBasicInfoFields
+            bio={bio}
+            currentUser={currentUser}
+            headline={headline}
+            setBio={setBio}
+            setHeadline={setHeadline}
+            setWebsite={setWebsite}
+            website={website}
+          />
         </div>
 
         <Separator />
 
         <div>
           <TalentFormSectionHeading step={2} title="Student Details" />
-
-          <div className="space-y-4 sm:space-y-5">
-            <div className="space-y-1.5 sm:space-y-2">
-              <Label className="text-sm font-semibold" htmlFor="ob-college">
-                College{" "}
-                <span className="text-[color:var(--tone-red-base)]">*</span>
-              </Label>
-              <Input
-                className="h-10 rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 text-sm sm:h-11 sm:rounded-xl"
-                id="ob-college"
-                onChange={(event) => setCollege(event.target.value)}
-                placeholder="e.g. College of Science"
-                required
-                value={college}
-              />
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-[1fr_12rem]">
-              <div className="space-y-1.5 sm:space-y-2">
-                <Label className="text-sm font-semibold" htmlFor="ob-course">
-                  Course{" "}
-                  <span className="text-[color:var(--tone-red-base)]">*</span>
-                </Label>
-                <Input
-                  className="h-10 rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 text-sm sm:h-11 sm:rounded-xl"
-                  id="ob-course"
-                  onChange={(event) => setCourse(event.target.value)}
-                  placeholder="e.g. BS Information Technology"
-                  required
-                  value={course}
-                />
-              </div>
-
-              <div className="space-y-1.5 sm:space-y-2">
-                <Label className="text-sm font-semibold" htmlFor="ob-year">
-                  Year Level{" "}
-                  <span className="text-[color:var(--tone-red-base)]">*</span>
-                </Label>
-                <Select
-                  id="ob-year"
-                  items={yearLevelOptions}
-                  name="yearLevel"
-                  onValueChange={(value) => setYearLevel(value ?? "")}
-                  required
-                  value={yearLevel || null}
-                >
-                  <SelectTrigger className="h-10 w-full rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 text-sm sm:h-11 sm:rounded-xl">
-                    <SelectValue placeholder="Select year" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl border border-[color:var(--line-strong)] bg-white shadow-[var(--shadow-menu)]">
-                    {yearLevelOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
+          <TalentStudentDetailsFields
+            college={college}
+            course={course}
+            setCollege={setCollege}
+            setCourse={setCourse}
+            setYearLevel={setYearLevel}
+            yearLevel={yearLevel}
+          />
         </div>
 
         <Separator />
@@ -291,7 +157,7 @@ export function TalentOnboardingForm({
 
         <Separator />
 
-        <TalentFormFooter notice={notice} />
+        <TalentFormFooter />
       </form>
     </div>
   );

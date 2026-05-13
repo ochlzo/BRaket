@@ -91,6 +91,7 @@ model TalentProfile {
   updatedAt                   DateTime
   TalentPortfolio             TalentPortfolio[]
   TalentSkills                TalentSkill[]
+  Services                    Service[]
   User                        User              @relation(fields: [user_id], references: [userId], onDelete: Cascade)
 
   @@id([talent_profile_id, user_id])
@@ -140,6 +141,47 @@ model TalentSkill {
 
   @@unique([talentProfileId, skillId])
   @@map("talent_skills")
+}
+
+model Service {
+  serviceId        String    @id @default(uuid()) @map("service_id")
+  talentProfileId String    @map("talent_profile_id")
+  title            String
+  minPrice         Decimal   @map("min_price") @db.Decimal(10, 2)
+  maxPrice         Decimal   @map("max_price") @db.Decimal(10, 2)
+  priceUnit        PriceUnit @map("price_unit")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  TalentProfile    TalentProfile  @relation(fields: [talentProfileId], references: [talent_profile_id], onDelete: Cascade)
+  ServiceMedia     ServiceMedia[]
+
+  @@map("Services")
+}
+
+model ServiceMedia {
+  serviceDetailId String   @id @default(uuid()) @map("service_detail_id")
+  serviceId       String   @map("service_id")
+  mediaUrl        String   @map("media_url")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  Service         Service  @relation(fields: [serviceId], references: [serviceId], onDelete: Cascade)
+
+  @@map("ServiceMedia")
+}
+
+enum PriceUnit {
+  FIXED
+  HOURLY
+  DAILY
+  WEEKLY
+  MONTHLY
+  PER_PROJECT
+  PER_TASK
+  PER_SESSION
+
+  @@map("price_unit")
 }
 
 enum ProficiencyLevel {
