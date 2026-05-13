@@ -193,7 +193,7 @@ export function ClientProfileHero({ profile, user }: ClientProfileHeroProps) {
           </div>
         </div>
 
-        <p className="max-w-4xl text-sm leading-6 text-[color:var(--ink-body)] sm:text-base sm:leading-7">
+        <p className="w-full text-sm leading-6 text-[color:var(--ink-body)] sm:text-base sm:leading-7">
           {profile.about || "No bio."}
         </p>
 

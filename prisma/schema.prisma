@@ -7,26 +7,28 @@ datasource db {
 }
 
 model User {
-  userId        String         @unique @map("user_id")
-  authId        String         @unique @map("auth_id")
-  email         String         @unique
-  contactNum    String?        @unique @db.VarChar(11)
-  username      String?        @unique
-  lastName      String?        @map("last_name")
-  firstName     String?        @map("first_name")
-  address       String?
-  avatarUrl     String?
-  initials      String?
-  backgroundimg_img_url  String?
-  facebook_url  String?
-  instagram_url String?
-  x_url         String?
-  github_url    String?
-  linkedin_url  String?
-  createdAt     DateTime       @default(now()) @map("createdAt")
-  updatedAt     DateTime       @updatedAt @map("updatedAt")
-  ClientProfile ClientProfile?
-  TalentProfile TalentProfile?
+  userId                String         @unique @map("user_id")
+  authId                String         @unique @map("auth_id")
+  email                 String         @unique
+  username              String?        @unique
+  lastName              String?        @map("last_name")
+  firstName             String?        @map("first_name")
+  address               String?
+  avatarUrl             String?
+  backgroundimg_img_url String?
+  facebook_url          String?
+  instagram_url         String?
+  x_url                 String?
+  github_url            String?
+  linkedin_url          String?
+  createdAt             DateTime       @default(now()) @map("createdAt")
+  updatedAt             DateTime       @updatedAt @map("updatedAt")
+  contactNum            String?        @unique @db.VarChar(11)
+  initials              String?
+  is_verified           Boolean        @default(false)
+  is_talent             Boolean        @default(false)
+  ClientProfile         ClientProfile?
+  TalentProfile         TalentProfile?
 
   @@id([userId, authId])
   @@map("User")
@@ -34,89 +36,80 @@ model User {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model ClientProfile {
-  client_profile_id         String     @unique
-  user_id                   String     @unique
-  organization_name         String
-  business_address          String?
-  website                   String?
-  about                     String?
-  client_avg_rating         Float?
-  client_review_count       Int?
-  client_reputation_score Float?
+  client_profile_id           String            @unique
+  user_id                     String            @unique
+  organization_name           String
+  business_address            String?
+  website                     String?
+  about                       String?
+  client_avg_rating           Float?
+  client_review_count         Int?
+  client_reputation_score     Float?
   completed_commissions_count Int?
-  createdAt                 DateTime   @default(now())
-  updatedAt                 DateTime
-  User                      User       @relation(fields: [user_id], references: [userId], onDelete: Cascade)
-  ClientPortfolio           ClientPortfolio[]
+  createdAt                   DateTime          @default(now())
+  updatedAt                   DateTime
+  ClientPortfolio             ClientPortfolio[]
+  User                        User              @relation(fields: [user_id], references: [userId], onDelete: Cascade)
 
   @@id([client_profile_id, user_id])
 }
 
 model ClientPortfolio {
-  client_portfolio_id     String
-  client_profile_id       String
-  title     String
-  desciption String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime
-  ClientProfile   ClientProfile  @relation(fields: [client_profile_id], references: [client_profile_id], onDelete: Cascade)
+  client_portfolio_id  String                 @id
+  client_profile_id    String
+  title                String
+  desciption           String
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime
+  ClientProfile        ClientProfile          @relation(fields: [client_profile_id], references: [client_profile_id], onDelete: Cascade)
   ClientPortfolioMedia ClientPortfolioMedia[]
-
-  @@id([client_portfolio_id])
 }
 
 model ClientPortfolioMedia {
-  cportfolio_media_id     String
-  client_portfolio_id     String
-  media_url     String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime
-  ClientPortfolio ClientPortfolio @relation(fields: [client_portfolio_id], references: [client_portfolio_id], onDelete: Cascade)
-  
-  @@id([cportfolio_media_id])
+  cportfolio_media_id String          @id
+  client_portfolio_id String
+  media_url           String
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime
+  ClientPortfolio     ClientPortfolio @relation(fields: [client_portfolio_id], references: [client_portfolio_id], onDelete: Cascade)
 }
 
 model TalentProfile {
-  talent_profile_id         String      @unique
-  user_id                   String      @unique
-  headline                  String
-  college                   String
-  course                    String
-  year_level                Int
-  website                   String?
-  avg_rating                Float?
-  talent_review_count       Int @default(0)
-  completed_commissions_count  Int @default(0)
-  talent_reputation_score   Float?
-  is_verified               Boolean @default(false)
-  createdAt                 DateTime @default(now())
-  updatedAt                 DateTime
-  User                      User       @relation(fields: [user_id], references: [userId], onDelete: Cascade)
-  TalentPortfolio           TalentPortfolio[]
+  talent_profile_id           String            @unique
+  user_id                     String            @unique
+  headline                    String
+  college                     String
+  course                      String
+  year_level                  Int
+  website                     String?
+  avg_rating                  Float?
+  talent_review_count         Int               @default(0)
+  completed_commissions_count Int               @default(0)
+  talent_reputation_score     Float?
+  createdAt                   DateTime          @default(now())
+  updatedAt                   DateTime
+  TalentPortfolio             TalentPortfolio[]
+  User                        User              @relation(fields: [user_id], references: [userId], onDelete: Cascade)
 
   @@id([talent_profile_id, user_id])
 }
 
 model TalentPortfolio {
-  talent_portfolio_id     String
-  talent_profile_id       String
-  title     String
-  desciption String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime
-  TalentProfile   TalentProfile  @relation(fields: [talent_profile_id], references: [talent_profile_id], onDelete: Cascade)
+  talent_portfolio_id  String                 @id
+  talent_profile_id    String
+  title                String
+  desciption           String
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime
+  TalentProfile        TalentProfile          @relation(fields: [talent_profile_id], references: [talent_profile_id], onDelete: Cascade)
   TalentPortfolioMedia TalentPortfolioMedia[]
-
-  @@id([talent_portfolio_id])
 }
 
 model TalentPortfolioMedia {
-  tportfolio_media_id     String
-  talent_portfolio_id     String
-  media_url     String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime
-  TalentPortfolio TalentPortfolio @relation(fields: [talent_portfolio_id], references: [talent_portfolio_id], onDelete: Cascade)
-  
-  @@id([tportfolio_media_id])
+  tportfolio_media_id String          @id
+  talent_portfolio_id String
+  media_url           String
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime
+  TalentPortfolio     TalentPortfolio @relation(fields: [talent_portfolio_id], references: [talent_portfolio_id], onDelete: Cascade)
 }
