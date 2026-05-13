@@ -31,6 +31,7 @@ export function TalentOnboardingForm({
   currentUser,
 }: TalentOnboardingFormProps) {
   const [headline, setHeadline] = useState("");
+  const [website, setWebsite] = useState("");
   const [bio, setBio] = useState("");
   const [minRate, setMinRate] = useState("");
   const [maxRate, setMaxRate] = useState("");
@@ -49,6 +50,14 @@ export function TalentOnboardingForm({
     bioLength < 150 || bioLength > 500
       ? "text-[color:var(--tone-red-base)]"
       : "text-[color:var(--ink-soft)]";
+  const headlineLength = headline.length;
+  const headlineLengthClassName =
+    headlineLength < 25 || headlineLength > 70
+      ? "text-[color:var(--tone-red-base)]"
+      : "text-[color:var(--ink-soft)]";
+  const fullName = [currentUser.firstName, currentUser.lastName]
+    .filter(Boolean)
+    .join(" ");
 
   function addSkill(name: string) {
     if (selectedSkills.length >= 10) {
@@ -87,50 +96,49 @@ export function TalentOnboardingForm({
           </h2>
 
           <div className="space-y-4 sm:space-y-5">
-            <div className="space-y-1.5 sm:space-y-2">
-              <Label className="text-sm font-semibold" htmlFor="ob-username">
-                Username{" "}
-                <span className="text-[color:var(--tone-red-base)]">*</span>
-              </Label>
-              <Input
-                className="h-10 rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 text-sm text-[color:var(--ink-muted)] sm:h-11 sm:rounded-xl"
-                id="ob-username"
-                placeholder="e.g. maria-santos"
-                readOnly
-                required
-                value={currentUser.username}
-              />
-            </div>
-
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5 sm:space-y-2">
-                <Label className="text-sm font-semibold" htmlFor="ob-first">
-                  First Name{" "}
+                <Label className="text-sm font-semibold" htmlFor="ob-username">
+                  Username{" "}
                   <span className="text-[color:var(--tone-red-base)]">*</span>
                 </Label>
                 <Input
                   className="h-10 rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 text-sm text-[color:var(--ink-muted)] sm:h-11 sm:rounded-xl"
-                  id="ob-first"
-                  placeholder="Maria"
+                  id="ob-username"
+                  placeholder="e.g. maria-santos"
                   readOnly
                   required
-                  value={currentUser.firstName}
+                  value={currentUser.username}
                 />
               </div>
               <div className="space-y-1.5 sm:space-y-2">
-                <Label className="text-sm font-semibold" htmlFor="ob-last">
-                  Last Name{" "}
+                <Label className="text-sm font-semibold" htmlFor="ob-fullname">
+                  Full Name{" "}
                   <span className="text-[color:var(--tone-red-base)]">*</span>
                 </Label>
                 <Input
                   className="h-10 rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 text-sm text-[color:var(--ink-muted)] sm:h-11 sm:rounded-xl"
-                  id="ob-last"
-                  placeholder="Santos"
+                  id="ob-fullname"
+                  placeholder="Maria Santos"
                   readOnly
                   required
-                  value={currentUser.lastName}
+                  value={fullName}
                 />
               </div>
+            </div>
+
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label className="text-sm font-semibold" htmlFor="ob-website">
+                Website
+              </Label>
+              <Input
+                className="h-10 rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 text-sm sm:h-11 sm:rounded-xl"
+                id="ob-website"
+                onChange={(event) => setWebsite(event.target.value)}
+                placeholder="https://yourportfolio.com"
+                type="url"
+                value={website}
+              />
             </div>
 
             <div className="space-y-1.5 sm:space-y-2">
@@ -141,11 +149,18 @@ export function TalentOnboardingForm({
               <Input
                 className="h-10 rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 text-sm sm:h-11 sm:rounded-xl"
                 id="ob-headline"
+                maxLength={70}
+                minLength={25}
                 onChange={(event) => setHeadline(event.target.value)}
                 placeholder="e.g. UI/UX Designer & Prototyping Specialist"
                 required
                 value={headline}
               />
+              {!isTesting ? (
+                <p className={`text-xs ${headlineLengthClassName}`}>
+                  {headlineLength}/70 characters (minimum 25)
+                </p>
+              ) : null}
             </div>
 
             <div className="space-y-1.5 sm:space-y-2">
