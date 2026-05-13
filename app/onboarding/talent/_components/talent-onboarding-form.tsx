@@ -11,6 +11,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { SkillLevel } from "@/lib/types";
 
@@ -33,8 +40,9 @@ export function TalentOnboardingForm({
   const [headline, setHeadline] = useState("");
   const [website, setWebsite] = useState("");
   const [bio, setBio] = useState("");
-  const [minRate, setMinRate] = useState("");
-  const [maxRate, setMaxRate] = useState("");
+  const [college, setCollege] = useState("");
+  const [course, setCourse] = useState("");
+  const [yearLevel, setYearLevel] = useState("");
   const [selectedSkills, setSelectedSkills] = useState<SelectedSkill[]>([]);
   const [skillSearch, setSkillSearch] = useState("");
   const [notice, setNotice] = useState("");
@@ -192,50 +200,63 @@ export function TalentOnboardingForm({
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--brand-orange)] text-[0.7rem] font-bold text-white sm:h-7 sm:w-7 sm:rounded-lg sm:text-xs">
               2
             </span>
-            Hourly Rates
+            Student Details
           </h2>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label className="text-sm font-semibold" htmlFor="ob-min">
-                Min Rate (PHP/hr){" "}
+          <div className="space-y-4 sm:space-y-5">
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label className="text-sm font-semibold" htmlFor="ob-college">
+                College{" "}
                 <span className="text-[color:var(--tone-red-base)]">*</span>
               </Label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-[color:var(--ink-muted)]">
-                  PHP
-                </span>
+              <Input
+                className="h-10 rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 text-sm sm:h-11 sm:rounded-xl"
+                id="ob-college"
+                onChange={(event) => setCollege(event.target.value)}
+                placeholder="e.g. College of Science"
+                required
+                value={college}
+              />
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-[1fr_12rem]">
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label className="text-sm font-semibold" htmlFor="ob-course">
+                  Course{" "}
+                  <span className="text-[color:var(--tone-red-base)]">*</span>
+                </Label>
                 <Input
-                  className="h-10 rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] pl-12 text-sm sm:h-11 sm:rounded-xl"
-                  id="ob-min"
-                  min="1"
-                  onChange={(event) => setMinRate(event.target.value)}
-                  placeholder="500"
+                  className="h-10 rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 text-sm sm:h-11 sm:rounded-xl"
+                  id="ob-course"
+                  onChange={(event) => setCourse(event.target.value)}
+                  placeholder="e.g. BS Information Technology"
                   required
-                  type="number"
-                  value={minRate}
+                  value={course}
                 />
               </div>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-sm font-semibold" htmlFor="ob-max">
-                Max Rate (PHP/hr){" "}
-                <span className="text-[color:var(--tone-red-base)]">*</span>
-              </Label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-[color:var(--ink-muted)]">
-                  PHP
-                </span>
-                <Input
-                  className="h-10 rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] pl-12 text-sm sm:h-11 sm:rounded-xl"
-                  id="ob-max"
-                  min="1"
-                  onChange={(event) => setMaxRate(event.target.value)}
-                  placeholder="1000"
+
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label className="text-sm font-semibold" htmlFor="ob-year">
+                  Year Level{" "}
+                  <span className="text-[color:var(--tone-red-base)]">*</span>
+                </Label>
+                <Select
+                  id="ob-year"
+                  name="yearLevel"
+                  onValueChange={(value) => setYearLevel(value ?? "")}
                   required
-                  type="number"
-                  value={maxRate}
-                />
+                  value={yearLevel || null}
+                >
+                  <SelectTrigger className="h-10 w-full rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 text-sm sm:h-11 sm:rounded-xl">
+                    <SelectValue placeholder="Select year" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl border border-[color:var(--line-strong)] bg-white shadow-[var(--shadow-menu)]">
+                    <SelectItem value="1">1st year</SelectItem>
+                    <SelectItem value="2">2nd year</SelectItem>
+                    <SelectItem value="3">3rd year</SelectItem>
+                    <SelectItem value="4">4th year</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
