@@ -5,24 +5,6 @@ export type CurrentUserSkill = {
   name: string;
 };
 
-type CurrentUserCacheEntry = {
-  expiresAt: number;
-  user: unknown;
-};
-
-const CURRENT_USER_CACHE_TTL_MS = 30_000;
-
-const globalForCurrentUserCache = globalThis as unknown as {
-  currentAppUserCache: Map<string, CurrentUserCacheEntry> | undefined;
-};
-
-const currentAppUserCache =
-  globalForCurrentUserCache.currentAppUserCache ?? new Map();
-
-if (process.env.NODE_ENV !== "production") {
-  globalForCurrentUserCache.currentAppUserCache = currentAppUserCache;
-}
-
 export function pickTextValue(source: Record<string, unknown>, keys: string[]) {
   for (const key of keys) {
     const value = source[key];
@@ -79,36 +61,7 @@ export function parseSkillsValue(value: unknown): CurrentUserSkill[] {
   });
 }
 
-export function getCacheKey(authId: string, sessionId: string) {
-  return `${authId}:${sessionId}`;
-}
-
-export function readCachedCurrentAppUser<T>(cacheKey: string) {
-  const cached = currentAppUserCache.get(cacheKey);
-
-  if (!cached) {
-    return null;
-  }
-
-  if (cached.expiresAt <= Date.now()) {
-    currentAppUserCache.delete(cacheKey);
-    return null;
-  }
-
-  return cached.user as T;
-}
-
-export function writeCachedCurrentAppUser<T>(cacheKey: string, user: T) {
-  currentAppUserCache.set(cacheKey, {
-    expiresAt: Date.now() + CURRENT_USER_CACHE_TTL_MS,
-    user,
-  });
-}
-
 export function clearCurrentAppUserCache(authId: string) {
-  for (const cacheKey of currentAppUserCache.keys()) {
-    if (cacheKey.startsWith(`${authId}:`)) {
-      currentAppUserCache.delete(cacheKey);
-    }
-  }
+  void authId;
+  // Kept for existing mutation flows; getCurrentAppUser now reads fresh DB state.
 }

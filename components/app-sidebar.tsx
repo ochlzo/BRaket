@@ -62,10 +62,16 @@ function getSidebarSubtitle(role: UserRole) {
 type AppSidebarProps = {
   avatarUrl: string | null;
   initials: string;
+  isTalent: boolean;
   role: UserRole;
 };
 
-export function AppSidebar({ avatarUrl, initials, role }: AppSidebarProps) {
+export function AppSidebar({
+  avatarUrl,
+  initials,
+  isTalent,
+  role,
+}: AppSidebarProps) {
   const items = role === "client" ? clientNavItems : talentNavItems;
 
   return (
@@ -80,7 +86,12 @@ export function AppSidebar({ avatarUrl, initials, role }: AppSidebarProps) {
         <NavMain items={items} />
       </SidebarContent>
       <SidebarFooter className="border-t border-[color:var(--line)] px-4 py-4">
-        <NavUser avatarUrl={avatarUrl} initials={initials} role={role} />
+        <NavUser
+          avatarUrl={avatarUrl}
+          initials={initials}
+          isTalent={isTalent}
+          role={role}
+        />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

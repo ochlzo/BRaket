@@ -2,7 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { useSyncExternalStore } from "react";
-import { ChevronsUpDown, LogOut, Settings } from "lucide-react";
+import {
+  ChevronsUpDown,
+  LogOut,
+  Settings,
+  UserPlus,
+  UserRound,
+} from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -31,10 +37,16 @@ import type { UserRole } from "@/lib/types";
 type NavUserProps = {
   avatarUrl: string | null;
   initials: string;
+  isTalent: boolean;
   role: UserRole;
 };
 
-export function NavUser({ avatarUrl, initials, role }: NavUserProps) {
+export function NavUser({
+  avatarUrl,
+  initials,
+  isTalent,
+  role,
+}: NavUserProps) {
   const { isMobile } = useSidebar();
   const router = useRouter();
   const session = useSyncExternalStore(
@@ -45,6 +57,8 @@ export function NavUser({ avatarUrl, initials, role }: NavUserProps) {
   const displayName =
     session?.displayName ?? (role === "talent" ? "Talent User" : "Client User");
   const username = session?.username ?? role;
+  const TalentMenuIcon = isTalent ? UserRound : UserPlus;
+  const talentMenuLabel = isTalent ? "Talent Profile" : "Register Talent";
 
   const handleSignOut = async () => {
     const supabase = createClient();
@@ -114,6 +128,10 @@ export function NavUser({ avatarUrl, initials, role }: NavUserProps) {
               <DropdownMenuItem onClick={() => router.push("/settings")}>
                 <Settings />
                 Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <TalentMenuIcon />
+                {talentMenuLabel}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

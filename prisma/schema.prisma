@@ -82,7 +82,7 @@ model TalentProfile {
   course                      String
   year_level                  Int
   website                     String?
-  avg_rating                  Float?
+  talent_avg_rating           Float?
   talent_review_count         Int               @default(0)
   completed_commissions_count Int               @default(0)
   talent_reputation_score     Float?

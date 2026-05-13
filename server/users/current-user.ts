@@ -16,13 +16,10 @@ import { prisma } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
 import type { UserRole } from "@/lib/types";
 import {
-  getCacheKey,
   type CurrentUserSkill,
   parseRateValue,
   parseSkillsValue,
   pickTextValue,
-  readCachedCurrentAppUser,
-  writeCachedCurrentAppUser,
 } from "@/server/users/current-user-helpers";
 
 export { clearCurrentAppUserCache } from "@/server/users/current-user-helpers";
@@ -37,6 +34,7 @@ export type CurrentAppUser = {
   firstName: string;
   headline: string;
   id: string;
+  isTalent: boolean;
   isVerified: boolean;
   lastName: string;
   location: string;
@@ -62,16 +60,6 @@ export async function getCurrentAppUser(): Promise<CurrentAppUser | null> {
 
   const authId = data.claims.sub;
   const email = data.claims.email.trim().toLowerCase();
-  const cacheKey = getCacheKey(authId, data.claims.session_id);
-  const cachedUser = readCachedCurrentAppUser<CurrentAppUser>(cacheKey);
-
-  if (
-    cachedUser &&
-    typeof cachedUser.initials === "string" &&
-    cachedUser.initials.trim().length > 0
-  ) {
-    return cachedUser;
-  }
 
   const metadata = (data.claims.user_metadata ?? {}) as Record<string, unknown>;
   const existingUser = await prisma.user.findFirst({
@@ -225,7 +213,8 @@ export async function getCurrentAppUser(): Promise<CurrentAppUser | null> {
     firstName: dbUser.firstName ?? authFirstName,
     headline,
     id: dbUser.userId,
-    isVerified: metadata.verified === true,
+    isTalent: dbUser.is_talent,
+    isVerified: dbUser.is_verified,
     lastName: dbUser.lastName ?? authLastName,
     location: dbUser.address ?? location ?? "",
     maxRate,
@@ -236,7 +225,6 @@ export async function getCurrentAppUser(): Promise<CurrentAppUser | null> {
     username: dbUser.username ?? username,
   };
 
-  writeCachedCurrentAppUser(cacheKey, currentUser);
   return currentUser;
 }
 

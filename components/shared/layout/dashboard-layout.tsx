@@ -32,6 +32,7 @@ export async function DashboardLayout({
       <AppSidebar
         avatarUrl={currentUser?.avatarUrl ?? null}
         initials={currentUser?.initials ?? ""}
+        isTalent={currentUser?.isTalent ?? false}
         role={role}
       />
 
