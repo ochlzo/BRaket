@@ -1,58 +1,40 @@
 import type { SkillLevel } from "@/lib/types";
 
-export const availableSkills = [
-  "HTML/CSS",
-  "React",
-  "Next.js",
-  "JavaScript",
-  "TypeScript",
-  "Node.js",
-  "Figma",
-  "Adobe Photoshop",
-  "Adobe Illustrator",
-  "Canva",
-  "Premiere Pro",
-  "After Effects",
-  "Lightroom",
-  "SEO Writing",
-  "Copywriting",
-  "Blog Posts",
-  "Social Media Management",
-  "Content Strategy",
-  "Photography",
-  "Video Editing",
-  "Motion Graphics",
-  "Branding",
-  "Logo Design",
-  "Web Design",
-  "Mobile Design",
-  "Python",
-  "PHP",
-  "WordPress",
-  "MongoDB",
-  "Tailwind CSS",
-];
-
 export const proficiencyLevels: {
   color: string;
   label: string;
+  optionColor: string;
   value: SkillLevel;
 }[] = [
   {
-    value: "beginner",
+    value: "BEGINNER",
     label: "Beginner",
     color: "bg-[color:var(--tone-sky-soft)] text-[color:var(--tone-sky-deep)]",
+    optionColor:
+      "hover:bg-[color:var(--tone-sky-soft)] hover:text-[color:var(--tone-sky-deep)] focus:bg-[color:var(--tone-sky-soft)] focus:text-[color:var(--tone-sky-deep)] data-[selected]:bg-[color:var(--tone-sky-soft)] data-[selected]:text-[color:var(--tone-sky-deep)]",
   },
   {
-    value: "intermediate",
+    value: "INTERMEDIATE",
     label: "Intermediate",
     color:
       "bg-[color:var(--tone-amber-soft)] text-[color:var(--tone-amber-deep)]",
+    optionColor:
+      "hover:bg-[color:var(--tone-amber-soft)] hover:text-[color:var(--tone-amber-deep)] focus:bg-[color:var(--tone-amber-soft)] focus:text-[color:var(--tone-amber-deep)] data-[selected]:bg-[color:var(--tone-amber-soft)] data-[selected]:text-[color:var(--tone-amber-deep)]",
   },
   {
-    value: "expert",
+    value: "ADVANCED",
+    label: "Advanced",
+    color:
+      "bg-[color:var(--tone-indigo-soft)] text-[color:var(--tone-indigo-deep)]",
+    optionColor:
+      "hover:bg-[color:var(--tone-indigo-soft)] hover:text-[color:var(--tone-indigo-deep)] focus:bg-[color:var(--tone-indigo-soft)] focus:text-[color:var(--tone-indigo-deep)] data-[selected]:bg-[color:var(--tone-indigo-soft)] data-[selected]:text-[color:var(--tone-indigo-deep)]",
+  },
+  {
+    value: "EXPERT",
     label: "Expert",
     color:
       "bg-[color:var(--tone-green-soft)] text-[color:var(--tone-green-deep)]",
+    optionColor:
+      "hover:bg-[color:var(--tone-green-soft)] hover:text-[color:var(--tone-green-deep)] focus:bg-[color:var(--tone-green-soft)] focus:text-[color:var(--tone-green-deep)] data-[selected]:bg-[color:var(--tone-green-soft)] data-[selected]:text-[color:var(--tone-green-deep)]",
   },
 ];

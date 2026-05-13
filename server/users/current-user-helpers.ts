@@ -51,14 +51,29 @@ export function parseSkillsValue(value: unknown): CurrentUserSkill[] {
       return [];
     }
 
-    const level = maybeSkill.level;
-    const normalizedLevel: SkillLevel =
-      level === "beginner" || level === "expert" || level === "intermediate"
-        ? level
-        : "intermediate";
+    const normalizedLevel = normalizeSkillLevel(maybeSkill.level);
 
     return [{ level: normalizedLevel, name }];
   });
+}
+
+function normalizeSkillLevel(value: unknown): SkillLevel {
+  if (typeof value !== "string") {
+    return "INTERMEDIATE";
+  }
+
+  switch (value.trim().toUpperCase()) {
+    case "BEGINNER":
+      return "BEGINNER";
+    case "INTERMEDIATE":
+      return "INTERMEDIATE";
+    case "ADVANCED":
+      return "ADVANCED";
+    case "EXPERT":
+      return "EXPERT";
+    default:
+      return "INTERMEDIATE";
+  }
 }
 
 export function clearCurrentAppUserCache(authId: string) {

@@ -10,10 +10,21 @@ type TalentProfileMainContentProps = {
 };
 
 const skillLevelStyles = {
-  beginner: "bg-[color:var(--tone-sky-soft)] text-[color:var(--tone-sky-deep)]",
-  expert: "bg-[color:var(--tone-green-soft)] text-[color:var(--tone-green-deep)]",
-  intermediate:
+  ADVANCED:
+    "bg-[color:var(--tone-indigo-soft)] text-[color:var(--tone-indigo-deep)]",
+  BEGINNER:
+    "bg-[color:var(--tone-sky-soft)] text-[color:var(--tone-sky-deep)]",
+  EXPERT:
+    "bg-[color:var(--tone-green-soft)] text-[color:var(--tone-green-deep)]",
+  INTERMEDIATE:
     "bg-[color:var(--tone-amber-soft)] text-[color:var(--tone-amber-deep)]",
+} as const;
+
+const skillLevelLabels = {
+  ADVANCED: "Advanced",
+  BEGINNER: "Beginner",
+  EXPERT: "Expert",
+  INTERMEDIATE: "Intermediate",
 } as const;
 
 export function TalentProfileMainContent({
@@ -44,7 +55,7 @@ export function TalentProfileMainContent({
               <span
                 className={`rounded-full px-3 py-1 text-xs font-bold ${skillLevelStyles[skill.level]}`}
               >
-                {skill.level.charAt(0).toUpperCase() + skill.level.slice(1)}
+                {skillLevelLabels[skill.level]}
               </span>
             </div>
           ))}

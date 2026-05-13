@@ -1,12 +1,33 @@
-import { Input } from "@/components/ui/input";
-import type { SkillLevel } from "@/lib/types";
+import { useState, type KeyboardEvent } from "react";
 
 import { proficiencyLevels } from "@/app/onboarding/talent/_data";
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+  ComboboxTrigger,
+} from "@/components/ui/combobox";
+import { InputGroupAddon, InputGroupButton } from "@/components/ui/input-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import type { SkillLevel } from "@/lib/types";
 
 export type SelectedSkill = { level: SkillLevel; name: string };
 
+const MIN_SKILL_NAME_LENGTH = 3;
+const skillsSubtitleClassName = "text-xs font-normal leading-none sm:text-sm";
+
 type TalentSkillsSelectorProps = {
   addSkill: (name: string) => void;
+  clearSkills: () => void;
   filteredSkills: string[];
   removeSkill: (name: string) => void;
   selectedSkills: SelectedSkill[];
@@ -17,6 +38,7 @@ type TalentSkillsSelectorProps = {
 
 export function TalentSkillsSelector({
   addSkill,
+  clearSkills,
   filteredSkills,
   removeSkill,
   selectedSkills,
@@ -24,77 +46,223 @@ export function TalentSkillsSelector({
   setSkillSearch,
   skillSearch,
 }: TalentSkillsSelectorProps) {
+  const [skillError, setSkillError] = useState("");
+  const hasReachedSkillLimit = selectedSkills.length >= 10;
+  const hasSkillSearchValue = skillSearch.trim().length > 0;
+
+  function getSkillToAdd(value: string) {
+    const trimmedValue = value.trim();
+    const matchingSkill = filteredSkills.find(
+      (skill) => skill.toLowerCase() === trimmedValue.toLowerCase(),
+    );
+
+    return matchingSkill ?? trimmedValue;
+  }
+
+  function tryAddSkill(value: string) {
+    const trimmedValue = value.trim();
+
+    if (trimmedValue.length < MIN_SKILL_NAME_LENGTH) {
+      setSkillError(
+        `Enter at least ${MIN_SKILL_NAME_LENGTH} characters to add a skill.`,
+      );
+      return;
+    }
+
+    addSkill(getSkillToAdd(trimmedValue));
+    setSkillError("");
+    setSkillSearch("");
+  }
+
+  function handleSkillSearchChange(value: string) {
+    setSkillSearch(value);
+
+    if (value.trim().length >= MIN_SKILL_NAME_LENGTH) {
+      setSkillError("");
+    }
+  }
+
+  function handleSkillSearchKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key !== "Enter") {
+      return;
+    }
+
+    event.preventDefault();
+    tryAddSkill(skillSearch);
+  }
+
+  function handleSkillLevelChange(name: string, value: string | null) {
+    const skillLevel = proficiencyLevels.find((level) => level.value === value);
+
+    if (!skillLevel) {
+      return;
+    }
+
+    setSkillLevel(name, skillLevel.value);
+  }
+
   return (
     <div>
-      <h2 className="mb-3 flex flex-wrap items-center gap-2 text-base font-bold text-foreground sm:mb-4 sm:text-lg">
-        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--brand-orange)] text-[0.7rem] font-bold text-white sm:h-7 sm:w-7 sm:rounded-lg sm:text-xs">
-          3
-        </span>
-        Skills
-        <span className="basis-full text-xs font-normal text-[color:var(--ink-muted)] sm:ml-1 sm:basis-auto sm:text-sm">
-          ({selectedSkills.length}/10 selected, minimum 3)
-        </span>
-      </h2>
+      <div className="mb-3 sm:mb-4">
+        <div className="flex items-center gap-2">
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--brand-orange)] text-[0.7rem] font-bold text-white sm:h-7 sm:w-7 sm:rounded-lg sm:text-xs">
+            3
+          </span>
+          <h2 className="text-base font-bold text-foreground sm:text-lg">
+            Skills
+          </h2>
+        </div>
+        <div className="mt-1 flex items-center justify-between gap-3">
+          <p className={`${skillsSubtitleClassName} text-[color:var(--ink-muted)]`}>
+            ({selectedSkills.length}/10 selected, minimum 3)
+          </p>
+          {selectedSkills.length > 0 ? (
+            <button
+              className={`${skillsSubtitleClassName} shrink-0 text-[color:var(--brand-orange)] transition hover:text-[color:var(--brand-orange-strong)]`}
+              onClick={clearSkills}
+              type="button"
+            >
+              Clear all
+            </button>
+          ) : null}
+        </div>
+      </div>
 
       {selectedSkills.length > 0 ? (
         <div className="mb-4 space-y-2">
           {selectedSkills.map((skill) => (
-            <div
+            <SelectedSkillItem
               key={skill.name}
-              className="rounded-2xl border border-[color:var(--line-strong)] bg-white px-3 py-3 sm:flex sm:items-center sm:justify-between sm:rounded-xl sm:px-4"
-            >
-              <span className="block text-sm font-semibold text-foreground">
-                {skill.name}
-              </span>
-              <div className="mt-2 flex flex-wrap items-center gap-1.5 sm:mt-0 sm:gap-2">
-                {proficiencyLevels.map((level) => (
-                  <button
-                    key={level.value}
-                    className={`min-h-9 rounded-full px-3 py-1 text-xs font-bold transition sm:min-h-0 sm:rounded-lg ${
-                      skill.level === level.value
-                        ? level.color
-                        : "text-[color:var(--ink-soft)] hover:bg-[color:var(--surface-alt)]"
-                    }`}
-                    onClick={() => setSkillLevel(skill.name, level.value)}
-                    type="button"
-                  >
-                    {level.label}
-                  </button>
-                ))}
-                <button
-                  aria-label={`Remove ${skill.name}`}
-                  className="ml-auto flex h-9 w-9 items-center justify-center rounded-full text-[color:var(--ink-soft)] transition hover:bg-[color:var(--surface-alt)] hover:text-[color:var(--tone-red-base)] sm:ml-2 sm:h-auto sm:w-auto sm:rounded-none"
-                  onClick={() => removeSkill(skill.name)}
-                  type="button"
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
+              removeSkill={removeSkill}
+              setSkillLevel={handleSkillLevelChange}
+              skill={skill}
+            />
           ))}
         </div>
       ) : null}
 
-      <Input
-        className="mb-3 h-10 rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 text-sm sm:h-11 sm:rounded-xl"
-        onChange={(event) => setSkillSearch(event.target.value)}
-        placeholder="Search skills to add..."
-        type="text"
-        value={skillSearch}
-      />
+      <Combobox
+        disabled={hasReachedSkillLimit}
+        onInputValueChange={handleSkillSearchChange}
+        onValueChange={(value) => {
+          if (typeof value !== "string") {
+            return;
+          }
 
-      <div className="flex flex-wrap gap-1.5">
-        {filteredSkills.slice(0, 12).map((skill) => (
-          <button
-            key={skill}
-            className="min-h-9 rounded-full border border-dashed border-[color:var(--line-strong)] px-3 py-1 text-xs font-medium text-[color:var(--ink-muted)] transition hover:border-[color:var(--brand-orange)]/40 hover:bg-[color:var(--surface-alt)] hover:text-[color:var(--brand-orange)] disabled:opacity-40"
-            disabled={selectedSkills.length >= 10}
-            onClick={() => addSkill(skill)}
-            type="button"
+          tryAddSkill(value);
+        }}
+        value={null}
+      >
+        <ComboboxInput
+          className="h-10 rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-3 text-sm sm:h-11 sm:rounded-xl"
+          disabled={hasReachedSkillLimit}
+          onKeyDown={handleSkillSearchKeyDown}
+          placeholder={
+            hasReachedSkillLimit
+              ? "Maximum of 10 skills selected"
+              : "Find or add your skills..."
+          }
+          showTrigger={false}
+          value={skillSearch}
+        >
+          <InputGroupAddon align="inline-end" className="gap-1 pr-2">
+            {hasSkillSearchValue ? (
+              <InputGroupButton
+                className="rounded-full px-2.5 text-xs font-semibold text-[color:var(--brand-orange)] hover:bg-[color:var(--surface-alt)] sm:px-3"
+                disabled={hasReachedSkillLimit}
+                onClick={() => tryAddSkill(skillSearch)}
+                type="button"
+                variant="ghost"
+              >
+                Add
+              </InputGroupButton>
+            ) : null}
+            <InputGroupButton
+              className="data-pressed:bg-transparent"
+              data-slot="input-group-button"
+              disabled={hasReachedSkillLimit}
+              render={<ComboboxTrigger />}
+              size="icon-xs"
+              variant="ghost"
+            />
+          </InputGroupAddon>
+        </ComboboxInput>
+        <ComboboxContent className="rounded-xl border border-[color:var(--line-strong)] bg-white shadow-[var(--shadow-menu)]">
+          <ComboboxList>
+            {filteredSkills.slice(0, 12).map((skill) => (
+              <ComboboxItem key={skill} value={skill}>
+                {skill}
+              </ComboboxItem>
+            ))}
+            <ComboboxEmpty>
+              Can&apos;t find the skill? Use Add to include it.
+            </ComboboxEmpty>
+          </ComboboxList>
+        </ComboboxContent>
+      </Combobox>
+
+      {skillError ? (
+        <p className="mt-2 text-xs text-[color:var(--tone-red-base)]">
+          {skillError}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+type SelectedSkillItemProps = {
+  removeSkill: (name: string) => void;
+  setSkillLevel: (name: string, value: string | null) => void;
+  skill: SelectedSkill;
+};
+
+function SelectedSkillItem({
+  removeSkill,
+  setSkillLevel,
+  skill,
+}: SelectedSkillItemProps) {
+  const selectedLevel = proficiencyLevels.find(
+    (level) => level.value === skill.level,
+  );
+
+  return (
+    <div className="flex items-center gap-2 rounded-2xl border border-[color:var(--line-strong)] bg-white px-3 py-3 sm:justify-between sm:rounded-xl sm:px-4">
+      <span className="min-w-0 flex-1 truncate text-sm font-semibold text-foreground">
+        {skill.name}
+      </span>
+      <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+        <Select
+          items={proficiencyLevels}
+          onValueChange={(value) => setSkillLevel(skill.name, value)}
+          value={skill.level}
+        >
+          <SelectTrigger
+            aria-label={`${skill.name} proficiency level`}
+            className={`h-9 w-[7.5rem] rounded-full border-[color:var(--line-strong)] px-3 text-xs font-semibold sm:h-8 sm:w-36 sm:rounded-xl ${selectedLevel?.color ?? "bg-[color:var(--surface-alt)]"}`}
+            size="sm"
           >
-            + {skill}
-          </button>
-        ))}
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent className="rounded-xl border border-[color:var(--line-strong)] bg-white shadow-[var(--shadow-menu)]">
+            {proficiencyLevels.map((level) => (
+              <SelectItem
+                className={level.optionColor}
+                key={level.value}
+                value={level.value}
+              >
+                {level.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <button
+          aria-label={`Remove ${skill.name}`}
+          className="ml-auto flex h-9 w-9 items-center justify-center rounded-full text-[color:var(--ink-soft)] transition hover:bg-[color:var(--surface-alt)] hover:text-[color:var(--tone-red-base)] sm:ml-2 sm:h-auto sm:w-auto sm:rounded-none"
+          onClick={() => removeSkill(skill.name)}
+          type="button"
+        >
+          x
+        </button>
       </div>
     </div>
   );

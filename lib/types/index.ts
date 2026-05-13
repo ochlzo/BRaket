@@ -44,7 +44,7 @@ export interface ClientProfile extends User {
 }
 
 /* ── Skills ── */
-export type SkillLevel = "beginner" | "intermediate" | "expert";
+export type SkillLevel = "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "EXPERT";
 
 export interface TalentSkill {
   name: string;

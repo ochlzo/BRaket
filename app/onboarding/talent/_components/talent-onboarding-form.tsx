@@ -1,13 +1,11 @@
 "use client";
-
 import { useState } from "react";
-
 import {
   TalentSkillsSelector,
   type SelectedSkill,
 } from "@/app/onboarding/talent/_components/talent-skills-selector";
-import { availableSkills } from "@/app/onboarding/talent/_data";
-import { Button } from "@/components/ui/button";
+import { TalentFormFooter } from "@/app/onboarding/talent/_components/talent-form-footer";
+import { TalentFormSectionHeading } from "@/app/onboarding/talent/_components/talent-form-section-heading";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -25,8 +23,15 @@ const isTesting =
   process.env._TESTING === "true" ||
   process.env.NEXT_PUBLIC__TESTING === "true" ||
   process.env.NEXT_PUBLIC_TESTING === "true";
+const yearLevelOptions = [
+  { label: "1st year", value: "1" },
+  { label: "2nd year", value: "2" },
+  { label: "3rd year", value: "3" },
+  { label: "4th year", value: "4" },
+];
 
 type TalentOnboardingFormProps = {
+  availableSkills: string[];
   currentUser: {
     firstName: string;
     lastName: string;
@@ -35,6 +40,7 @@ type TalentOnboardingFormProps = {
 };
 
 export function TalentOnboardingForm({
+  availableSkills,
   currentUser,
 }: TalentOnboardingFormProps) {
   const [headline, setHeadline] = useState("");
@@ -50,7 +56,10 @@ export function TalentOnboardingForm({
   const filteredSkills = availableSkills.filter(
     (skill) =>
       skill.toLowerCase().includes(skillSearch.toLowerCase()) &&
-      !selectedSkills.some((selectedSkill) => selectedSkill.name === skill),
+      !selectedSkills.some(
+        (selectedSkill) =>
+          selectedSkill.name.toLowerCase() === skill.toLowerCase(),
+      ),
   );
 
   const bioLength = bio.length;
@@ -71,15 +80,28 @@ export function TalentOnboardingForm({
     if (selectedSkills.length >= 10) {
       return;
     }
-
-    setSelectedSkills((prev) => [...prev, { level: "intermediate", name }]);
+    const trimmedName = name.trim();
+    if (
+      trimmedName.length === 0 ||
+      selectedSkills.some(
+        (skill) => skill.name.toLowerCase() === trimmedName.toLowerCase(),
+      )
+    ) {
+      return;
+    }
+    setSelectedSkills((prev) => [
+      ...prev,
+      { level: "INTERMEDIATE", name: trimmedName },
+    ]);
     setSkillSearch("");
   }
 
   function removeSkill(name: string) {
     setSelectedSkills((prev) => prev.filter((skill) => skill.name !== name));
   }
-
+  function clearSkills() {
+    setSelectedSkills([]);
+  }
   function setSkillLevel(name: string, level: SkillLevel) {
     setSelectedSkills((prev) =>
       prev.map((skill) => (skill.name === name ? { ...skill, level } : skill)),
@@ -96,12 +118,7 @@ export function TalentOnboardingForm({
         }}
       >
         <div>
-          <h2 className="mb-3 flex items-center gap-2 text-base font-bold text-foreground sm:mb-4 sm:text-lg">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--brand-orange)] text-[0.7rem] font-bold text-white sm:h-7 sm:w-7 sm:rounded-lg sm:text-xs">
-              1
-            </span>
-            Basic Information
-          </h2>
+          <TalentFormSectionHeading step={1} title="Basic Information" />
 
           <div className="space-y-4 sm:space-y-5">
             <div className="grid gap-4 sm:grid-cols-2">
@@ -196,12 +213,7 @@ export function TalentOnboardingForm({
         <Separator />
 
         <div>
-          <h2 className="mb-3 flex items-center gap-2 text-base font-bold text-foreground sm:mb-4 sm:text-lg">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--brand-orange)] text-[0.7rem] font-bold text-white sm:h-7 sm:w-7 sm:rounded-lg sm:text-xs">
-              2
-            </span>
-            Student Details
-          </h2>
+          <TalentFormSectionHeading step={2} title="Student Details" />
 
           <div className="space-y-4 sm:space-y-5">
             <div className="space-y-1.5 sm:space-y-2">
@@ -242,6 +254,7 @@ export function TalentOnboardingForm({
                 </Label>
                 <Select
                   id="ob-year"
+                  items={yearLevelOptions}
                   name="yearLevel"
                   onValueChange={(value) => setYearLevel(value ?? "")}
                   required
@@ -251,10 +264,11 @@ export function TalentOnboardingForm({
                     <SelectValue placeholder="Select year" />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl border border-[color:var(--line-strong)] bg-white shadow-[var(--shadow-menu)]">
-                    <SelectItem value="1">1st year</SelectItem>
-                    <SelectItem value="2">2nd year</SelectItem>
-                    <SelectItem value="3">3rd year</SelectItem>
-                    <SelectItem value="4">4th year</SelectItem>
+                    {yearLevelOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -266,6 +280,7 @@ export function TalentOnboardingForm({
 
         <TalentSkillsSelector
           addSkill={addSkill}
+          clearSkills={clearSkills}
           filteredSkills={filteredSkills}
           removeSkill={removeSkill}
           selectedSkills={selectedSkills}
@@ -276,23 +291,7 @@ export function TalentOnboardingForm({
 
         <Separator />
 
-        {notice ? (
-          <p
-            className="rounded-xl border border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 py-3 text-sm text-[color:var(--ink-soft)]"
-            role="status"
-          >
-            {notice}
-          </p>
-        ) : null}
-
-        <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-          <Button
-            className="min-h-11 rounded-full bg-[color:var(--brand-orange)] px-5 text-sm font-semibold !text-white transition hover:bg-[color:var(--brand-orange-strong)] sm:h-12 sm:rounded-xl sm:px-8"
-            type="submit"
-          >
-            Next
-          </Button>
-        </div>
+        <TalentFormFooter notice={notice} />
       </form>
     </div>
   );

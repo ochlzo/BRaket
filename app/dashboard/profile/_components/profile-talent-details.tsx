@@ -7,10 +7,21 @@ type ProfileTalentDetailsProps = {
 };
 
 const skillLevelStyles = {
-  beginner: "bg-[color:var(--tone-sky-soft)] text-[color:var(--tone-sky-deep)]",
-  expert: "bg-[color:var(--tone-green-soft)] text-[color:var(--tone-green-deep)]",
-  intermediate:
+  ADVANCED:
+    "bg-[color:var(--tone-indigo-soft)] text-[color:var(--tone-indigo-deep)]",
+  BEGINNER:
+    "bg-[color:var(--tone-sky-soft)] text-[color:var(--tone-sky-deep)]",
+  EXPERT:
+    "bg-[color:var(--tone-green-soft)] text-[color:var(--tone-green-deep)]",
+  INTERMEDIATE:
     "bg-[color:var(--tone-amber-soft)] text-[color:var(--tone-amber-deep)]",
+} as const;
+
+const skillLevelLabels = {
+  ADVANCED: "Advanced",
+  BEGINNER: "Beginner",
+  EXPERT: "Expert",
+  INTERMEDIATE: "Intermediate",
 } as const;
 
 export function ProfileTalentDetails({
@@ -33,7 +44,7 @@ export function ProfileTalentDetails({
               >
                 {skill.name}
                 <span className="opacity-60">-</span>
-                <span className="capitalize opacity-80">{skill.level}</span>
+                <span className="opacity-80">{skillLevelLabels[skill.level]}</span>
               </span>
             ))}
           </div>
