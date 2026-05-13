@@ -10,12 +10,13 @@ export const metadata: Metadata = {
 type LoginPageProps = {
   searchParams: Promise<{
     authError?: string;
+    callbackUrl?: string;
     reset?: string;
   }>;
 };
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const { authError, reset } = await searchParams;
+  const { authError, callbackUrl, reset } = await searchParams;
   const initialNotice =
     reset === "success"
       ? "Your password was updated. Sign in with your new password."
@@ -32,7 +33,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         </p>
       </div>
 
-      <LoginForm initialError={authError} initialNotice={initialNotice} />
+      <LoginForm
+        callbackUrl={callbackUrl}
+        initialError={authError}
+        initialNotice={initialNotice}
+      />
     </div>
   );
 }

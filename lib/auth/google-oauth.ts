@@ -1,3 +1,5 @@
+import { normalizeCallbackUrl } from "@/lib/auth/session";
+
 export type GoogleOAuthMode = "login" | "signup";
 export type GoogleOAuthRole = "client" | "talent";
 
@@ -30,6 +32,7 @@ export function getGoogleOAuthEntryPath(mode: GoogleOAuthMode) {
 
 export function readGoogleOAuthContext(searchParams: URLSearchParams) {
   return {
+    callbackUrl: normalizeCallbackUrl(searchParams.get("callbackUrl")),
     mode: normalizeMode(searchParams.get("mode")),
     role: normalizeRole(searchParams.get("role")),
   };
@@ -39,12 +42,19 @@ export function buildGoogleOAuthRedirectTo(
   origin: string,
   mode: GoogleOAuthMode,
   role: GoogleOAuthRole = "client",
+  callbackUrl?: unknown,
 ) {
   const url = new URL("/auth/callback", origin);
   url.searchParams.set("mode", mode);
 
   if (mode === "signup") {
     url.searchParams.set("role", role);
+  }
+
+  const normalizedCallbackUrl = normalizeCallbackUrl(callbackUrl);
+
+  if (normalizedCallbackUrl) {
+    url.searchParams.set("callbackUrl", normalizedCallbackUrl);
   }
 
   return url.toString();
@@ -54,11 +64,18 @@ export function buildGoogleOAuthFlowPath(
   pathname: string,
   mode: GoogleOAuthMode,
   role: GoogleOAuthRole = "client",
+  callbackUrl?: unknown,
 ) {
   const searchParams = new URLSearchParams({
     mode,
     role,
   });
+
+  const normalizedCallbackUrl = normalizeCallbackUrl(callbackUrl);
+
+  if (normalizedCallbackUrl) {
+    searchParams.set("callbackUrl", normalizedCallbackUrl);
+  }
 
   return `${pathname}?${searchParams.toString()}`;
 }
@@ -67,6 +84,7 @@ export function getGoogleOAuthCallbackRedirectPath(
   needsPasswordCreation: boolean,
   mode: GoogleOAuthMode,
   role: GoogleOAuthRole = "client",
+  callbackUrl?: unknown,
 ) {
   return buildGoogleOAuthFlowPath(
     needsPasswordCreation
@@ -74,6 +92,7 @@ export function getGoogleOAuthCallbackRedirectPath(
       : GOOGLE_OAUTH_COMPLETE_PATH,
     mode,
     role,
+    callbackUrl,
   );
 }
 

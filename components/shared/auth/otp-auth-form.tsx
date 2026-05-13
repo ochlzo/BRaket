@@ -8,6 +8,7 @@ import { OtpAuthFormView } from "@/components/shared/auth/otp-auth-form.view";
 import { Separator } from "@/components/ui/separator";
 
 type OtpAuthFormProps = {
+  callbackUrl?: string;
   email?: string;
   mode: AuthMode;
   passwordFieldAction?: ReactNode;
@@ -15,12 +16,13 @@ type OtpAuthFormProps = {
 };
 
 export function OtpAuthForm({
+  callbackUrl,
   email,
   mode,
   passwordFieldAction,
   setEmail,
 }: OtpAuthFormProps) {
-  const auth = useOtpAuth(mode, { email, setEmail });
+  const auth = useOtpAuth(mode, { callbackUrl, email, setEmail });
 
   return (
     <div className="space-y-5">

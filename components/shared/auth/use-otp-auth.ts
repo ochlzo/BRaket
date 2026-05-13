@@ -17,6 +17,7 @@ type Step = "password" | "code";
 
 type AuthUser = { user_metadata?: unknown } | null;
 type UseOtpAuthOptions = {
+  callbackUrl?: string;
   email?: string;
   setEmail?: (value: string) => void;
 };
@@ -51,7 +52,7 @@ export function useOtpAuth(mode: AuthMode, options: UseOtpAuthOptions = {}) {
     });
 
     saveAppSession(session);
-    router.replace(getAuthRedirectPath(session.type, mode));
+    router.replace(getAuthRedirectPath(session.type, mode, options.callbackUrl));
     router.refresh();
   };
 
@@ -102,6 +103,7 @@ export function useOtpAuth(mode: AuthMode, options: UseOtpAuthOptions = {}) {
           window.location.origin,
           mode,
           "client",
+          options.callbackUrl,
         ),
       },
     });

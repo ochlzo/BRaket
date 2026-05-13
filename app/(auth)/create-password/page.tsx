@@ -19,15 +19,23 @@ export const metadata: Metadata = {
 
 type CreatePasswordPageProps = {
   searchParams: Promise<{
+    callbackUrl?: string;
     mode?: string;
     role?: string;
   }>;
 };
 
-function buildAuthErrorRedirect(mode: "login" | "signup") {
+function buildAuthErrorRedirect(
+  mode: "login" | "signup",
+  callbackUrl: string | null,
+) {
   const searchParams = new URLSearchParams({
     authError: GOOGLE_OAUTH_FAILED_MESSAGE,
   });
+
+  if (callbackUrl) {
+    searchParams.set("callbackUrl", callbackUrl);
+  }
 
   return `${getGoogleOAuthEntryPath(mode)}?${searchParams.toString()}`;
 }
@@ -35,9 +43,10 @@ function buildAuthErrorRedirect(mode: "login" | "signup") {
 export default async function CreatePasswordPage({
   searchParams,
 }: CreatePasswordPageProps) {
-  const { mode, role } = await searchParams;
+  const { callbackUrl, mode, role } = await searchParams;
   const oauthContext = readGoogleOAuthContext(
     new URLSearchParams({
+      callbackUrl: callbackUrl ?? "",
       mode: mode ?? "",
       role: role ?? "",
     }),
@@ -51,7 +60,7 @@ export default async function CreatePasswordPage({
   } = await supabase.auth.getUser();
 
   if (userError || !user?.id) {
-    redirect(buildAuthErrorRedirect(oauthContext.mode));
+    redirect(buildAuthErrorRedirect(oauthContext.mode, oauthContext.callbackUrl));
   }
 
   try {
@@ -61,6 +70,7 @@ export default async function CreatePasswordPage({
           "/auth/complete",
           oauthContext.mode,
           oauthContext.role,
+          oauthContext.callbackUrl,
         ),
       );
     }
@@ -69,7 +79,7 @@ export default async function CreatePasswordPage({
       "Failed to verify create-password Google auth provider state.",
       providerError,
     );
-    redirect(buildAuthErrorRedirect(oauthContext.mode));
+    redirect(buildAuthErrorRedirect(oauthContext.mode, oauthContext.callbackUrl));
   }
 
   return (
@@ -85,6 +95,7 @@ export default async function CreatePasswordPage({
       </div>
 
       <OAuthCreatePasswordForm
+        callbackUrl={oauthContext.callbackUrl}
         mode={oauthContext.mode}
         role={oauthContext.role}
       />

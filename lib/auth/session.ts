@@ -135,7 +135,17 @@ export function resolveAppSession({
   return { displayName, type: resolvedRole, username };
 }
 
-export function getAuthRedirectPath(role: UserRole, mode: AuthMode) {
+export function getAuthRedirectPath(
+  role: UserRole,
+  mode: AuthMode,
+  callbackUrl?: unknown,
+) {
+  const normalizedCallbackUrl = normalizeCallbackUrl(callbackUrl);
+
+  if (mode === "login" && normalizedCallbackUrl) {
+    return normalizedCallbackUrl;
+  }
+
   if (mode === "signup") {
     return "/dashboard/client";
   }
@@ -147,6 +157,39 @@ export function getDashboardProfilePath(role: UserRole) {
   return role === "talent"
     ? "/dashboard/talent/profile"
     : "/dashboard/client/profile";
+}
+
+export function normalizeCallbackUrl(value: unknown) {
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const callbackUrl = value.trim();
+
+  if (
+    !callbackUrl.startsWith("/") ||
+    callbackUrl.startsWith("//") ||
+    callbackUrl === "/login" ||
+    callbackUrl.startsWith("/login?")
+  ) {
+    return null;
+  }
+
+  return callbackUrl;
+}
+
+export function getLoginRedirectPath(callbackUrl?: unknown) {
+  const normalizedCallbackUrl = normalizeCallbackUrl(callbackUrl);
+
+  if (!normalizedCallbackUrl) {
+    return "/login";
+  }
+
+  const searchParams = new URLSearchParams({
+    callbackUrl: normalizedCallbackUrl,
+  });
+
+  return `/login?${searchParams.toString()}`;
 }
 
 export function saveAppSession(session: AppSession) {

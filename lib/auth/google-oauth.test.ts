@@ -1,18 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-const googleOAuthModule = await import(
-  new URL("./google-oauth.ts", import.meta.url).href,
-);
-
-const {
+import {
   buildGoogleOAuthFlowPath,
   buildGoogleOAuthMetadataPatch,
   buildGoogleOAuthRedirectTo,
   getGoogleOAuthCallbackRedirectPath,
   readGoogleOAuthContext,
   resolveGoogleOAuthMode,
-} = googleOAuthModule;
+} from "./google-oauth";
 
 test("builds a signup callback URL with the selected role", () => {
   const redirectTo = buildGoogleOAuthRedirectTo(
@@ -27,6 +23,20 @@ test("builds a signup callback URL with the selected role", () => {
   );
 });
 
+test("builds a login callback URL with a safe callback target", () => {
+  const redirectTo = buildGoogleOAuthRedirectTo(
+    "https://braket.example",
+    "login",
+    "client",
+    "/onboarding/talent",
+  );
+
+  assert.equal(
+    redirectTo,
+    "https://braket.example/auth/callback?mode=login&callbackUrl=%2Fonboarding%2Ftalent",
+  );
+});
+
 test("builds a create-password path with the oauth context", () => {
   assert.equal(
     buildGoogleOAuthFlowPath("/create-password", "signup", "talent"),
@@ -34,10 +44,27 @@ test("builds a create-password path with the oauth context", () => {
   );
 });
 
+test("builds an oauth flow path with a safe callback target", () => {
+  assert.equal(
+    buildGoogleOAuthFlowPath(
+      "/auth/complete",
+      "login",
+      "client",
+      "/onboarding/talent",
+    ),
+    "/auth/complete?mode=login&role=client&callbackUrl=%2Fonboarding%2Ftalent",
+  );
+});
+
 test("redirects oauth callback to create-password when email auth is missing", () => {
   assert.equal(
-    getGoogleOAuthCallbackRedirectPath(true, "login", "client"),
-    "/create-password?mode=login&role=client",
+    getGoogleOAuthCallbackRedirectPath(
+      true,
+      "login",
+      "client",
+      "/onboarding/talent",
+    ),
+    "/create-password?mode=login&role=client&callbackUrl=%2Fonboarding%2Ftalent",
   );
 });
 
@@ -57,9 +84,21 @@ test("defaults callback context to login and client when params are invalid", ()
   );
 
   assert.deepEqual(context, {
+    callbackUrl: null,
     mode: "login",
     role: "client",
   });
+});
+
+test("reads safe callback URLs from oauth search params", () => {
+  const context = readGoogleOAuthContext(
+    new URLSearchParams({
+      callbackUrl: "/onboarding/talent",
+      mode: "login",
+    }),
+  );
+
+  assert.equal(context.callbackUrl, "/onboarding/talent");
 });
 
 test("adds missing role and username metadata for Google auth users", () => {

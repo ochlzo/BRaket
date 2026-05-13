@@ -9,6 +9,7 @@ import {
   saveAppSession,
 } from "@/lib/auth/session";
 import {
+  buildGoogleOAuthFlowPath,
   buildGoogleOAuthMetadataPatch,
   GOOGLE_OAUTH_FAILED_MESSAGE,
   getGoogleOAuthEntryPath,
@@ -77,7 +78,13 @@ export function OAuthComplete() {
       });
 
       saveAppSession(session);
-      router.replace(getAuthRedirectPath(session.type, resolvedMode));
+      router.replace(
+        getAuthRedirectPath(
+          session.type,
+          resolvedMode,
+          oauthContext.callbackUrl,
+        ),
+      );
       router.refresh();
     }
 
@@ -86,9 +93,14 @@ export function OAuthComplete() {
     return () => {
       isActive = false;
     };
-  }, [oauthContext.mode, oauthContext.role, router]);
+  }, [oauthContext.callbackUrl, oauthContext.mode, oauthContext.role, router]);
 
-  const returnHref = getGoogleOAuthEntryPath(oauthContext.mode);
+  const returnHref = buildGoogleOAuthFlowPath(
+    getGoogleOAuthEntryPath(oauthContext.mode),
+    oauthContext.mode,
+    oauthContext.role,
+    oauthContext.callbackUrl,
+  );
 
   return (
     <div className="mx-auto max-w-md rounded-3xl border border-[color:var(--line-strong)] bg-white p-8 shadow-[var(--shadow-panel-elevated)]">

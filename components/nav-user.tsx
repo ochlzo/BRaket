@@ -64,7 +64,7 @@ export function NavUser({
     const supabase = createClient();
 
     try {
-      await supabase.auth.signOut({ scope: "local" });
+      await supabase.auth.signOut();
     } finally {
       clearAppSession();
       window.location.href = "/";

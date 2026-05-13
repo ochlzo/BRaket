@@ -26,6 +26,7 @@ const SESSION_REQUIRED_MESSAGE =
   "Continue with Google again to create a password for this account.";
 
 type OAuthCreatePasswordFormProps = {
+  callbackUrl: string | null;
   mode: GoogleOAuthMode;
   role: GoogleOAuthRole;
 };
@@ -38,6 +39,7 @@ function validatePasswordChange(
 }
 
 export function OAuthCreatePasswordForm({
+  callbackUrl,
   mode,
   role,
 }: OAuthCreatePasswordFormProps) {
@@ -151,11 +153,18 @@ export function OAuthCreatePasswordForm({
       return;
     }
 
-    router.replace(buildGoogleOAuthFlowPath("/auth/complete", mode, role));
+    router.replace(
+      buildGoogleOAuthFlowPath("/auth/complete", mode, role, callbackUrl),
+    );
     router.refresh();
   };
 
-  const returnHref = getGoogleOAuthEntryPath(mode);
+  const returnHref = buildGoogleOAuthFlowPath(
+    getGoogleOAuthEntryPath(mode),
+    mode,
+    role,
+    callbackUrl,
+  );
 
   return (
     <form className="space-y-5" onSubmit={(event) => void handleSubmit(event)}>

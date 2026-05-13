@@ -1,13 +1,14 @@
 import "server-only";
 
 import { Prisma } from "@prisma/client";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import {
   buildAvatarInitials,
   buildDisplayName,
   getAuthRedirectPath,
+  getLoginRedirectPath,
   normalizeUserRole,
   resolveCanonicalUsername,
 } from "@/lib/auth/session";
@@ -50,18 +51,18 @@ export async function getCurrentAppUser(): Promise<CurrentAppUser | null> {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   const {
-    data,
+    data: { user },
     error,
-  } = await supabase.auth.getClaims();
+  } = await supabase.auth.getUser();
 
-  if (error || !data?.claims?.sub || !data.claims.email) {
+  if (error || !user?.id || !user.email) {
     return null;
   }
 
-  const authId = data.claims.sub;
-  const email = data.claims.email.trim().toLowerCase();
+  const authId = user.id;
+  const email = user.email.trim().toLowerCase();
 
-  const metadata = (data.claims.user_metadata ?? {}) as Record<string, unknown>;
+  const metadata = (user.user_metadata ?? {}) as Record<string, unknown>;
   const existingUser = await prisma.user.findFirst({
     where: { authId },
   });
@@ -232,7 +233,8 @@ export async function requireCurrentAppUser(expectedRole?: UserRole) {
   const user = await getCurrentAppUser();
 
   if (!user) {
-    redirect("/login");
+    const headerStore = await headers();
+    redirect(getLoginRedirectPath(headerStore.get("x-braket-path")));
   }
 
   if (expectedRole && user.role !== expectedRole) {

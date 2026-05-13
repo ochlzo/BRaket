@@ -78,6 +78,7 @@ model TalentProfile {
   talent_profile_id           String            @unique
   user_id                     String            @unique
   headline                    String
+  bio                         String
   college                     String
   course                      String
   year_level                  Int
@@ -89,6 +90,7 @@ model TalentProfile {
   createdAt                   DateTime          @default(now())
   updatedAt                   DateTime
   TalentPortfolio             TalentPortfolio[]
+  TalentSkills                TalentSkill[]
   User                        User              @relation(fields: [user_id], references: [userId], onDelete: Cascade)
 
   @@id([talent_profile_id, user_id])
@@ -112,4 +114,39 @@ model TalentPortfolioMedia {
   createdAt           DateTime        @default(now())
   updatedAt           DateTime
   TalentPortfolio     TalentPortfolio @relation(fields: [talent_portfolio_id], references: [talent_portfolio_id], onDelete: Cascade)
+}
+
+model Skill {
+  skillId      String        @id @default(uuid()) @map("skill_id")
+  name         String        @unique
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+
+  TalentSkills TalentSkill[]
+
+  @@map("skills")
+}
+
+model TalentSkill {
+  talentSkillId    String           @id @default(uuid()) @map("talent_skill_id")
+  talentProfileId  String           @map("talent_profile_id")
+  skillId          String           @map("skill_id")
+  proficiencyLevel ProficiencyLevel @map("proficiency_level")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+
+  TalentProfile    TalentProfile    @relation(fields: [talentProfileId], references: [talent_profile_id], onDelete: Cascade)
+  Skill            Skill            @relation(fields: [skillId], references: [skillId], onDelete: Cascade)
+
+  @@unique([talentProfileId, skillId])
+  @@map("talent_skills")
+}
+
+enum ProficiencyLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+
+  @@map("proficiency_level")
 }

@@ -5,11 +5,16 @@ import { ForgotPasswordForm } from "@/components/shared/auth/forgot-password-for
 import { OtpAuthForm } from "@/components/shared/auth/otp-auth-form";
 
 type LoginFormProps = {
+  callbackUrl?: string;
   initialError?: string;
   initialNotice?: string;
 };
 
-export function LoginForm({ initialError, initialNotice }: LoginFormProps) {
+export function LoginForm({
+  callbackUrl,
+  initialError,
+  initialNotice,
+}: LoginFormProps) {
   const [email, setEmail] = useState("");
   const [isRequestingPasswordReset, setIsRequestingPasswordReset] =
     useState(false);
@@ -42,6 +47,7 @@ export function LoginForm({ initialError, initialNotice }: LoginFormProps) {
       ) : null}
 
       <OtpAuthForm
+        callbackUrl={callbackUrl}
         email={email}
         mode="login"
         passwordFieldAction={

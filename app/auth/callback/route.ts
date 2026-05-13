@@ -17,6 +17,11 @@ function buildErrorRedirect(requestUrl: URL) {
   );
 
   redirectUrl.searchParams.set("authError", GOOGLE_OAUTH_FAILED_MESSAGE);
+
+  if (oauthContext.callbackUrl) {
+    redirectUrl.searchParams.set("callbackUrl", oauthContext.callbackUrl);
+  }
+
   return redirectUrl;
 }
 
@@ -53,6 +58,7 @@ export async function GET(request: Request) {
         !hasEmailProvider,
         oauthContext.mode,
         oauthContext.role,
+        oauthContext.callbackUrl,
       ),
       requestUrl.origin,
     );

@@ -1,15 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
-import { saveTalentOnboardingAction } from "@/app/onboarding/talent/_actions/save-talent-onboarding-action";
 import {
   TalentSkillsSelector,
   type SelectedSkill,
 } from "@/app/onboarding/talent/_components/talent-skills-selector";
 import { availableSkills } from "@/app/onboarding/talent/_data";
-import { saveAppSession } from "@/lib/auth/session";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,19 +19,24 @@ const isTesting =
   process.env.NEXT_PUBLIC__TESTING === "true" ||
   process.env.NEXT_PUBLIC_TESTING === "true";
 
-export function TalentOnboardingForm() {
-  const router = useRouter();
-  const [username, setUsername] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+type TalentOnboardingFormProps = {
+  currentUser: {
+    firstName: string;
+    lastName: string;
+    username: string;
+  };
+};
+
+export function TalentOnboardingForm({
+  currentUser,
+}: TalentOnboardingFormProps) {
   const [headline, setHeadline] = useState("");
   const [bio, setBio] = useState("");
   const [minRate, setMinRate] = useState("");
   const [maxRate, setMaxRate] = useState("");
   const [selectedSkills, setSelectedSkills] = useState<SelectedSkill[]>([]);
   const [skillSearch, setSkillSearch] = useState("");
-  const [error, setError] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
+  const [notice, setNotice] = useState("");
 
   const filteredSkills = availableSkills.filter(
     (skill) =>
@@ -68,99 +70,76 @@ export function TalentOnboardingForm() {
   }
 
   return (
-    <div className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-8">
+    <div className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-4 sm:p-8">
       <form
-        className="space-y-7"
-        onSubmit={async (event) => {
+        className="space-y-5 sm:space-y-7"
+        onSubmit={(event) => {
           event.preventDefault();
-          setError("");
-          setIsSaving(true);
-
-          const result = await saveTalentOnboardingAction({
-            bio,
-            firstName,
-            headline,
-            lastName,
-            maxRate,
-            minRate,
-            skills: selectedSkills,
-            username,
-          });
-
-          setIsSaving(false);
-
-          if (!result.ok) {
-            setError(result.message);
-            return;
-          }
-
-          saveAppSession(result.session);
-          router.push("/dashboard/talent/services/new");
-          router.refresh();
+          setNotice("Talent onboarding is UI-only for now.");
         }}
       >
         <div>
-          <h2 className="mb-4 flex items-center gap-2 text-lg font-bold text-foreground">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[color:var(--brand-orange)] text-xs font-bold text-white">
+          <h2 className="mb-3 flex items-center gap-2 text-base font-bold text-foreground sm:mb-4 sm:text-lg">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--brand-orange)] text-[0.7rem] font-bold text-white sm:h-7 sm:w-7 sm:rounded-lg sm:text-xs">
               1
             </span>
             Basic Information
           </h2>
 
-          <div className="space-y-5">
-            <div className="space-y-2">
+          <div className="space-y-4 sm:space-y-5">
+            <div className="space-y-1.5 sm:space-y-2">
               <Label className="text-sm font-semibold" htmlFor="ob-username">
                 Username{" "}
                 <span className="text-[color:var(--tone-red-base)]">*</span>
               </Label>
               <Input
-                className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm"
+                className="h-10 rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 text-sm text-[color:var(--ink-muted)] sm:h-11 sm:rounded-xl"
                 id="ob-username"
-                onChange={(event) => setUsername(event.target.value)}
                 placeholder="e.g. maria-santos"
+                readOnly
                 required
-                value={username}
+                value={currentUser.username}
               />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
+              <div className="space-y-1.5 sm:space-y-2">
                 <Label className="text-sm font-semibold" htmlFor="ob-first">
                   First Name{" "}
                   <span className="text-[color:var(--tone-red-base)]">*</span>
                 </Label>
                 <Input
-                  className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm"
+                  className="h-10 rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 text-sm text-[color:var(--ink-muted)] sm:h-11 sm:rounded-xl"
                   id="ob-first"
-                  onChange={(event) => setFirstName(event.target.value)}
                   placeholder="Maria"
+                  readOnly
                   required
-                  value={firstName}
+                  value={currentUser.firstName}
                 />
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1.5 sm:space-y-2">
                 <Label className="text-sm font-semibold" htmlFor="ob-last">
                   Last Name{" "}
                   <span className="text-[color:var(--tone-red-base)]">*</span>
                 </Label>
                 <Input
-                  className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm"
+                  className="h-10 rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 text-sm text-[color:var(--ink-muted)] sm:h-11 sm:rounded-xl"
                   id="ob-last"
-                  onChange={(event) => setLastName(event.target.value)}
                   placeholder="Santos"
+                  readOnly
                   required
-                  value={lastName}
+                  value={currentUser.lastName}
                 />
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1.5 sm:space-y-2">
               <Label className="text-sm font-semibold" htmlFor="ob-headline">
                 Headline{" "}
                 <span className="text-[color:var(--tone-red-base)]">*</span>
               </Label>
               <Input
-                className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm"
+                className="h-10 rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 text-sm sm:h-11 sm:rounded-xl"
                 id="ob-headline"
                 onChange={(event) => setHeadline(event.target.value)}
                 placeholder="e.g. UI/UX Designer & Prototyping Specialist"
@@ -169,12 +148,12 @@ export function TalentOnboardingForm() {
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1.5 sm:space-y-2">
               <Label className="text-sm font-semibold" htmlFor="ob-bio">
                 Bio <span className="text-[color:var(--tone-red-base)]">*</span>
               </Label>
               <Textarea
-                className="rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm"
+                className="min-h-28 rounded-2xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 py-3 text-sm sm:rounded-xl"
                 id="ob-bio"
                 onChange={(event) => setBio(event.target.value)}
                 placeholder="Tell clients about yourself, your experience, and what makes you unique..."
@@ -194,8 +173,8 @@ export function TalentOnboardingForm() {
         <Separator />
 
         <div>
-          <h2 className="mb-4 flex items-center gap-2 text-lg font-bold text-foreground">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[color:var(--brand-orange)] text-xs font-bold text-white">
+          <h2 className="mb-3 flex items-center gap-2 text-base font-bold text-foreground sm:mb-4 sm:text-lg">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--brand-orange)] text-[0.7rem] font-bold text-white sm:h-7 sm:w-7 sm:rounded-lg sm:text-xs">
               2
             </span>
             Hourly Rates
@@ -212,7 +191,7 @@ export function TalentOnboardingForm() {
                   PHP
                 </span>
                 <Input
-                  className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] pl-12 text-sm"
+                  className="h-10 rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] pl-12 text-sm sm:h-11 sm:rounded-xl"
                   id="ob-min"
                   min="1"
                   onChange={(event) => setMinRate(event.target.value)}
@@ -233,7 +212,7 @@ export function TalentOnboardingForm() {
                   PHP
                 </span>
                 <Input
-                  className="h-11 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] pl-12 text-sm"
+                  className="h-10 rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] pl-12 text-sm sm:h-11 sm:rounded-xl"
                   id="ob-max"
                   min="1"
                   onChange={(event) => setMaxRate(event.target.value)}
@@ -261,24 +240,21 @@ export function TalentOnboardingForm() {
 
         <Separator />
 
-        {error ? (
+        {notice ? (
           <p
-            className="rounded-xl border border-[color:var(--tone-red-soft)] bg-[color:var(--tone-red-soft)] px-4 py-3 text-sm text-[color:var(--tone-red-deep)]"
-            role="alert"
+            className="rounded-xl border border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 py-3 text-sm text-[color:var(--ink-soft)]"
+            role="status"
           >
-            {error}
+            {notice}
           </p>
         ) : null}
 
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
           <Button
-            className="h-12 rounded-xl bg-[color:var(--brand-orange)] px-8 text-sm font-semibold !text-white transition hover:bg-[color:var(--brand-orange-strong)]"
-            disabled={isSaving}
+            className="min-h-11 rounded-full bg-[color:var(--brand-orange)] px-5 text-sm font-semibold !text-white transition hover:bg-[color:var(--brand-orange-strong)] sm:h-12 sm:rounded-xl sm:px-8"
             type="submit"
           >
-            {isSaving
-              ? "Saving Your Profile..."
-              : "Complete Profile & Create First Service ->"}
+            Next
           </Button>
         </div>
       </form>

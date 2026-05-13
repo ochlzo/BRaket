@@ -7,6 +7,8 @@ const {
   buildAvatarInitials,
   buildDicebearNotionistsAvatarUrl,
   getAuthRedirectPath,
+  getLoginRedirectPath,
+  normalizeCallbackUrl,
   resolveCanonicalUsername,
 } = sessionModule;
 
@@ -18,6 +20,32 @@ test("redirects all signup flows to the client dashboard", () => {
 test("keeps login redirects role-aware", () => {
   assert.equal(getAuthRedirectPath("talent", "login"), "/dashboard/talent");
   assert.equal(getAuthRedirectPath("client", "login"), "/dashboard/client");
+});
+
+test("uses safe callback URLs for login redirects", () => {
+  assert.equal(
+    getAuthRedirectPath("client", "login", "/onboarding/talent"),
+    "/onboarding/talent",
+  );
+  assert.equal(
+    getAuthRedirectPath("talent", "login", "/settings/account?tab=profile"),
+    "/settings/account?tab=profile",
+  );
+});
+
+test("ignores unsafe callback URLs", () => {
+  assert.equal(normalizeCallbackUrl("https://evil.example/path"), null);
+  assert.equal(normalizeCallbackUrl("//evil.example/path"), null);
+  assert.equal(normalizeCallbackUrl("/login"), null);
+  assert.equal(getAuthRedirectPath("client", "login", "https://evil.example"), "/dashboard/client");
+});
+
+test("builds login redirects with callback parameters", () => {
+  assert.equal(
+    getLoginRedirectPath("/onboarding/talent"),
+    "/login?callbackUrl=%2Fonboarding%2Ftalent",
+  );
+  assert.equal(getLoginRedirectPath("https://evil.example"), "/login");
 });
 
 test("prefers the stored database username over auth metadata", () => {
