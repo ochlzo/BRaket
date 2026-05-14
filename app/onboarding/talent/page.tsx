@@ -1,5 +1,6 @@
 import { TalentOnboardingFlow } from "@/app/onboarding/talent/_components/talent-onboarding-flow";
 import { TalentOnboardingHeader } from "@/app/onboarding/talent/_components/talent-onboarding-header";
+import { getCategoryOptions } from "@/app/onboarding/talent/_lib/get-category-options";
 import { getSkillOptions } from "@/app/onboarding/talent/_lib/get-skill-options";
 import { requireCurrentAppUser } from "@/server/users/current-user";
 
@@ -23,6 +24,7 @@ export default async function OnboardingPage({
   const { step } = await searchParams;
   const initialStep = parseOnboardingStep(step);
   const currentUser = await requireCurrentAppUser();
+  const categoryOptions = await getCategoryOptions();
   const skillOptions = await getSkillOptions();
 
   return (
@@ -31,6 +33,7 @@ export default async function OnboardingPage({
         <div className="mx-auto max-w-2xl">
           <TalentOnboardingHeader />
           <TalentOnboardingFlow
+            availableCategories={categoryOptions}
             availableSkills={skillOptions}
             currentUser={{
               firstName: currentUser.firstName,

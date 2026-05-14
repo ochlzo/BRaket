@@ -2,8 +2,9 @@
 
 import { useState, type FormEvent } from "react";
 
-import { TalentFormSectionHeading } from "@/app/onboarding/talent/_components/talent-form-section-heading";
+import { TalentServiceCategorySelector } from "@/app/onboarding/talent/_components/talent-service-category-selector";
 import { TalentMediaUploadField } from "@/app/onboarding/talent/_components/talent-media-upload-field";
+import type { CategoryOption } from "@/app/onboarding/talent/_lib/get-category-options";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
 
 const priceUnitOptions = [
   { label: "Fixed", value: "FIXED" },
@@ -42,8 +44,18 @@ function getPriceRangeError(minPrice: string, maxPrice: string) {
   return "";
 }
 
-export function TalentServiceOnboardingForm() {
+type TalentServiceOnboardingFormProps = {
+  availableCategories: CategoryOption[];
+  onSkip: () => void;
+};
+
+export function TalentServiceOnboardingForm({
+  availableCategories,
+  onSkip,
+}: TalentServiceOnboardingFormProps) {
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [priceUnit, setPriceUnit] = useState("");
@@ -55,6 +67,11 @@ export function TalentServiceOnboardingForm() {
     event.preventDefault();
 
     if (!event.currentTarget.reportValidity()) {
+      return;
+    }
+
+    if (selectedCategoryIds.length === 0) {
+      setNotice("Select at least 1 category before creating your service.");
       return;
     }
 
@@ -76,15 +93,25 @@ export function TalentServiceOnboardingForm() {
       <form className="space-y-5 sm:space-y-7" onSubmit={handleSubmit}>
         <div>
           <div className="mb-4">
-            <h2 className="text-lg font-extrabold tracking-[-0.03em] text-foreground sm:text-2xl">
-              Create Your First Service
-            </h2>
+            <div className="flex items-start justify-between gap-3">
+              <h2 className="text-lg font-extrabold tracking-[-0.03em] text-foreground sm:text-2xl">
+                Create Your First Service
+              </h2>
+              <Button
+                className="mt-0.5 rounded-full text-xs font-semibold text-[color:var(--brand-orange)] sm:rounded-xl sm:text-sm"
+                onClick={onSkip}
+                size="xs"
+                type="button"
+                variant="ghost"
+              >
+                <span className="sm:hidden">Skip</span>
+                <span className="hidden sm:inline">Skip for now</span>
+              </Button>
+            </div>
             <p className="mt-2 text-sm leading-6 text-[color:var(--ink-muted)]">
               Define a service clients can book from your talent profile.
             </p>
           </div>
-
-          <TalentFormSectionHeading step={3} title="Service Details" />
 
           <div className="space-y-4 sm:space-y-5">
             <div className="space-y-1.5 sm:space-y-2">
@@ -102,6 +129,32 @@ export function TalentServiceOnboardingForm() {
                 value={title}
               />
             </div>
+
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label
+                className="text-sm font-semibold"
+                htmlFor="service-description"
+              >
+                Description{" "}
+                <span className="text-[color:var(--tone-red-base)]">*</span>
+              </Label>
+              <Textarea
+                className="min-h-28 rounded-2xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 py-3 text-sm sm:rounded-xl"
+                id="service-description"
+                name="description"
+                onChange={(event) => setDescription(event.target.value)}
+                placeholder="Describe what clients will get, your process, timeline, and deliverables."
+                required
+                rows={4}
+                value={description}
+              />
+            </div>
+
+            <TalentServiceCategorySelector
+              availableCategories={availableCategories}
+              selectedCategoryIds={selectedCategoryIds}
+              setSelectedCategoryIds={setSelectedCategoryIds}
+            />
 
             <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_14rem] lg:items-start">
               <div className="space-y-1.5 sm:space-y-2">
@@ -189,7 +242,7 @@ export function TalentServiceOnboardingForm() {
           inputName="serviceMedia"
           onFilesChange={setSampleFiles}
           onNoticeChange={setNotice}
-          title="Sample Work Images"
+          title="Work Samples"
         />
 
         {notice ? (

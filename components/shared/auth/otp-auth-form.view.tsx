@@ -246,16 +246,6 @@ export function OtpAuthFormView({
         </div>
       )}
 
-      <div className="relative flex items-center gap-4 py-1">
-        <Separator className="flex-1" />
-        <span className="text-xs font-medium text-[color:var(--ink-soft)]">
-          {isSignup
-            ? "Account creation completes after code verification"
-            : "Password is primary, code is available as a fallback"}
-        </span>
-        <Separator className="flex-1" />
-      </div>
-
       <p className="pt-1 text-center text-sm text-[color:var(--ink-muted)]">
         {isSignup ? "Already have an account?" : "Need an account?"}{" "}
         <a

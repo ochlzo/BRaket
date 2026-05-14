@@ -111,10 +111,7 @@ export function TalentOnboardingForm({
 
   return (
     <div className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-4 sm:p-8">
-      <form
-        className="space-y-5 sm:space-y-7"
-        onSubmit={handleSubmit}
-      >
+      <form className="space-y-5 sm:space-y-7" onSubmit={handleSubmit}>
         <div>
           <TalentFormSectionHeading step={1} title="Basic Information" />
           <TalentBasicInfoFields
@@ -146,6 +143,7 @@ export function TalentOnboardingForm({
 
         <TalentSkillsSelector
           addSkill={addSkill}
+          availableSkills={availableSkills}
           clearSkills={clearSkills}
           filteredSkills={filteredSkills}
           removeSkill={removeSkill}

@@ -142,18 +142,42 @@ model TalentSkill {
 }
 
 model Service {
-  serviceId       String         @id @default(uuid()) @map("service_id")
-  talentProfileId String         @map("talent_profile_id")
-  title           String
-  minPrice        Decimal        @map("min_price") @db.Decimal(10, 2)
-  maxPrice        Decimal        @map("max_price") @db.Decimal(10, 2)
-  priceUnit       PriceUnit      @map("price_unit")
-  createdAt       DateTime       @default(now()) @map("created_at")
-  updatedAt       DateTime       @updatedAt @map("updated_at")
-  ServiceMedia    ServiceMedia[]
-  TalentProfile   TalentProfile  @relation(fields: [talentProfileId], references: [talent_profile_id], onDelete: Cascade)
+  serviceId         String            @id @default(uuid()) @map("service_id")
+  talentProfileId   String            @map("talent_profile_id")
+  title             String
+  description       String
+  minPrice          Decimal           @map("min_price") @db.Decimal(10, 2)
+  maxPrice          Decimal           @map("max_price") @db.Decimal(10, 2)
+  priceUnit         PriceUnit         @map("price_unit")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+  ServiceCategories ServiceCategory[]
+  ServiceMedia      ServiceMedia[]
+  TalentProfile     TalentProfile     @relation(fields: [talentProfileId], references: [talent_profile_id], onDelete: Cascade)
 
   @@map("Services")
+}
+
+model Category {
+  categoryId        String            @id @default(uuid()) @map("category_id")
+  name              String
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+  ServiceCategories ServiceCategory[]
+
+  @@map("Categories")
+}
+
+model ServiceCategory {
+  serviceCategoryId String   @id @default(uuid()) @map("service_category_id")
+  categoryId        String   @map("category_id")
+  serviceId         String   @map("service_id")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  Category          Category @relation(fields: [categoryId], references: [categoryId], onDelete: Cascade)
+  Service           Service  @relation(fields: [serviceId], references: [serviceId], onDelete: Cascade)
+
+  @@map("ServiceCategories")
 }
 
 model ServiceMedia {

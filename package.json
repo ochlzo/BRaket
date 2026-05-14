@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "seed:skills": "node prisma/seed-skills.mjs",
+    "seed:categories": "node prisma/seed-categories.mjs",
     "postinstall": "prisma generate"
   },
   "dependencies": {

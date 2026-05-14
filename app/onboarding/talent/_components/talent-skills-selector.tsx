@@ -27,6 +27,7 @@ const skillsSubtitleClassName = "text-xs font-normal leading-none sm:text-sm";
 
 type TalentSkillsSelectorProps = {
   addSkill: (name: string) => void;
+  availableSkills: string[];
   clearSkills: () => void;
   filteredSkills: string[];
   removeSkill: (name: string) => void;
@@ -38,6 +39,7 @@ type TalentSkillsSelectorProps = {
 
 export function TalentSkillsSelector({
   addSkill,
+  availableSkills,
   clearSkills,
   filteredSkills,
   removeSkill,
@@ -52,7 +54,7 @@ export function TalentSkillsSelector({
 
   function getSkillToAdd(value: string) {
     const trimmedValue = value.trim();
-    const matchingSkill = filteredSkills.find(
+    const matchingSkill = availableSkills.find(
       (skill) => skill.toLowerCase() === trimmedValue.toLowerCase(),
     );
 
