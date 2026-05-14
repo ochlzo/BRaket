@@ -6,7 +6,7 @@ import type { ClientProfilePageData } from "@/lib/client-profile/types";
 import type { CurrentAppUser } from "@/server/users/current-user";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/shared/user-avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -161,19 +161,14 @@ export function ClientProfileHero({ profile, user }: ClientProfileHeroProps) {
         <div className="-mt-7 flex flex-col gap-3 sm:-mt-10 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex min-w-0 items-start gap-6 sm:items-end sm:gap-4">
             <div className="relative shrink-0 overflow-visible">
-              <Avatar className="size-20 rounded-none border-[3px] border-white bg-[color:var(--surface-alt)] shadow-[var(--shadow-panel-soft)] after:rounded-none sm:size-24">
-                {user.avatarUrl ? (
-                  <AvatarImage
-                    alt={user.displayName}
-                    className="rounded-none"
-                    src={user.avatarUrl}
-                  />
-                ) : (
-                  <AvatarFallback className="rounded-none text-lg font-black text-[color:var(--ink-muted)]">
-                    {user.initials || "?"}
-                  </AvatarFallback>
-                )}
-              </Avatar>
+              <UserAvatar
+                alt={user.displayName}
+                className="size-20 rounded-none border-[3px] border-white bg-[color:var(--surface-alt)] shadow-[var(--shadow-panel-soft)] after:rounded-none sm:size-24"
+                fallbackClassName="rounded-none text-lg font-black text-[color:var(--ink-muted)]"
+                imageClassName="rounded-none"
+                initials={user.initials}
+                src={user.avatarUrl}
+              />
               <ClientProfileImageEditor
                 initials={user.initials}
                 avatarUrl={user.avatarUrl}

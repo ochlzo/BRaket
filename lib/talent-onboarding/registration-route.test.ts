@@ -8,6 +8,7 @@ const routeModule = await import(
 const {
   getAllowedTalentOnboardingStep,
   getTalentRegistrationPath,
+  getTalentVerificationMaybeLaterPath,
   shouldForceTalentVerification,
 } = routeModule;
 
@@ -80,5 +81,16 @@ test("forces verification on onboarding pages for unverified talent users", () =
       isVerified: false,
     }),
     true,
+  );
+});
+
+test("sends existing talents to the talent dashboard when skipping verification", () => {
+  assert.equal(getTalentVerificationMaybeLaterPath(true), "/dashboard/talent");
+});
+
+test("sends non-talents back to talent onboarding when skipping verification", () => {
+  assert.equal(
+    getTalentVerificationMaybeLaterPath(false),
+    "/onboarding/talent?step=1",
   );
 });

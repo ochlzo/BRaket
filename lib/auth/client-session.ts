@@ -1,4 +1,9 @@
-import { APP_SESSION_KEY, type AppSession, normalizeUserRole } from "@/lib/auth/session";
+import {
+  APP_SESSION_CHANGE_EVENT,
+  APP_SESSION_KEY,
+  type AppSession,
+  normalizeUserRole,
+} from "@/lib/auth/session";
 
 export type ClientAppSession = AppSession & {
   verified?: boolean;
@@ -37,8 +42,13 @@ function parseStoredSession(data: string | null): ClientAppSession | null {
       parsed.displayName.trim().length > 0
         ? parsed.displayName.trim()
         : username;
+    const avatarUrl =
+      typeof parsed.avatarUrl === "string" && parsed.avatarUrl.trim().length > 0
+        ? parsed.avatarUrl.trim()
+        : "";
 
     return {
+      avatarUrl,
       displayName,
       type: normalizeUserRole(parsed.type),
       username,
@@ -51,7 +61,12 @@ function parseStoredSession(data: string | null): ClientAppSession | null {
 
 export function subscribeToAppSession(onStoreChange: () => void) {
   window.addEventListener("storage", onStoreChange);
-  return () => window.removeEventListener("storage", onStoreChange);
+  window.addEventListener(APP_SESSION_CHANGE_EVENT, onStoreChange);
+
+  return () => {
+    window.removeEventListener("storage", onStoreChange);
+    window.removeEventListener(APP_SESSION_CHANGE_EVENT, onStoreChange);
+  };
 }
 
 export function getClientAppSessionSnapshot() {

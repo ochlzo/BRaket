@@ -10,7 +10,7 @@ import {
   UserRound,
 } from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/shared/user-avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -92,13 +92,12 @@ export function NavUser({
               />
             }
           >
-            <Avatar className="h-9 w-9 group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8">
-              {avatarUrl ? (
-                <AvatarImage alt={displayName} src={avatarUrl} />
-              ) : (
-                <AvatarFallback>{initials || "?"}</AvatarFallback>
-              )}
-            </Avatar>
+            <UserAvatar
+              alt={displayName}
+              className="h-9 w-9 group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8"
+              initials={initials}
+              src={avatarUrl}
+            />
             <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
               <span className="truncate font-medium">{displayName}</span>
               <span className="truncate text-xs text-[color:var(--ink-muted)]">
@@ -116,13 +115,12 @@ export function NavUser({
             <DropdownMenuGroup>
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-3 px-2 py-2 text-left text-sm">
-                  <Avatar className="h-9 w-9">
-                    {avatarUrl ? (
-                      <AvatarImage alt={displayName} src={avatarUrl} />
-                    ) : (
-                      <AvatarFallback>{initials || "?"}</AvatarFallback>
-                    )}
-                  </Avatar>
+                  <UserAvatar
+                    alt={displayName}
+                    className="h-9 w-9"
+                    initials={initials}
+                    src={avatarUrl}
+                  />
                   <div className="grid flex-1 leading-tight">
                     <span className="truncate font-medium">{displayName}</span>
                     <span className="truncate text-xs text-[color:var(--ink-muted)]">

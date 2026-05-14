@@ -1,10 +1,12 @@
 import type { UserRole } from "@/lib/types";
 
 export const APP_SESSION_KEY = "braket_session";
+export const APP_SESSION_CHANGE_EVENT = "braket_session_change";
 
 export type AuthMode = "login" | "signup";
 
 export type AppSession = {
+  avatarUrl?: string;
   displayName: string;
   type: UserRole;
   username: string;
@@ -131,8 +133,13 @@ export function resolveAppSession({
     lastName,
     fallbackDisplayName,
   );
+  const avatarUrl = readTextMetadataValue(metadata, [
+    "avatar_url",
+    "avatarUrl",
+    "picture",
+  ]);
 
-  return { displayName, type: resolvedRole, username };
+  return { avatarUrl, displayName, type: resolvedRole, username };
 }
 
 export function getAuthRedirectPath(
@@ -195,9 +202,11 @@ export function getLoginRedirectPath(callbackUrl?: unknown) {
 export function saveAppSession(session: AppSession) {
   if (typeof window === "undefined") return;
   localStorage.setItem(APP_SESSION_KEY, JSON.stringify(session));
+  window.dispatchEvent(new Event(APP_SESSION_CHANGE_EVENT));
 }
 
 export function clearAppSession() {
   if (typeof window === "undefined") return;
   localStorage.removeItem(APP_SESSION_KEY);
+  window.dispatchEvent(new Event(APP_SESSION_CHANGE_EVENT));
 }

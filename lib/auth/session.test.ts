@@ -9,6 +9,7 @@ const {
   getAuthRedirectPath,
   getLoginRedirectPath,
   normalizeCallbackUrl,
+  resolveAppSession,
   resolveCanonicalUsername,
 } = sessionModule;
 
@@ -72,6 +73,19 @@ test("builds the notionists avatar url from a seed", () => {
     buildDicebearNotionistsAvatarUrl("Vivian"),
     "https://api.dicebear.com/9.x/notionists/svg?seed=Vivian",
   );
+});
+
+test("keeps auth metadata avatar url in the client app session", () => {
+  const session = resolveAppSession({
+    email: "vivian@example.com",
+    mode: "login",
+    userMetadata: {
+      avatar_url: "https://example.com/avatar.jpg",
+      username: "vivian",
+    },
+  });
+
+  assert.equal(session.avatarUrl, "https://example.com/avatar.jpg");
 });
 
 test("builds initials from display name or email", () => {

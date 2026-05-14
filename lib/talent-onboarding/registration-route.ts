@@ -1,4 +1,5 @@
 const VERIFICATION_PATH = "/onboarding/talent/verification";
+const TALENT_DASHBOARD_PATH = "/dashboard/talent";
 const TALENT_PROFILE_PATH = "/dashboard/talent/profile";
 const MAX_ONBOARDING_STEP = 3;
 const MIN_ONBOARDING_STEP = 1;
@@ -53,4 +54,8 @@ export function shouldForceTalentVerification({
   isVerified,
 }: TalentVerificationInput) {
   return isTalent && !isVerified;
+}
+
+export function getTalentVerificationMaybeLaterPath(isTalent: boolean) {
+  return isTalent ? TALENT_DASHBOARD_PATH : `/onboarding/talent?step=${MIN_ONBOARDING_STEP}`;
 }

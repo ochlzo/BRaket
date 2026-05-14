@@ -2,18 +2,23 @@
 
 import { MenuIcon, XIcon } from "lucide-react";
 import Link from "next/link";
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 import { BrandMark } from "@/components/shared/branding/brand-mark";
+import { UserAvatar } from "@/components/shared/user-avatar";
 import {
   getClientAppSessionSnapshot,
   subscribeToAppSession,
 } from "@/lib/auth/client-session";
-import { getDashboardProfilePath } from "@/lib/auth/session";
-import { clearAppSession } from "@/lib/auth/session";
+import {
+  clearAppSession,
+  getDashboardProfilePath,
+  saveAppSession,
+} from "@/lib/auth/session";
 import type { NavItem } from "@/lib/content/navigation";
 import { semantic } from "@/lib/theme/semantic";
 import { createClient } from "@/lib/supabase/client";
+import { getCurrentAppSessionAction } from "@/server/users/get-current-app-session-action";
 
 type SiteHeaderProps = {
   activeHref: string;
@@ -56,6 +61,38 @@ export function SiteHeader({
     ? getInitials(sessionLabel, session.username)
     : "";
 
+  useEffect(() => {
+    if (!session) {
+      return;
+    }
+
+    const currentSession = session;
+    let isActive = true;
+
+    async function refreshSessionAvatar() {
+      const nextSession = await getCurrentAppSessionAction();
+
+      if (!isActive || !nextSession) {
+        return;
+      }
+
+      if (
+        nextSession.avatarUrl !== currentSession.avatarUrl ||
+        nextSession.displayName !== currentSession.displayName ||
+        nextSession.username !== currentSession.username ||
+        nextSession.type !== currentSession.type
+      ) {
+        saveAppSession(nextSession);
+      }
+    }
+
+    void refreshSessionAvatar();
+
+    return () => {
+      isActive = false;
+    };
+  }, [session]);
+
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-[color:var(--line)] bg-white/82 backdrop-blur-xl">
       <div className="relative mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-6 lg:px-8">
@@ -82,7 +119,12 @@ export function SiteHeader({
                 type="button"
                 className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm font-bold text-foreground transition-colors hover:border-[color:var(--brand-orange)] focus:outline-none"
               >
-                {sessionInitials}
+                <UserAvatar
+                  alt={sessionLabel}
+                  className="h-full w-full"
+                  initials={sessionInitials}
+                  src={session.avatarUrl}
+                />
               </button>
 
               <div className="absolute right-0 top-full z-50 hidden w-48 pt-2 group-hover:block">

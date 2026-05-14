@@ -16,16 +16,20 @@ import { Button } from "@/components/ui/button";
 import { FileInput } from "@/components/ui/file-input";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getTalentVerificationMaybeLaterPath } from "@/lib/talent-onboarding/registration-route";
 
 type TalentBuVerificationIntroProps = {
+  isTalent: boolean;
   step?: string;
 };
 
 export function TalentBuVerificationIntro({
+  isTalent,
   step,
 }: TalentBuVerificationIntroProps) {
   const router = useRouter();
   const isFormStep = step === "form";
+  const maybeLaterPath = getTalentVerificationMaybeLaterPath(isTalent);
 
   if (isFormStep) {
     return (
@@ -158,7 +162,7 @@ export function TalentBuVerificationIntro({
             <DialogFooter className="mx-0 mb-0 flex-row items-center justify-center border-t border-[color:var(--line)] bg-[color:var(--surface-alt)] px-6 pb-7 pt-3 sm:justify-center">
               <Button
                 className="mx-auto h-11 min-w-32 translate-y-1 cursor-pointer bg-[color:var(--brand-orange)] px-6 text-white hover:bg-[color:var(--brand-orange-strong)]"
-                onClick={() => router.push("/onboarding/talent?step=1")}
+                onClick={() => router.push(maybeLaterPath)}
                 type="button"
               >
                 Continue
