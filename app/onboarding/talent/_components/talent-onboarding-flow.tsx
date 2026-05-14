@@ -6,6 +6,7 @@ import { TalentOnboardingForm } from "@/app/onboarding/talent/_components/talent
 import { TalentPortfolioOnboardingForm } from "@/app/onboarding/talent/_components/talent-portfolio-onboarding-form";
 import { TalentServiceOnboardingForm } from "@/app/onboarding/talent/_components/talent-service-onboarding-form";
 import type { CategoryOption } from "@/app/onboarding/talent/_lib/get-category-options";
+import type { TalentPortfolioStepInitialValues } from "@/app/onboarding/talent/_lib/talent-portfolio-step";
 import type { TalentProfileStepInitialValues } from "@/app/onboarding/talent/_lib/talent-profile-step";
 
 type TalentOnboardingFlowProps = {
@@ -16,6 +17,7 @@ type TalentOnboardingFlowProps = {
     lastName: string;
     username: string;
   };
+  initialPortfolioValues: TalentPortfolioStepInitialValues;
   initialProfileValues: TalentProfileStepInitialValues;
   initialStep: 1 | 2 | 3;
 };
@@ -24,6 +26,7 @@ export function TalentOnboardingFlow({
   availableCategories,
   availableSkills,
   currentUser,
+  initialPortfolioValues,
   initialProfileValues,
   initialStep,
 }: TalentOnboardingFlowProps) {
@@ -42,6 +45,7 @@ export function TalentOnboardingFlow({
   if (initialStep === 2) {
     return (
       <TalentPortfolioOnboardingForm
+        initialValues={initialPortfolioValues}
         onBack={() => router.push("/onboarding/talent?step=1")}
         onComplete={() => router.push("/onboarding/talent?step=3")}
       />

@@ -75,7 +75,6 @@ export async function saveTalentProfileStepAction(
     await prisma.$transaction(async (tx) => {
       const existingProfile = await tx.talentProfile.findUnique({
         select: {
-          profile_completion: true,
           talent_profile_id: true,
         },
         where: { user_id: dbUser.userId },
@@ -83,10 +82,6 @@ export async function saveTalentProfileStepAction(
       const now = new Date();
       const talentProfileId =
         existingProfile?.talent_profile_id ?? crypto.randomUUID();
-      const profileCompletion = Math.max(
-        existingProfile?.profile_completion ?? 0,
-        1,
-      );
 
       const talentProfile = await tx.talentProfile.upsert({
         create: {
@@ -94,7 +89,6 @@ export async function saveTalentProfileStepAction(
           college: input.college,
           course: input.course,
           headline: input.headline,
-          profile_completion: 1,
           talent_profile_id: talentProfileId,
           updatedAt: now,
           user_id: dbUser.userId,
@@ -106,7 +100,6 @@ export async function saveTalentProfileStepAction(
           college: input.college,
           course: input.course,
           headline: input.headline,
-          profile_completion: profileCompletion,
           updatedAt: now,
           website: input.website || null,
           year_level: Number(input.yearLevel),

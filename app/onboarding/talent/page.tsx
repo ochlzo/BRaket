@@ -2,6 +2,7 @@ import { TalentOnboardingFlow } from "@/app/onboarding/talent/_components/talent
 import { TalentOnboardingHeader } from "@/app/onboarding/talent/_components/talent-onboarding-header";
 import { getCategoryOptions } from "@/app/onboarding/talent/_lib/get-category-options";
 import { getSkillOptions } from "@/app/onboarding/talent/_lib/get-skill-options";
+import { buildTalentPortfolioStepInitialValues } from "@/app/onboarding/talent/_lib/talent-portfolio-step";
 import { buildTalentProfileStepInitialValues } from "@/app/onboarding/talent/_lib/talent-profile-step";
 import {
   getAllowedTalentOnboardingStep,
@@ -28,7 +29,19 @@ export default async function OnboardingPage({
       college: true,
       course: true,
       headline: true,
-      profile_completion: true,
+      TalentPortfolio: {
+        orderBy: { createdAt: "asc" },
+        select: {
+          description: true,
+          talent_portfolio_id: true,
+          TalentPortfolioMedia: {
+            orderBy: { createdAt: "asc" },
+            select: { media_url: true },
+          },
+          title: true,
+        },
+        take: 1,
+      },
       TalentSkills: {
         orderBy: { createdAt: "asc" },
         select: {
@@ -41,10 +54,7 @@ export default async function OnboardingPage({
     },
     where: { user_id: currentUser.id },
   });
-  const initialStep = getAllowedTalentOnboardingStep(
-    step,
-    talentProfile?.profile_completion ?? 0,
-  );
+  const initialStep = getAllowedTalentOnboardingStep(step);
 
   if (
     shouldForceTalentVerification({
@@ -77,6 +87,9 @@ export default async function OnboardingPage({
             }}
             initialProfileValues={buildTalentProfileStepInitialValues(
               talentProfile,
+            )}
+            initialPortfolioValues={buildTalentPortfolioStepInitialValues(
+              talentProfile?.TalentPortfolio[0] ?? null,
             )}
             initialStep={initialStep}
           />

@@ -7,7 +7,6 @@ const routeModule = await import(
 
 const {
   getAllowedTalentOnboardingStep,
-  getTalentOnboardingStep,
   getTalentRegistrationPath,
   shouldForceTalentVerification,
 } = routeModule;
@@ -17,7 +16,6 @@ test("routes unverified non-talent users to verification", () => {
     getTalentRegistrationPath({
       isTalent: false,
       isVerified: false,
-      profileCompletion: 0,
     }),
     "/onboarding/talent/verification",
   );
@@ -28,9 +26,8 @@ test("routes verified non-talent users to the next onboarding step", () => {
     getTalentRegistrationPath({
       isTalent: false,
       isVerified: true,
-      profileCompletion: 1,
     }),
-    "/onboarding/talent?step=2",
+    "/onboarding/talent?step=1",
   );
 });
 
@@ -39,7 +36,6 @@ test("routes unverified talent users to verification", () => {
     getTalentRegistrationPath({
       isTalent: true,
       isVerified: false,
-      profileCompletion: 2,
     }),
     "/onboarding/talent/verification",
   );
@@ -50,30 +46,21 @@ test("routes verified talent users to the talent profile", () => {
     getTalentRegistrationPath({
       isTalent: true,
       isVerified: true,
-      profileCompletion: 3,
     }),
     "/dashboard/talent/profile",
   );
 });
 
-test("normalizes profile completion into supported onboarding steps", () => {
-  assert.equal(getTalentOnboardingStep(null), 1);
-  assert.equal(getTalentOnboardingStep(0), 1);
-  assert.equal(getTalentOnboardingStep(1), 2);
-  assert.equal(getTalentOnboardingStep(2), 3);
-  assert.equal(getTalentOnboardingStep(3), 3);
+test("allows supported onboarding steps", () => {
+  assert.equal(getAllowedTalentOnboardingStep("1"), 1);
+  assert.equal(getAllowedTalentOnboardingStep("2"), 2);
+  assert.equal(getAllowedTalentOnboardingStep("3"), 3);
 });
 
-test("allows navigating back to completed onboarding steps", () => {
-  assert.equal(getAllowedTalentOnboardingStep("1", 2), 1);
-  assert.equal(getAllowedTalentOnboardingStep("2", 2), 2);
-  assert.equal(getAllowedTalentOnboardingStep("3", 2), 3);
-});
-
-test("uses next incomplete step for missing, invalid, or future onboarding steps", () => {
-  assert.equal(getAllowedTalentOnboardingStep(undefined, 1), 2);
-  assert.equal(getAllowedTalentOnboardingStep("nope", 1), 2);
-  assert.equal(getAllowedTalentOnboardingStep("3", 1), 2);
+test("uses the first onboarding step for missing or invalid steps", () => {
+  assert.equal(getAllowedTalentOnboardingStep(undefined), 1);
+  assert.equal(getAllowedTalentOnboardingStep("nope"), 1);
+  assert.equal(getAllowedTalentOnboardingStep("4"), 1);
 });
 
 test("does not force verification on onboarding pages for unverified non-talent users", () => {

@@ -23,6 +23,10 @@ export const CLIENT_PORTFOLIO_MEDIA_MAX_IMAGES = 10;
 
 export const CLIENT_PORTFOLIO_MEDIA_MAX_BYTES = 5 * 1024 * 1024;
 
+export const TALENT_PORTFOLIO_MEDIA_BUCKET =
+  process.env.NEXT_PUBLIC_SUPABASE_TALENT_PORTFOLIO_BUCKET ??
+  "talent-portfolio-media";
+
 export const USER_PROFILE_IMAGES_BUCKET =
   process.env.NEXT_PUBLIC_SUPABASE_USER_PROFILE_IMAGES_BUCKET ??
   "user-profile-images";

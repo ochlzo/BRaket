@@ -5,25 +5,15 @@ import { ImageIcon, X } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-
-const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const MAX_IMAGE_COUNT = 10;
-
-function formatFileSize(bytes: number) {
-  if (bytes < 1024) {
-    return `${bytes} B`;
-  }
-
-  if (bytes < 1024 * 1024) {
-    return `${(bytes / 1024).toFixed(1)} KB`;
-  }
-
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
-function getFileKey(file: File) {
-  return `${file.name}-${file.size}-${file.lastModified}`;
-}
+import {
+  formatTalentPortfolioFileSize,
+  getTalentPortfolioFileKey,
+  isTalentPortfolioMediaSize,
+  isTalentPortfolioMediaType,
+  TALENT_PORTFOLIO_MEDIA_ACCEPTED_TYPES,
+  TALENT_PORTFOLIO_MEDIA_MAX_BYTES,
+  TALENT_PORTFOLIO_MEDIA_MAX_IMAGES,
+} from "@/app/onboarding/talent/_lib/talent-portfolio-step";
 
 function syncInputFiles(input: HTMLInputElement | null, files: File[]) {
   if (!input) {
@@ -37,6 +27,7 @@ function syncInputFiles(input: HTMLInputElement | null, files: File[]) {
 
 type TalentMediaUploadFieldProps = {
   emptyDescription: string;
+  existingMediaUrls?: string[];
   files: File[];
   inputId: string;
   inputName: string;
@@ -48,6 +39,7 @@ type TalentMediaUploadFieldProps = {
 
 export function TalentMediaUploadField({
   emptyDescription,
+  existingMediaUrls = [],
   files,
   inputId,
   inputName,
@@ -57,14 +49,18 @@ export function TalentMediaUploadField({
   title,
 }: TalentMediaUploadFieldProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const mediaCount = existingMediaUrls.length + files.length;
 
   function updateFiles(nextFiles: File[]) {
     const validFiles = nextFiles.filter((file) =>
-      ACCEPTED_IMAGE_TYPES.includes(file.type),
+      isTalentPortfolioMediaType(file.type),
+    );
+    const allowedFiles = validFiles.filter((file) =>
+      isTalentPortfolioMediaSize(file.size),
     );
     const seen = new Set<string>();
-    const mergedFiles = [...files, ...validFiles].filter((file) => {
-      const key = getFileKey(file);
+    const mergedFiles = [...files, ...allowedFiles].filter((file) => {
+      const key = getTalentPortfolioFileKey(file);
 
       if (seen.has(key)) {
         return false;
@@ -73,12 +69,27 @@ export function TalentMediaUploadField({
       seen.add(key);
       return true;
     });
-    const cappedFiles = mergedFiles.slice(0, MAX_IMAGE_COUNT);
+    const remainingSlots = Math.max(
+      0,
+      TALENT_PORTFOLIO_MEDIA_MAX_IMAGES - existingMediaUrls.length,
+    );
+    const cappedFiles = mergedFiles.slice(0, remainingSlots);
 
     if (validFiles.length !== nextFiles.length) {
       onNoticeChange("Only JPG, PNG, and WebP images are attached.");
-    } else if (mergedFiles.length > MAX_IMAGE_COUNT) {
-      onNoticeChange(`Only the first ${MAX_IMAGE_COUNT} images are attached.`);
+    } else if (allowedFiles.length !== validFiles.length) {
+      onNoticeChange(
+        `Only images up to ${formatTalentPortfolioFileSize(
+          TALENT_PORTFOLIO_MEDIA_MAX_BYTES,
+        )} are attached.`,
+      );
+    } else if (
+      existingMediaUrls.length + mergedFiles.length >
+      TALENT_PORTFOLIO_MEDIA_MAX_IMAGES
+    ) {
+      onNoticeChange(
+        `Only the first ${TALENT_PORTFOLIO_MEDIA_MAX_IMAGES} images are attached.`,
+      );
     } else {
       onNoticeChange("");
     }
@@ -115,18 +126,20 @@ export function TalentMediaUploadField({
           </p>
           <p className="mt-1 text-xs leading-5 text-[color:var(--ink-muted)]">
             {isRequired ? "At least 1 image is required. " : null}
-            JPG, PNG, or WebP. Up to {MAX_IMAGE_COUNT} files.
+            JPG, PNG, or WebP. Up to {TALENT_PORTFOLIO_MEDIA_MAX_IMAGES} files,{" "}
+            {formatTalentPortfolioFileSize(TALENT_PORTFOLIO_MEDIA_MAX_BYTES)}{" "}
+            each.
           </p>
         </div>
         <Badge className="rounded-full border-0 bg-[color:var(--tone-orange-pale)] px-3 py-1.5 text-[color:var(--tone-orange-deep)]">
           <ImageIcon className="size-3.5" />
-          {files.length}/{MAX_IMAGE_COUNT}
+          {mediaCount}/{TALENT_PORTFOLIO_MEDIA_MAX_IMAGES}
         </Badge>
       </div>
 
       <input
         ref={inputRef}
-        accept={ACCEPTED_IMAGE_TYPES.join(",")}
+        accept={TALENT_PORTFOLIO_MEDIA_ACCEPTED_TYPES.join(",")}
         className="sr-only"
         id={inputId}
         multiple
@@ -158,31 +171,48 @@ export function TalentMediaUploadField({
       </div>
 
       <div className="mt-4 grid gap-2">
-        {files.length > 0 ? (
-          files.map((file, index) => (
-            <div
-              className="flex items-center justify-between gap-3 rounded-xl border border-[color:var(--line-strong)] bg-white px-3 py-2.5"
-              key={getFileKey(file)}
-            >
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-foreground">
-                  {file.name}
-                </p>
-                <p className="text-xs text-[color:var(--ink-muted)]">
-                  {formatFileSize(file.size)}
-                </p>
-              </div>
-              <Button
-                aria-label={`Remove ${file.name}`}
-                onClick={() => removeFile(index)}
-                size="icon-xs"
-                type="button"
-                variant="ghost"
+        {existingMediaUrls.length > 0 || files.length > 0 ? (
+          <>
+            {existingMediaUrls.map((url, index) => (
+              <div
+                className="flex items-center justify-between gap-3 rounded-xl border border-[color:var(--line-strong)] bg-white px-3 py-2.5"
+                key={url}
               >
-                <X className="size-3.5" />
-              </Button>
-            </div>
-          ))
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-foreground">
+                    Saved image {index + 1}
+                  </p>
+                  <p className="truncate text-xs text-[color:var(--ink-muted)]">
+                    {url}
+                  </p>
+                </div>
+              </div>
+            ))}
+            {files.map((file, index) => (
+              <div
+                className="flex items-center justify-between gap-3 rounded-xl border border-[color:var(--line-strong)] bg-white px-3 py-2.5"
+                key={getTalentPortfolioFileKey(file)}
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-foreground">
+                    {file.name}
+                  </p>
+                  <p className="text-xs text-[color:var(--ink-muted)]">
+                    {formatTalentPortfolioFileSize(file.size)}
+                  </p>
+                </div>
+                <Button
+                  aria-label={`Remove ${file.name}`}
+                  onClick={() => removeFile(index)}
+                  size="icon-xs"
+                  type="button"
+                  variant="ghost"
+                >
+                  <X className="size-3.5" />
+                </Button>
+              </div>
+            ))}
+          </>
         ) : (
           <div className="rounded-xl border border-dashed border-[color:var(--line-strong)] bg-white px-4 py-5 text-center">
             <p className="text-sm font-semibold text-foreground">

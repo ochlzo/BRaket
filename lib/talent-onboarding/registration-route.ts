@@ -8,24 +8,12 @@ export type TalentOnboardingStep = 1 | 2 | 3;
 type TalentRegistrationPathInput = {
   isTalent: boolean;
   isVerified: boolean;
-  profileCompletion: number | null | undefined;
 };
 
 type TalentVerificationInput = {
   isTalent: boolean;
   isVerified: boolean;
 };
-
-export function getTalentOnboardingStep(
-  profileCompletion: number | null | undefined,
-): TalentOnboardingStep {
-  const completion =
-    typeof profileCompletion === "number" && Number.isFinite(profileCompletion)
-      ? Math.max(0, Math.floor(profileCompletion))
-      : 0;
-
-  return Math.min(completion + 1, MAX_ONBOARDING_STEP) as TalentOnboardingStep;
-}
 
 function parseTalentOnboardingStep(value: string | undefined) {
   const step = Number(value);
@@ -41,24 +29,13 @@ function parseTalentOnboardingStep(value: string | undefined) {
   return null;
 }
 
-export function getAllowedTalentOnboardingStep(
-  requestedStep: string | undefined,
-  profileCompletion: number | null | undefined,
-) {
-  const nextStep = getTalentOnboardingStep(profileCompletion);
-  const parsedStep = parseTalentOnboardingStep(requestedStep);
-
-  if (!parsedStep || parsedStep > nextStep) {
-    return nextStep;
-  }
-
-  return parsedStep;
+export function getAllowedTalentOnboardingStep(requestedStep: string | undefined) {
+  return parseTalentOnboardingStep(requestedStep) ?? MIN_ONBOARDING_STEP;
 }
 
 export function getTalentRegistrationPath({
   isTalent,
   isVerified,
-  profileCompletion,
 }: TalentRegistrationPathInput) {
   if (!isVerified) {
     return VERIFICATION_PATH;
@@ -68,7 +45,7 @@ export function getTalentRegistrationPath({
     return TALENT_PROFILE_PATH;
   }
 
-  return `/onboarding/talent?step=${getTalentOnboardingStep(profileCompletion)}`;
+  return `/onboarding/talent?step=${MIN_ONBOARDING_STEP}`;
 }
 
 export function shouldForceTalentVerification({
