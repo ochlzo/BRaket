@@ -159,9 +159,9 @@ export function ClientProfileHero({ profile, user }: ClientProfileHeroProps) {
           onOpenChange={setBioEditorOpen}
         />
         <div className="-mt-7 flex flex-col gap-3 sm:-mt-10 sm:flex-row sm:items-end sm:justify-between">
-          <div className="flex items-start gap-3 sm:items-end sm:gap-4">
+          <div className="flex min-w-0 items-start gap-6 sm:items-end sm:gap-4">
             <div className="relative shrink-0 overflow-visible">
-              <Avatar className="size-16 rounded-none border-[3px] border-white bg-[color:var(--surface-alt)] shadow-[var(--shadow-panel-soft)] after:rounded-none sm:size-24">
+              <Avatar className="size-20 rounded-none border-[3px] border-white bg-[color:var(--surface-alt)] shadow-[var(--shadow-panel-soft)] after:rounded-none sm:size-24">
                 {user.avatarUrl ? (
                   <AvatarImage
                     alt={user.displayName}
@@ -179,11 +179,11 @@ export function ClientProfileHero({ profile, user }: ClientProfileHeroProps) {
                 avatarUrl={user.avatarUrl}
                 backgroundImageUrl={profile.backgroundImageUrl}
                 displayName={user.displayName}
-                triggerClassName="absolute bottom-0 right-0 z-20 h-7 w-7 translate-x-[35%] translate-y-[35%] rounded-full border border-white/70 bg-[color:var(--brand-orange)] text-white shadow-[var(--shadow-brand-orange-md)] hover:bg-[color:var(--brand-orange-strong)] sm:h-8 sm:w-8"
+                triggerClassName="absolute bottom-0 right-0 z-20 h-8 w-8 translate-x-[35%] translate-y-[35%] rounded-full border border-white/70 bg-[color:var(--brand-orange)] text-white shadow-[var(--shadow-brand-orange-md)] hover:bg-[color:var(--brand-orange-strong)]"
               />
             </div>
-            <div className="pb-1">
-              <h1 className="mt-1 text-xl font-bold tracking-[-0.03em] text-[color:var(--foreground)] sm:typo-card-title-2xl">
+            <div className="min-w-0 flex-1 pt-10 pr-10 sm:pt-0 sm:pb-1 sm:pr-0">
+              <h1 className="text-2xl font-bold leading-tight tracking-[-0.03em] text-[color:var(--foreground)] break-words sm:typo-card-title-2xl">
                 {user.displayName}
               </h1>
               <p className="mt-1 text-xs font-medium text-[color:var(--ink-muted)] sm:text-sm">

@@ -17,6 +17,7 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { getDashboardProfilePath } from "@/lib/auth/session";
 import type { UserRole } from "@/lib/types";
@@ -79,13 +80,24 @@ export function AppSidebar({
       collapsible="icon"
       className="border-r border-[color:var(--line-strong)] bg-white"
     >
-      <SidebarHeader className="border-b border-[color:var(--line)] px-6 py-4">
-        <BrandMark href="/" subtitle={getSidebarSubtitle(role)} />
+      <SidebarHeader className="border-b border-[color:var(--line)] px-4 py-4 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-2">
+        <div className="flex w-full items-center gap-2 group-data-[collapsible=icon]:w-auto group-data-[collapsible=icon]:flex-col">
+          <BrandMark
+            className="min-w-0"
+            compactOnSidebarCollapse
+            href="/"
+            subtitle={getSidebarSubtitle(role)}
+          />
+          <SidebarTrigger
+            className="ml-auto border border-[color:var(--line)] bg-white text-[color:var(--ink-muted)] hover:bg-[color:var(--surface-alt)] hover:text-foreground group-data-[collapsible=icon]:ml-0"
+            title="Toggle sidebar"
+          />
+        </div>
       </SidebarHeader>
-      <SidebarContent className="px-3 py-4">
+      <SidebarContent className="px-3 py-4 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-0">
         <NavMain items={items} />
       </SidebarContent>
-      <SidebarFooter className="border-t border-[color:var(--line)] px-4 py-4">
+      <SidebarFooter className="border-t border-[color:var(--line)] px-4 py-4 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-0">
         <NavUser
           avatarUrl={avatarUrl}
           initials={initials}

@@ -35,13 +35,16 @@ export function NavMain({ items }: { items: SidebarNavItem[] }) {
               render={<Link href={item.href} prefetch />}
               className={cn(
                 "h-12 rounded-xl px-4 text-sm font-medium transition-all",
+                "group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:rounded-full group-data-[collapsible=icon]:p-0!",
                 active
                   ? "bg-[color:var(--brand-orange)]/10 font-semibold text-[color:var(--brand-orange)]"
                   : "text-[color:var(--ink-muted)] hover:bg-[color:var(--surface-alt)] hover:text-foreground",
               )}
             >
               <Icon className="size-[18px]" strokeWidth={2.1} />
-              <span>{item.label}</span>
+              <span className="group-data-[collapsible=icon]:hidden">
+                {item.label}
+              </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         );

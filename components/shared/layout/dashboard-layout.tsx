@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { cookies } from "next/headers";
 import type { UserRole } from "@/lib/types";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
@@ -25,10 +26,15 @@ export async function DashboardLayout({
   action,
   noScroll = false,
 }: DashboardLayoutProps) {
-  const currentUser = await getCurrentAppUser();
+  const [currentUser, cookieStore] = await Promise.all([
+    getCurrentAppUser(),
+    cookies(),
+  ]);
+  const defaultSidebarOpen =
+    cookieStore.get("sidebar_state")?.value !== "false";
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={defaultSidebarOpen}>
       <AppSidebar
         avatarUrl={currentUser?.avatarUrl ?? null}
         initials={currentUser?.initials ?? ""}
