@@ -4,6 +4,7 @@ import { getCategoryOptions } from "@/app/onboarding/talent/_lib/get-category-op
 import { getSkillOptions } from "@/app/onboarding/talent/_lib/get-skill-options";
 import { buildTalentPortfolioStepInitialValues } from "@/app/onboarding/talent/_lib/talent-portfolio-step";
 import { buildTalentProfileStepInitialValues } from "@/app/onboarding/talent/_lib/talent-profile-step";
+import { buildTalentServiceStepInitialValues } from "@/app/onboarding/talent/_lib/talent-service-step";
 import {
   getAllowedTalentOnboardingStep,
   shouldForceTalentVerification,
@@ -38,6 +39,26 @@ export default async function OnboardingPage({
             orderBy: { createdAt: "asc" },
             select: { media_url: true },
           },
+          title: true,
+        },
+        take: 1,
+      },
+      Services: {
+        orderBy: { createdAt: "asc" },
+        select: {
+          description: true,
+          maxPrice: true,
+          minPrice: true,
+          priceUnit: true,
+          ServiceCategories: {
+            orderBy: { createdAt: "asc" },
+            select: { categoryId: true },
+          },
+          ServiceMedia: {
+            orderBy: { createdAt: "asc" },
+            select: { mediaUrl: true },
+          },
+          serviceId: true,
           title: true,
         },
         take: 1,
@@ -90,6 +111,9 @@ export default async function OnboardingPage({
             )}
             initialPortfolioValues={buildTalentPortfolioStepInitialValues(
               talentProfile?.TalentPortfolio[0] ?? null,
+            )}
+            initialServiceValues={buildTalentServiceStepInitialValues(
+              talentProfile?.Services[0] ?? null,
             )}
             initialStep={initialStep}
           />
