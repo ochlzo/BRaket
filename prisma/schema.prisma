@@ -89,6 +89,7 @@ model TalentProfile {
   createdAt                   DateTime          @default(now())
   updatedAt                   DateTime
   bio                         String
+  profile_completion          Int               @default(0)
   Services                    Service[]
   TalentPortfolio             TalentPortfolio[]
   User                        User              @relation(fields: [user_id], references: [userId], onDelete: Cascade)

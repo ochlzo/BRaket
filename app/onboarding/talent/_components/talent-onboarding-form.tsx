@@ -2,6 +2,7 @@
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
+import { saveTalentProfileStepAction } from "@/app/onboarding/talent/_actions/save-talent-profile-step-action";
 import {
   TalentSkillsSelector,
   type SelectedSkill,
@@ -12,6 +13,7 @@ import {
   TalentBasicInfoFields,
   TalentStudentDetailsFields,
 } from "@/app/onboarding/talent/_components/talent-profile-form-fields";
+import { validateTalentProfileStepInput } from "@/app/onboarding/talent/_lib/talent-profile-step";
 import { Separator } from "@/components/ui/separator";
 import type { SkillLevel } from "@/lib/types";
 
@@ -38,6 +40,7 @@ export function TalentOnboardingForm({
   const [yearLevel, setYearLevel] = useState("");
   const [selectedSkills, setSelectedSkills] = useState<SelectedSkill[]>([]);
   const [skillSearch, setSkillSearch] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const filteredSkills = availableSkills.filter(
     (skill) =>
@@ -89,24 +92,65 @@ export function TalentOnboardingForm({
     });
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (isSubmitting) {
+      return;
+    }
 
     if (!event.currentTarget.reportValidity()) {
       return;
     }
 
-    if (!yearLevel) {
-      showValidationToast("Select your year level before continuing.");
+    const input = {
+      bio,
+      college,
+      course,
+      headline,
+      skills: selectedSkills,
+      website,
+      yearLevel,
+    };
+    const validation = validateTalentProfileStepInput(input);
+
+    if (!validation.ok) {
+      if (validation.fieldErrors?.yearLevel) {
+        showValidationToast("Select your year level before continuing.");
+        return;
+      }
+
+      if (validation.fieldErrors?.skills) {
+        showValidationToast("Select at least 3 skills before continuing.");
+        return;
+      }
+
+      showValidationToast(validation.message);
       return;
     }
 
-    if (selectedSkills.length < 3) {
-      showValidationToast("Select at least 3 skills before continuing.");
-      return;
-    }
+    const formData = new FormData();
+    formData.set("headline", headline);
+    formData.set("website", website);
+    formData.set("bio", bio);
+    formData.set("college", college);
+    formData.set("course", course);
+    formData.set("yearLevel", yearLevel);
+    formData.set("skills", JSON.stringify(selectedSkills));
 
-    onComplete();
+    try {
+      setIsSubmitting(true);
+      const result = await saveTalentProfileStepAction(formData);
+
+      if (!result.ok) {
+        showValidationToast(result.message);
+        return;
+      }
+
+      onComplete();
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -155,7 +199,7 @@ export function TalentOnboardingForm({
 
         <Separator />
 
-        <TalentFormFooter />
+        <TalentFormFooter isSubmitting={isSubmitting} />
       </form>
     </div>
   );

@@ -1,0 +1,124 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+
+const profileStepModule = await import(
+  new URL("./talent-profile-step.ts", import.meta.url).href,
+);
+
+const {
+  parseTalentProfileStepFormData,
+  validateTalentProfileStepInput,
+} = profileStepModule;
+
+test("parses talent profile step form data with trimmed values", () => {
+  const formData = new FormData();
+  formData.set("headline", "  UI/UX Designer & Prototyping Specialist  ");
+  formData.set("website", " portfolio.example.com ");
+  formData.set("bio", "  ".padEnd(152, "A"));
+  formData.set("college", "  College of Science  ");
+  formData.set("course", "  BS Information Technology  ");
+  formData.set("yearLevel", "3");
+  formData.set(
+    "skills",
+    JSON.stringify([
+      { name: "  Figma  ", level: "ADVANCED" },
+      { name: "React", level: "INTERMEDIATE" },
+      { name: "Writing", level: "BEGINNER" },
+    ]),
+  );
+
+  const result = parseTalentProfileStepFormData(formData);
+
+  assert.equal(result.headline, "UI/UX Designer & Prototyping Specialist");
+  assert.equal(result.website, "https://portfolio.example.com");
+  assert.equal(result.bio.length, 150);
+  assert.equal(result.college, "College of Science");
+  assert.equal(result.course, "BS Information Technology");
+  assert.equal(result.yearLevel, "3");
+  assert.deepEqual(result.skills, [
+    { name: "Figma", level: "ADVANCED" },
+    { name: "React", level: "INTERMEDIATE" },
+    { name: "Writing", level: "BEGINNER" },
+  ]);
+});
+
+test("rejects missing required talent profile fields", () => {
+  const result = validateTalentProfileStepInput({
+    bio: "",
+    college: "",
+    course: "",
+    headline: "",
+    skills: [
+      { name: "Figma", level: "ADVANCED" },
+      { name: "React", level: "INTERMEDIATE" },
+      { name: "Writing", level: "BEGINNER" },
+    ],
+    website: "",
+    yearLevel: "1",
+  });
+
+  assert.equal(result.ok, false);
+  assert.equal(result.fieldErrors?.headline, "Headline is required.");
+  assert.equal(result.fieldErrors?.bio, "Bio is required.");
+  assert.equal(result.fieldErrors?.college, "College is required.");
+  assert.equal(result.fieldErrors?.course, "Course is required.");
+});
+
+test("rejects invalid year levels", () => {
+  const result = validateTalentProfileStepInput({
+    bio: "A".repeat(150),
+    college: "College of Science",
+    course: "BS Information Technology",
+    headline: "UI/UX Designer & Prototyping Specialist",
+    skills: [
+      { name: "Figma", level: "ADVANCED" },
+      { name: "React", level: "INTERMEDIATE" },
+      { name: "Writing", level: "BEGINNER" },
+    ],
+    website: "",
+    yearLevel: "5",
+  });
+
+  assert.equal(result.ok, false);
+  assert.equal(result.fieldErrors?.yearLevel, "Select a valid year level.");
+});
+
+test("rejects fewer than 3 skills", () => {
+  const result = validateTalentProfileStepInput({
+    bio: "A".repeat(150),
+    college: "College of Science",
+    course: "BS Information Technology",
+    headline: "UI/UX Designer & Prototyping Specialist",
+    skills: [
+      { name: "Figma", level: "ADVANCED" },
+      { name: "React", level: "INTERMEDIATE" },
+    ],
+    website: "",
+    yearLevel: "3",
+  });
+
+  assert.equal(result.ok, false);
+  assert.equal(result.fieldErrors?.skills, "Select at least 3 skills.");
+});
+
+test("accepts optional blank website", () => {
+  const result = validateTalentProfileStepInput({
+    bio: "A".repeat(150),
+    college: "College of Science",
+    course: "BS Information Technology",
+    headline: "UI/UX Designer & Prototyping Specialist",
+    skills: [
+      { name: "Figma", level: "ADVANCED" },
+      { name: "React", level: "INTERMEDIATE" },
+      { name: "Writing", level: "BEGINNER" },
+    ],
+    website: "",
+    yearLevel: "3",
+  });
+
+  assert.deepEqual(result, {
+    message: "",
+    ok: true,
+  });
+});
+

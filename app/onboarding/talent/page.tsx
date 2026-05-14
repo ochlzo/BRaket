@@ -2,7 +2,10 @@ import { TalentOnboardingFlow } from "@/app/onboarding/talent/_components/talent
 import { TalentOnboardingHeader } from "@/app/onboarding/talent/_components/talent-onboarding-header";
 import { getCategoryOptions } from "@/app/onboarding/talent/_lib/get-category-options";
 import { getSkillOptions } from "@/app/onboarding/talent/_lib/get-skill-options";
+import { getTalentOnboardingStep } from "@/lib/talent-onboarding/registration-route";
+import { prisma } from "@/lib/prisma";
 import { requireCurrentAppUser } from "@/server/users/current-user";
+import { redirect } from "next/navigation";
 
 type OnboardingPageProps = {
   searchParams: Promise<{
@@ -22,8 +25,23 @@ export default async function OnboardingPage({
   searchParams,
 }: OnboardingPageProps) {
   const { step } = await searchParams;
-  const initialStep = parseOnboardingStep(step);
   const currentUser = await requireCurrentAppUser();
+  const talentProfile = await prisma.talentProfile.findUnique({
+    select: { profile_completion: true },
+    where: { user_id: currentUser.id },
+  });
+  const initialStep = getTalentOnboardingStep(
+    talentProfile?.profile_completion ?? 0,
+  );
+
+  if (!currentUser.isVerified) {
+    redirect("/onboarding/talent/verification");
+  }
+
+  if (parseOnboardingStep(step) !== initialStep || step !== String(initialStep)) {
+    redirect(`/onboarding/talent?step=${initialStep}`);
+  }
+
   const categoryOptions = await getCategoryOptions();
   const skillOptions = await getSkillOptions();
 

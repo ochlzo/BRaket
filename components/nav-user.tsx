@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useSyncExternalStore } from "react";
+import { useTransition, useSyncExternalStore } from "react";
 import {
   ChevronsUpDown,
   LogOut,
@@ -32,6 +32,7 @@ import {
 } from "@/lib/auth/client-session";
 import { clearAppSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/client";
+import { resolveTalentRegistrationPathAction } from "@/server/talent-onboarding/resolve-talent-registration-path";
 import type { UserRole } from "@/lib/types";
 
 type NavUserProps = {
@@ -49,6 +50,7 @@ export function NavUser({
 }: NavUserProps) {
   const { isMobile } = useSidebar();
   const router = useRouter();
+  const [isRoutingTalent, startTalentRouting] = useTransition();
   const session = useSyncExternalStore(
     subscribeToAppSession,
     getClientAppSessionSnapshot,
@@ -59,6 +61,13 @@ export function NavUser({
   const username = session?.username ?? role;
   const TalentMenuIcon = isTalent ? UserRound : UserPlus;
   const talentMenuLabel = isTalent ? "Talent Profile" : "Register Talent";
+
+  function handleTalentMenuClick() {
+    startTalentRouting(async () => {
+      const path = await resolveTalentRegistrationPathAction();
+      router.push(path);
+    });
+  }
 
   const handleSignOut = async () => {
     const supabase = createClient();
@@ -129,7 +138,10 @@ export function NavUser({
                 <Settings />
                 Settings
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                disabled={isRoutingTalent}
+                onClick={handleTalentMenuClick}
+              >
                 <TalentMenuIcon />
                 {talentMenuLabel}
               </DropdownMenuItem>
