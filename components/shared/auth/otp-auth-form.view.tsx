@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import {
   ArrowRightIcon,
+  AUTH_FORM_AUTO_COMPLETE,
+  AUTH_PASSWORD_AUTO_COMPLETE,
   MailIcon,
   PasswordInput,
 } from "@/components/shared/auth/auth-form.shared";
@@ -51,6 +53,7 @@ export function OtpAuthFormView({
 }: OtpAuthFormViewProps) {
   return (
     <form
+      autoComplete={AUTH_FORM_AUTO_COMPLETE}
       className="space-y-5"
       onSubmit={(e) => {
         e.preventDefault();
@@ -71,7 +74,7 @@ export function OtpAuthFormView({
           <Input
             id={`${mode}-email`}
             type="email"
-            autoComplete="email"
+            autoComplete={AUTH_FORM_AUTO_COMPLETE}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder={isSignup ? "you@bicol-u.edu.ph" : "you@example.com"}
@@ -94,7 +97,7 @@ export function OtpAuthFormView({
                 <PasswordInput
                   id="password"
                   name="password"
-                  autoComplete="new-password"
+                  autoComplete={AUTH_PASSWORD_AUTO_COMPLETE}
                   placeholder="Create a strong password"
                 />
               </div>
@@ -108,7 +111,7 @@ export function OtpAuthFormView({
                 <PasswordInput
                   id="confirmPassword"
                   name="confirmPassword"
-                  autoComplete="new-password"
+                  autoComplete={AUTH_PASSWORD_AUTO_COMPLETE}
                   placeholder="Re-enter your password"
                 />
               </div>
@@ -127,7 +130,7 @@ export function OtpAuthFormView({
               <PasswordInput
                 id="password"
                 name="password"
-                autoComplete="current-password"
+                autoComplete={AUTH_PASSWORD_AUTO_COMPLETE}
                 placeholder="Enter your password"
               />
             </div>

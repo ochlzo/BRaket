@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { TalentOnboardingForm } from "@/app/onboarding/talent/_components/talent-onboarding-form";
 import { TalentPortfolioOnboardingForm } from "@/app/onboarding/talent/_components/talent-portfolio-onboarding-form";
@@ -12,15 +12,17 @@ type TalentOnboardingFlowProps = {
     lastName: string;
     username: string;
   };
+  initialStep: 1 | 2;
 };
 
 export function TalentOnboardingFlow({
   availableSkills,
   currentUser,
+  initialStep,
 }: TalentOnboardingFlowProps) {
-  const [step, setStep] = useState<"profile" | "portfolio">("profile");
+  const router = useRouter();
 
-  if (step === "portfolio") {
+  if (initialStep === 2) {
     return <TalentPortfolioOnboardingForm />;
   }
 
@@ -28,7 +30,7 @@ export function TalentOnboardingFlow({
     <TalentOnboardingForm
       availableSkills={availableSkills}
       currentUser={currentUser}
-      onComplete={() => setStep("portfolio")}
+      onComplete={() => router.push("/onboarding/talent?step=2")}
     />
   );
 }

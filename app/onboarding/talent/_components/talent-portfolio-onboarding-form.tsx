@@ -90,6 +90,11 @@ export function TalentPortfolioOnboardingForm() {
       return;
     }
 
+    if (selectedFiles.length === 0) {
+      setNotice("Add at least 1 portfolio image before creating your portfolio.");
+      return;
+    }
+
     setNotice("Portfolio creation is UI-only for now.");
   }
 
@@ -171,10 +176,12 @@ export function TalentPortfolioOnboardingForm() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-sm font-bold text-foreground">
-                Portfolio Media
+                Portfolio Media{" "}
+                <span className="text-[color:var(--tone-red-base)]">*</span>
               </p>
               <p className="mt-1 text-xs leading-5 text-[color:var(--ink-muted)]">
-                JPG, PNG, or WebP. Up to {TALENT_PORTFOLIO_MAX_IMAGES} files.
+                At least 1 image is required. JPG, PNG, or WebP. Up to{" "}
+                {TALENT_PORTFOLIO_MAX_IMAGES} files.
               </p>
             </div>
             <Badge className="rounded-full border-0 bg-[color:var(--tone-orange-pale)] px-3 py-1.5 text-[color:var(--tone-orange-deep)]">
@@ -254,7 +261,7 @@ export function TalentPortfolioOnboardingForm() {
                   No images selected yet
                 </p>
                 <p className="mt-1 text-xs leading-6 text-[color:var(--ink-muted)]">
-                  Media is optional for this UI-only step.
+                  Add at least 1 image to continue.
                 </p>
               </div>
             )}

@@ -3,7 +3,21 @@ import { TalentOnboardingHeader } from "@/app/onboarding/talent/_components/tale
 import { getSkillOptions } from "@/app/onboarding/talent/_lib/get-skill-options";
 import { requireCurrentAppUser } from "@/server/users/current-user";
 
-export default async function OnboardingPage() {
+type OnboardingPageProps = {
+  searchParams: Promise<{
+    step?: string;
+  }>;
+};
+
+function parseOnboardingStep(value: string | undefined) {
+  return value === "2" ? 2 : 1;
+}
+
+export default async function OnboardingPage({
+  searchParams,
+}: OnboardingPageProps) {
+  const { step } = await searchParams;
+  const initialStep = parseOnboardingStep(step);
   const currentUser = await requireCurrentAppUser();
   const skillOptions = await getSkillOptions();
 
@@ -19,6 +33,7 @@ export default async function OnboardingPage() {
               lastName: currentUser.lastName,
               username: currentUser.username,
             }}
+            initialStep={initialStep}
           />
         </div>
       </section>

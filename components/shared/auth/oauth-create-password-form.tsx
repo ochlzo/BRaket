@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
   ArrowRightIcon,
+  AUTH_FORM_AUTO_COMPLETE,
+  AUTH_PASSWORD_AUTO_COMPLETE,
   PasswordInput,
 } from "@/components/shared/auth/auth-form.shared";
 import {
@@ -167,7 +169,11 @@ export function OAuthCreatePasswordForm({
   );
 
   return (
-    <form className="space-y-5" onSubmit={(event) => void handleSubmit(event)}>
+    <form
+      autoComplete={AUTH_FORM_AUTO_COMPLETE}
+      className="space-y-5"
+      onSubmit={(event) => void handleSubmit(event)}
+    >
       <div className="space-y-2">
         <Label
           htmlFor="oauth-create-password"
@@ -178,7 +184,7 @@ export function OAuthCreatePasswordForm({
         <PasswordInput
           id="oauth-create-password"
           name="password"
-          autoComplete="new-password"
+          autoComplete={AUTH_PASSWORD_AUTO_COMPLETE}
           placeholder="Create a password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
@@ -195,7 +201,7 @@ export function OAuthCreatePasswordForm({
         <PasswordInput
           id="oauth-confirm-password"
           name="confirmPassword"
-          autoComplete="new-password"
+          autoComplete={AUTH_PASSWORD_AUTO_COMPLETE}
           placeholder="Re-enter your password"
           value={confirmPassword}
           onChange={(event) => setConfirmPassword(event.target.value)}

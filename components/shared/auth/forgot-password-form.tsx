@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   ArrowRightIcon,
+  AUTH_FORM_AUTO_COMPLETE,
   MailIcon,
 } from "@/components/shared/auth/auth-form.shared";
 import {
@@ -62,7 +63,11 @@ export function ForgotPasswordForm({
   };
 
   return (
-    <form className="space-y-5" onSubmit={(event) => void handleSubmit(event)}>
+    <form
+      autoComplete={AUTH_FORM_AUTO_COMPLETE}
+      className="space-y-5"
+      onSubmit={(event) => void handleSubmit(event)}
+    >
       <div className="space-y-2">
         <h2 className="text-xl font-bold tracking-[-0.03em] text-foreground">
           Reset your password
@@ -87,7 +92,7 @@ export function ForgotPasswordForm({
           <Input
             id="forgot-password-email"
             type="email"
-            autoComplete="email"
+            autoComplete={AUTH_FORM_AUTO_COMPLETE}
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             placeholder="you@example.com"

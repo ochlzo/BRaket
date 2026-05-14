@@ -28,6 +28,10 @@ test("uses safe callback URLs for login redirects", () => {
     "/onboarding/talent",
   );
   assert.equal(
+    getAuthRedirectPath("client", "login", "/onboarding/talent?step=2"),
+    "/onboarding/talent?step=2",
+  );
+  assert.equal(
     getAuthRedirectPath("talent", "login", "/settings/account?tab=profile"),
     "/settings/account?tab=profile",
   );
@@ -44,6 +48,10 @@ test("builds login redirects with callback parameters", () => {
   assert.equal(
     getLoginRedirectPath("/onboarding/talent"),
     "/login?callbackUrl=%2Fonboarding%2Ftalent",
+  );
+  assert.equal(
+    getLoginRedirectPath("/onboarding/talent?step=2"),
+    "/login?callbackUrl=%2Fonboarding%2Ftalent%3Fstep%3D2",
   );
   assert.equal(getLoginRedirectPath("https://evil.example"), "/login");
 });

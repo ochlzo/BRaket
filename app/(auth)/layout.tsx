@@ -2,9 +2,9 @@ import { BrandMark } from "@/components/shared/branding/brand-mark";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "BRaket â€“ Sign In or Create Account",
+  title: "BRaket Sign In or Create Account",
   description:
-    "Access the BRaket platform â€“ discover talent and commission opportunities for Bicol University students.",
+    "Access the BRaket platform, discover talent and commission opportunities for Bicol University students.",
 };
 
 export default function AuthLayout({
@@ -81,7 +81,7 @@ export default function AuthLayout({
                   <span className="h-1.5 w-1.5 rounded-full bg-white" />
                   {badge}
                 </span>
-              )
+              ),
             )}
           </div>
         </div>
@@ -100,7 +100,7 @@ export default function AuthLayout({
 
         {/* Footer */}
         <div className="px-6 pb-6 text-center text-xs text-[color:var(--ink-soft)]">
-          Â© {new Date().getFullYear()} BRaket. All rights reserved.
+          © {new Date().getFullYear()} BRaket. All rights reserved.
         </div>
       </div>
     </div>

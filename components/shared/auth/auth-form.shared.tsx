@@ -3,6 +3,9 @@
 import { useState, type ComponentProps } from "react";
 import { Input } from "@/components/ui/input";
 
+export const AUTH_FORM_AUTO_COMPLETE = "off";
+export const AUTH_PASSWORD_AUTO_COMPLETE = "new-password";
+
 /* ─── Icon helpers ─── */
 export function EyeIcon() {
   return (
