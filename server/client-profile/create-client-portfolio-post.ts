@@ -7,6 +7,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import {
   CLIENT_PORTFOLIO_MEDIA_ACCEPTED_TYPES,
   CLIENT_PORTFOLIO_MEDIA_BUCKET,
+  CLIENT_PORTFOLIO_MEDIA_MAX_BYTES,
   CLIENT_PORTFOLIO_MEDIA_MAX_IMAGES,
 } from "@/lib/supabase/storage";
 import type { CreateClientPortfolioPostState } from "@/lib/client-profile/types";
@@ -34,6 +35,10 @@ function readText(formData: FormData, key: string) {
 
 function isSupportedImage(file: File) {
   return CLIENT_PORTFOLIO_MEDIA_ACCEPTED_TYPES.includes(file.type);
+}
+
+function isSupportedImageSize(file: File) {
+  return file.size <= CLIENT_PORTFOLIO_MEDIA_MAX_BYTES;
 }
 
 function getFileExtension(file: File) {
@@ -99,6 +104,14 @@ export async function createClientPortfolioPostAction(
     return {
       ...EMPTY_STATE,
       message: "Only JPG, PNG, and WebP images are supported.",
+    };
+  }
+
+  const oversizedFile = files.find((file) => !isSupportedImageSize(file));
+  if (oversizedFile) {
+    return {
+      ...EMPTY_STATE,
+      message: "Keep each image under 5 MB.",
     };
   }
 
