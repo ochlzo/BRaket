@@ -78,7 +78,7 @@ export function AppSidebar({
       collapsible="icon"
       className="border-r border-[color:var(--line-strong)] bg-white"
     >
-      <SidebarHeader className="border-b border-[color:var(--line)] px-4 py-4 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-2">
+      <SidebarHeader className="h-16 justify-center border-b border-[color:var(--line)] px-4 py-0 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-2">
         <div className="flex w-full items-center gap-2 group-data-[collapsible=icon]:w-auto group-data-[collapsible=icon]:flex-col">
           <BrandMark
             className="min-w-0"
