@@ -7,28 +7,28 @@ datasource db {
 }
 
 model User {
-  userId                String         @unique @map("user_id")
-  authId                String         @unique @map("auth_id")
-  email                 String         @unique
-  username              String?        @unique
-  lastName              String?        @map("last_name")
-  firstName             String?        @map("first_name")
-  address               String?
-  avatarUrl             String?
-  backgroundimg_img_url String?
-  facebook_url          String?
-  instagram_url         String?
-  x_url                 String?
-  github_url            String?
-  linkedin_url          String?
-  createdAt             DateTime       @default(now()) @map("createdAt")
-  updatedAt             DateTime       @updatedAt @map("updatedAt")
-  contactNum            String?        @unique @db.VarChar(11)
-  initials              String?
-  is_verified           Boolean        @default(false)
-  is_talent             Boolean        @default(false)
-  ClientProfile         ClientProfile?
-  TalentProfile         TalentProfile?
+  userId             String         @unique @map("user_id")
+  authId             String         @unique @map("auth_id")
+  email              String         @unique
+  username           String?        @unique
+  lastName           String?        @map("last_name")
+  firstName          String?        @map("first_name")
+  address            String?
+  avatarUrl          String?
+  background_img_url String?
+  facebook_url       String?
+  instagram_url      String?
+  x_url              String?
+  github_url         String?
+  linkedin_url       String?
+  createdAt          DateTime       @default(now()) @map("createdAt")
+  updatedAt          DateTime       @updatedAt @map("updatedAt")
+  contactNum         String?        @unique @db.VarChar(11)
+  initials           String?
+  is_verified        Boolean        @default(false)
+  is_talent          Boolean        @default(false)
+  ClientProfile      ClientProfile?
+  TalentProfile      TalentProfile?
 
   @@id([userId, authId])
   @@map("User")
@@ -58,7 +58,7 @@ model ClientPortfolio {
   client_portfolio_id  String                 @id
   client_profile_id    String
   title                String
-  desciption           String
+  description          String
   createdAt            DateTime               @default(now())
   updatedAt            DateTime
   ClientProfile        ClientProfile          @relation(fields: [client_profile_id], references: [client_profile_id], onDelete: Cascade)
@@ -78,7 +78,6 @@ model TalentProfile {
   talent_profile_id           String            @unique
   user_id                     String            @unique
   headline                    String
-  bio                         String
   college                     String
   course                      String
   year_level                  Int
@@ -89,10 +88,11 @@ model TalentProfile {
   talent_reputation_score     Float?
   createdAt                   DateTime          @default(now())
   updatedAt                   DateTime
-  TalentPortfolio             TalentPortfolio[]
-  TalentSkills                TalentSkill[]
+  bio                         String
   Services                    Service[]
+  TalentPortfolio             TalentPortfolio[]
   User                        User              @relation(fields: [user_id], references: [userId], onDelete: Cascade)
+  TalentSkills                TalentSkill[]
 
   @@id([talent_profile_id, user_id])
 }
@@ -101,7 +101,7 @@ model TalentPortfolio {
   talent_portfolio_id  String                 @id
   talent_profile_id    String
   title                String
-  desciption           String
+  description          String
   createdAt            DateTime               @default(now())
   updatedAt            DateTime
   TalentProfile        TalentProfile          @relation(fields: [talent_profile_id], references: [talent_profile_id], onDelete: Cascade)
@@ -122,7 +122,6 @@ model Skill {
   name         String        @unique
   createdAt    DateTime      @default(now()) @map("created_at")
   updatedAt    DateTime      @updatedAt @map("updated_at")
-
   TalentSkills TalentSkill[]
 
   @@map("skills")
@@ -135,26 +134,24 @@ model TalentSkill {
   proficiencyLevel ProficiencyLevel @map("proficiency_level")
   createdAt        DateTime         @default(now()) @map("created_at")
   updatedAt        DateTime         @updatedAt @map("updated_at")
-
-  TalentProfile    TalentProfile    @relation(fields: [talentProfileId], references: [talent_profile_id], onDelete: Cascade)
   Skill            Skill            @relation(fields: [skillId], references: [skillId], onDelete: Cascade)
+  TalentProfile    TalentProfile    @relation(fields: [talentProfileId], references: [talent_profile_id], onDelete: Cascade)
 
   @@unique([talentProfileId, skillId])
   @@map("talent_skills")
 }
 
 model Service {
-  serviceId        String    @id @default(uuid()) @map("service_id")
-  talentProfileId String    @map("talent_profile_id")
-  title            String
-  minPrice         Decimal   @map("min_price") @db.Decimal(10, 2)
-  maxPrice         Decimal   @map("max_price") @db.Decimal(10, 2)
-  priceUnit        PriceUnit @map("price_unit")
-  createdAt        DateTime  @default(now()) @map("created_at")
-  updatedAt        DateTime  @updatedAt @map("updated_at")
-
-  TalentProfile    TalentProfile  @relation(fields: [talentProfileId], references: [talent_profile_id], onDelete: Cascade)
-  ServiceMedia     ServiceMedia[]
+  serviceId       String         @id @default(uuid()) @map("service_id")
+  talentProfileId String         @map("talent_profile_id")
+  title           String
+  minPrice        Decimal        @map("min_price") @db.Decimal(10, 2)
+  maxPrice        Decimal        @map("max_price") @db.Decimal(10, 2)
+  priceUnit       PriceUnit      @map("price_unit")
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @updatedAt @map("updated_at")
+  ServiceMedia    ServiceMedia[]
+  TalentProfile   TalentProfile  @relation(fields: [talentProfileId], references: [talent_profile_id], onDelete: Cascade)
 
   @@map("Services")
 }
@@ -165,7 +162,6 @@ model ServiceMedia {
   mediaUrl        String   @map("media_url")
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
-
   Service         Service  @relation(fields: [serviceId], references: [serviceId], onDelete: Cascade)
 
   @@map("ServiceMedia")

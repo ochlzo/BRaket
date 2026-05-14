@@ -151,7 +151,7 @@ export async function createClientPortfolioPostAction(
           client_portfolio_id: portfolioId,
           client_profile_id: clientProfile.client_profile_id,
           createdAt: timestamp,
-          desciption: description,
+          description,
           title,
           updatedAt: timestamp,
         },

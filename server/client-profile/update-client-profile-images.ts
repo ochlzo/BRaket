@@ -196,12 +196,12 @@ export async function updateClientProfileImagesAction(
   }
 
   let nextAvatarUrl = dbUser.avatarUrl ?? null;
-  let nextBackgroundImageUrl = dbUser.backgroundimg_img_url ?? null;
+  let nextBackgroundImageUrl = dbUser.background_img_url ?? null;
   const uploadedImages: string[] = [];
   const objectPathsToDelete = new Set<string>();
   const currentAvatarObjectPath = getPublicObjectPath(dbUser.avatarUrl);
   const currentBackgroundObjectPath = getPublicObjectPath(
-    dbUser.backgroundimg_img_url,
+    dbUser.background_img_url,
   );
 
   try {
@@ -239,7 +239,7 @@ export async function updateClientProfileImagesAction(
     const result = await prisma.user.updateMany({
       data: {
         avatarUrl: nextAvatarUrl,
-        backgroundimg_img_url: nextBackgroundImageUrl,
+        background_img_url: nextBackgroundImageUrl,
       },
       where: { authId: currentUser.authId },
     });

@@ -68,7 +68,7 @@ function buildPortfolioItems(
 ): ClientProfilePortfolioItem[] {
   return items.map((item) => ({
     createdAt: item.createdAt.toISOString(),
-    description: compactText(item.desciption),
+    description: compactText(item.description),
     id: item.client_portfolio_id,
     media: item.ClientPortfolioMedia.map((media) => ({
       id: media.cportfolio_media_id,
@@ -108,7 +108,7 @@ export function mapClientProfilePageData(
     authId: source.user.authId,
     avatarUrl: compactText(source.user.avatarUrl),
     backgroundImageUrl:
-      compactText(source.user.backgroundimg_img_url) ||
+      compactText(source.user.background_img_url) ||
       DEFAULT_COVER_BACKGROUND,
     businessAddress: compactText(clientProfile?.business_address),
     completedCommissionsCount:

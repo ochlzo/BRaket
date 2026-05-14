@@ -1,7 +1,7 @@
 -- Run this in the Supabase SQL editor before wiring the user profile image uploader.
 -- Bucket purpose:
 -- - store user-uploaded avatar images for User.avatar_url
--- - store user-uploaded background images for User.backgroundimg_img_url
+-- - store user-uploaded background images for User.background_img_url
 --
 -- Suggested object paths:
 -- - avatars/<auth.uid()>/<filename>

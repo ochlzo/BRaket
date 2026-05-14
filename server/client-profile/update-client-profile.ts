@@ -98,7 +98,7 @@ export async function updateClientProfileAction(
         data: {
           address: businessAddress || null,
           avatarUrl: avatarUrl || null,
-          backgroundimg_img_url: backgroundImageUrl || null,
+          background_img_url: backgroundImageUrl || null,
           contactNum,
           facebook_url: facebookUrl || null,
           firstName: firstName || null,

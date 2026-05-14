@@ -90,7 +90,7 @@ export type ClientProfilePageSource = {
     address: string | null;
     authId: string;
     avatarUrl: string | null;
-    backgroundimg_img_url: string | null;
+    background_img_url: string | null;
     contactNum: string | null;
     createdAt: Date;
     email: string;
@@ -124,7 +124,7 @@ export type ClientProfilePageSource = {
       }>;
       client_portfolio_id: string;
       createdAt: Date;
-      desciption: string;
+      description: string;
       title: string;
       updatedAt: Date;
     }>;
