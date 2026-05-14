@@ -18,7 +18,7 @@ test("allows talent dashboard access after talent onboarding finalization", () =
   );
 });
 
-test("keeps client dashboard access role-based", () => {
+test("allows authenticated users to access the client dashboard", () => {
   assert.equal(
     canAccessDashboardRole({
       expectedRole: "client",
@@ -33,7 +33,7 @@ test("keeps client dashboard access role-based", () => {
       isTalent: true,
       role: "talent",
     }),
-    false,
+    true,
   );
 });
 

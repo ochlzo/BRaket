@@ -88,11 +88,11 @@ export function NavUser({
             render={
               <SidebarMenuButton
                 size="lg"
-                className="rounded-xl aria-expanded:bg-[color:var(--surface-alt)]"
+                className="rounded-xl transition-all hover:bg-[color:var(--surface-alt)] hover:shadow-[var(--shadow-menu)] aria-expanded:bg-[color:var(--surface-alt)] aria-expanded:shadow-[var(--shadow-menu)] group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:rounded-full"
               />
             }
           >
-            <Avatar className="h-9 w-9">
+            <Avatar className="h-9 w-9 group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8">
               {avatarUrl ? (
                 <AvatarImage alt={displayName} src={avatarUrl} />
               ) : (

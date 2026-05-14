@@ -9,11 +9,10 @@ type DashboardAccessInput = {
 export function canAccessDashboardRole({
   expectedRole,
   isTalent,
-  role,
 }: DashboardAccessInput) {
   if (expectedRole === "talent") {
     return isTalent;
   }
 
-  return role === expectedRole;
+  return true;
 }

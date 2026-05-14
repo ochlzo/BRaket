@@ -16,8 +16,6 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarRail,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { getDashboardProfilePath } from "@/lib/auth/session";
 import type { UserRole } from "@/lib/types";
@@ -88,10 +86,6 @@ export function AppSidebar({
             href="/"
             subtitle={getSidebarSubtitle(role)}
           />
-          <SidebarTrigger
-            className="ml-auto border border-[color:var(--line)] bg-white text-[color:var(--ink-muted)] hover:bg-[color:var(--surface-alt)] hover:text-foreground group-data-[collapsible=icon]:ml-0"
-            title="Toggle sidebar"
-          />
         </div>
       </SidebarHeader>
       <SidebarContent className="px-3 py-4 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-0">
@@ -105,7 +99,6 @@ export function AppSidebar({
           role={role}
         />
       </SidebarFooter>
-      <SidebarRail />
     </Sidebar>
   );
 }
