@@ -12,14 +12,13 @@ export async function resolveTalentRegistrationPathAction() {
   }
 
   const talentProfile = await prisma.talentProfile.findUnique({
-    select: { profile_completion: true },
+    select: { talent_profile_id: true },
     where: { user_id: currentUser.id },
   });
 
   return getTalentRegistrationPath({
     isTalent: currentUser.isTalent,
     isVerified: currentUser.isVerified,
-    profileCompletion: talentProfile?.profile_completion ?? 0,
+    profileCompletion: talentProfile ? 1 : 0,
   });
 }
-

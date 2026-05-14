@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { UserRole } from "@/lib/types";
 
 import { checkChangeEmailAvailabilityAction } from "../_actions/check-change-email-availability-action";
+import { syncAccountEmailAction } from "../_actions/sync-account-email-action";
 
 export type ChangeEmailUserContext = {
   authId: string;
@@ -59,7 +60,7 @@ export function useChangeEmailDialog({
       : step === "password"
         ? "Enter your password to continue to the next step."
         : step === "otp"
-          ? `Enter the OTP that was sent to ${normalizedNewEmail} finish the change.`
+          ? `Enter the OTP that was sent to ${normalizedNewEmail} to finish the change.`
           : "Updating email...";
 
   function resetDialog() {
@@ -77,34 +78,6 @@ export function useChangeEmailDialog({
   function closeDialog() {
     resetDialog();
     onOpenChange(false);
-  }
-
-  async function finalizeChange(accessToken: string) {
-    const response = await fetch("/api/auth/change-email/complete", {
-      body: JSON.stringify({ accessToken }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-    });
-    const payload = (await response.json().catch(() => ({}))) as {
-      message?: string;
-      ok?: boolean;
-    };
-
-    if (!response.ok || !payload.ok) {
-      setOtpError(
-        payload.message ||
-          "We could not finish updating your email yet. Please try again.",
-      );
-      setStep("otp");
-      return false;
-    }
-
-    onEmailCommitted(normalizedNewEmail);
-    closeDialog();
-    router.refresh();
-    return true;
   }
 
   function handleCheckNewEmail() {
@@ -153,52 +126,20 @@ export function useChangeEmailDialog({
       return;
     }
 
-    const { data, error: signupError } = await supabase.auth.signUp({
+    const { error: updateEmailError } = await supabase.auth.updateUser({
       email: normalizedNewEmail,
-      password,
-      options: {
-        data: {
-          authId: currentUser.authId,
-          change_email_auth_id: currentUser.authId,
-          change_email_display_name: displayName,
-          change_email_first_name: currentUser.firstName,
-          change_email_last_name: currentUser.lastName,
-          change_email_user_id: currentUser.id,
-          display_name: displayName,
-          firstName: currentUser.firstName,
-          full_name: displayName,
-          lastName: currentUser.lastName,
-          name: displayName,
-          role: currentUser.role,
-          userId: currentUser.id,
-          username: currentUser.username,
-        },
-      },
     });
 
     setIsSubmittingPassword(false);
 
-    if (signupError) {
-      const message =
-        typeof signupError.message === "string" ? signupError.message : "";
-      if (/already registered|already in use/i.test(message)) {
-        setNewEmailError("This email is already in use.");
-        setStep("email");
-        return;
-      }
-
-      setPasswordError(message || "We could not send the confirmation code.");
+    if (updateEmailError) {
+      setNewEmailError(updateEmailError.message || "We could not send the confirmation email.");
+      setStep("email");
       return;
     }
 
     setOtpCode("");
     setStep("otp");
-
-    if (data.session?.access_token) {
-      setIsSubmittingOtp(true);
-      await finalizeChange(data.session.access_token);
-      setIsSubmittingOtp(false);
-    }
   }
 
   async function handleVerifyOtp() {
@@ -211,22 +152,29 @@ export function useChangeEmailDialog({
 
     setIsSubmittingOtp(true);
 
-    const { data, error: verifyError } = await supabase.auth.verifyOtp({
+    const { error: verifyError } = await supabase.auth.verifyOtp({
       email: normalizedNewEmail,
       token: otpCode.trim(),
-      type: "signup",
+      type: "email_change",
     });
 
-    if (verifyError || !data.session?.access_token) {
+    if (verifyError) {
       setIsSubmittingOtp(false);
-      setOtpError(
-        verifyError?.message || "We could not verify that OTP yet.",
-      );
+      setOtpError(verifyError?.message || "We could not verify that OTP yet.");
       return;
     }
 
-    setStep("updating");
-    await finalizeChange(data.session.access_token);
+    const syncResult = await syncAccountEmailAction();
+
+    if (!syncResult.ok) {
+      setIsSubmittingOtp(false);
+      setOtpError(syncResult.message);
+      return;
+    }
+
+    onEmailCommitted(syncResult.email);
+    closeDialog();
+    router.refresh();
     setIsSubmittingOtp(false);
   }
 

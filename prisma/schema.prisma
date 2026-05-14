@@ -89,7 +89,6 @@ model TalentProfile {
   createdAt                   DateTime          @default(now())
   updatedAt                   DateTime
   bio                         String
-  profile_completion          Int               @default(0)
   Services                    Service[]
   TalentPortfolio             TalentPortfolio[]
   User                        User              @relation(fields: [user_id], references: [userId], onDelete: Cascade)
@@ -146,12 +145,12 @@ model Service {
   serviceId         String            @id @default(uuid()) @map("service_id")
   talentProfileId   String            @map("talent_profile_id")
   title             String
-  description       String
   minPrice          Decimal           @map("min_price") @db.Decimal(10, 2)
   maxPrice          Decimal           @map("max_price") @db.Decimal(10, 2)
   priceUnit         PriceUnit         @map("price_unit")
   createdAt         DateTime          @default(now()) @map("created_at")
   updatedAt         DateTime          @updatedAt @map("updated_at")
+  description       String
   ServiceCategories ServiceCategory[]
   ServiceMedia      ServiceMedia[]
   TalentProfile     TalentProfile     @relation(fields: [talentProfileId], references: [talent_profile_id], onDelete: Cascade)

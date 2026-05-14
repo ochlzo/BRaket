@@ -11,6 +11,7 @@ export default async function ClientProfilePage() {
   return (
     <DashboardLayout
       role="client"
+      showHeaderTrigger={false}
       subtitle="View and manage the live client profile tied to your BRaket account."
       title="Client Profile"
     >

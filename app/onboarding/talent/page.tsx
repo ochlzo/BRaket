@@ -28,7 +28,6 @@ export default async function OnboardingPage({
       college: true,
       course: true,
       headline: true,
-      profile_completion: true,
       TalentSkills: {
         orderBy: { createdAt: "asc" },
         select: {
@@ -43,7 +42,7 @@ export default async function OnboardingPage({
   });
   const initialStep = getAllowedTalentOnboardingStep(
     step,
-    talentProfile?.profile_completion ?? 0,
+    talentProfile ? 1 : 0,
   );
 
   if (

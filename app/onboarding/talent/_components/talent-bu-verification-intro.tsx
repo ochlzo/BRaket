@@ -142,16 +142,22 @@ export function TalentBuVerificationIntro({
           >
             Maybe Later
           </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Important note</DialogTitle>
-              <DialogDescription>
-                Your services will not be listed until you are verified as a BU
-                student.
+          <DialogContent className="overflow-hidden border border-[color:var(--line-strong)] bg-white p-0 shadow-[var(--shadow-panel-elevated)] sm:max-w-md">
+            <DialogHeader className="items-center gap-3 px-6 pb-2 pt-6 text-center">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[color:var(--brand-orange)]/10 text-[color:var(--brand-orange)]">
+                <Mail className="size-5" />
+              </div>
+              <DialogTitle className="text-lg font-bold text-foreground">
+                Just a quick note
+              </DialogTitle>
+              <DialogDescription className="text-sm leading-6 text-[color:var(--ink-muted)]">
+                You are welcome to continue for now. Your services will simply
+                stay private until your BU student verification is complete.
               </DialogDescription>
             </DialogHeader>
-            <DialogFooter>
+            <DialogFooter className="mx-0 mb-0 flex-row items-center justify-center border-t border-[color:var(--line)] bg-[color:var(--surface-alt)] px-6 pb-7 pt-3 sm:justify-center">
               <Button
+                className="mx-auto h-11 min-w-32 translate-y-1 cursor-pointer bg-[color:var(--brand-orange)] px-6 text-white hover:bg-[color:var(--brand-orange-strong)]"
                 onClick={() => router.push("/onboarding/talent?step=1")}
                 type="button"
               >

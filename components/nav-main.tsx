@@ -34,10 +34,10 @@ export function NavMain({ items }: { items: SidebarNavItem[] }) {
               tooltip={item.label}
               render={<Link href={item.href} prefetch />}
               className={cn(
-                "h-12 rounded-xl px-4 text-sm font-medium transition-all",
+                "h-12 rounded-xl px-4 text-sm font-medium transition-all hover:shadow-[var(--shadow-menu)]",
                 "group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:rounded-full group-data-[collapsible=icon]:p-0!",
                 active
-                  ? "bg-[color:var(--brand-orange)]/10 font-semibold text-[color:var(--brand-orange)]"
+                  ? "bg-[color:var(--brand-orange)]/10 font-semibold text-[color:var(--brand-orange)] hover:bg-[color:var(--brand-orange)]/10"
                   : "text-[color:var(--ink-muted)] hover:bg-[color:var(--surface-alt)] hover:text-foreground",
               )}
             >
