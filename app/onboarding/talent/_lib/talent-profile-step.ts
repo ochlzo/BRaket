@@ -20,6 +20,8 @@ export type TalentProfileStepState = {
   successToken?: string;
 };
 
+export type TalentProfileStepInitialValues = TalentProfileStepInput;
+
 export type ProficiencyLevelInput =
   | "BEGINNER"
   | "INTERMEDIATE"
@@ -33,6 +35,29 @@ const PROFICIENCY_LEVELS = new Set<string>([
   "EXPERT",
 ]);
 const YEAR_LEVELS = new Set(["1", "2", "3", "4"]);
+
+const EMPTY_INITIAL_VALUES: TalentProfileStepInitialValues = {
+  bio: "",
+  college: "",
+  course: "",
+  headline: "",
+  skills: [],
+  website: "",
+  yearLevel: "",
+};
+
+type TalentProfileStepSource = {
+  bio: string;
+  college: string;
+  course: string;
+  headline: string;
+  TalentSkills: {
+    proficiencyLevel: ProficiencyLevelInput;
+    Skill: { name: string };
+  }[];
+  website: string | null;
+  year_level: number;
+} | null;
 
 function readText(formData: FormData, key: string) {
   const value = formData.get(key);
@@ -105,6 +130,27 @@ export function parseTalentProfileStepFormData(
   };
 }
 
+export function buildTalentProfileStepInitialValues(
+  profile: TalentProfileStepSource,
+): TalentProfileStepInitialValues {
+  if (!profile) {
+    return EMPTY_INITIAL_VALUES;
+  }
+
+  return {
+    bio: profile.bio,
+    college: profile.college,
+    course: profile.course,
+    headline: profile.headline,
+    skills: profile.TalentSkills.map((skill) => ({
+      level: skill.proficiencyLevel,
+      name: skill.Skill.name,
+    })),
+    website: profile.website ?? "",
+    yearLevel: String(profile.year_level),
+  };
+}
+
 export function validateTalentProfileStepInput(
   input: TalentProfileStepInput,
 ): TalentProfileStepState {
@@ -153,4 +199,3 @@ export function validateTalentProfileStepInput(
     ok: true,
   };
 }
-

@@ -13,7 +13,10 @@ import {
   TalentBasicInfoFields,
   TalentStudentDetailsFields,
 } from "@/app/onboarding/talent/_components/talent-profile-form-fields";
-import { validateTalentProfileStepInput } from "@/app/onboarding/talent/_lib/talent-profile-step";
+import {
+  type TalentProfileStepInitialValues,
+  validateTalentProfileStepInput,
+} from "@/app/onboarding/talent/_lib/talent-profile-step";
 import { Separator } from "@/components/ui/separator";
 import type { SkillLevel } from "@/lib/types";
 
@@ -24,21 +27,25 @@ type TalentOnboardingFormProps = {
     lastName: string;
     username: string;
   };
+  initialValues: TalentProfileStepInitialValues;
   onComplete: () => void;
 };
 
 export function TalentOnboardingForm({
   availableSkills,
   currentUser,
+  initialValues,
   onComplete,
 }: TalentOnboardingFormProps) {
-  const [headline, setHeadline] = useState("");
-  const [website, setWebsite] = useState("");
-  const [bio, setBio] = useState("");
-  const [college, setCollege] = useState("");
-  const [course, setCourse] = useState("");
-  const [yearLevel, setYearLevel] = useState("");
-  const [selectedSkills, setSelectedSkills] = useState<SelectedSkill[]>([]);
+  const [headline, setHeadline] = useState(initialValues.headline);
+  const [website, setWebsite] = useState(initialValues.website);
+  const [bio, setBio] = useState(initialValues.bio);
+  const [college, setCollege] = useState(initialValues.college);
+  const [course, setCourse] = useState(initialValues.course);
+  const [yearLevel, setYearLevel] = useState(initialValues.yearLevel);
+  const [selectedSkills, setSelectedSkills] = useState<SelectedSkill[]>(
+    initialValues.skills,
+  );
   const [skillSearch, setSkillSearch] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 

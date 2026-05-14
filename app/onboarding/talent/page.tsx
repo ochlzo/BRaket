@@ -2,7 +2,11 @@ import { TalentOnboardingFlow } from "@/app/onboarding/talent/_components/talent
 import { TalentOnboardingHeader } from "@/app/onboarding/talent/_components/talent-onboarding-header";
 import { getCategoryOptions } from "@/app/onboarding/talent/_lib/get-category-options";
 import { getSkillOptions } from "@/app/onboarding/talent/_lib/get-skill-options";
-import { getTalentOnboardingStep } from "@/lib/talent-onboarding/registration-route";
+import { buildTalentProfileStepInitialValues } from "@/app/onboarding/talent/_lib/talent-profile-step";
+import {
+  getAllowedTalentOnboardingStep,
+  shouldForceTalentVerification,
+} from "@/lib/talent-onboarding/registration-route";
 import { prisma } from "@/lib/prisma";
 import { requireCurrentAppUser } from "@/server/users/current-user";
 import { redirect } from "next/navigation";
@@ -13,32 +17,45 @@ type OnboardingPageProps = {
   }>;
 };
 
-function parseOnboardingStep(value: string | undefined) {
-  if (value === "3") {
-    return 3;
-  }
-
-  return value === "2" ? 2 : 1;
-}
-
 export default async function OnboardingPage({
   searchParams,
 }: OnboardingPageProps) {
   const { step } = await searchParams;
   const currentUser = await requireCurrentAppUser();
   const talentProfile = await prisma.talentProfile.findUnique({
-    select: { profile_completion: true },
+    select: {
+      bio: true,
+      college: true,
+      course: true,
+      headline: true,
+      profile_completion: true,
+      TalentSkills: {
+        orderBy: { createdAt: "asc" },
+        select: {
+          proficiencyLevel: true,
+          Skill: { select: { name: true } },
+        },
+      },
+      website: true,
+      year_level: true,
+    },
     where: { user_id: currentUser.id },
   });
-  const initialStep = getTalentOnboardingStep(
+  const initialStep = getAllowedTalentOnboardingStep(
+    step,
     talentProfile?.profile_completion ?? 0,
   );
 
-  if (!currentUser.isVerified) {
+  if (
+    shouldForceTalentVerification({
+      isTalent: currentUser.isTalent,
+      isVerified: currentUser.isVerified,
+    })
+  ) {
     redirect("/onboarding/talent/verification");
   }
 
-  if (parseOnboardingStep(step) !== initialStep || step !== String(initialStep)) {
+  if (step !== String(initialStep)) {
     redirect(`/onboarding/talent?step=${initialStep}`);
   }
 
@@ -58,6 +75,9 @@ export default async function OnboardingPage({
               lastName: currentUser.lastName,
               username: currentUser.username,
             }}
+            initialProfileValues={buildTalentProfileStepInitialValues(
+              talentProfile,
+            )}
             initialStep={initialStep}
           />
         </div>

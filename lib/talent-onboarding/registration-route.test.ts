@@ -5,7 +5,12 @@ const routeModule = await import(
   new URL("./registration-route.ts", import.meta.url).href,
 );
 
-const { getTalentOnboardingStep, getTalentRegistrationPath } = routeModule;
+const {
+  getAllowedTalentOnboardingStep,
+  getTalentOnboardingStep,
+  getTalentRegistrationPath,
+  shouldForceTalentVerification,
+} = routeModule;
 
 test("routes unverified non-talent users to verification", () => {
   assert.equal(
@@ -59,3 +64,34 @@ test("normalizes profile completion into supported onboarding steps", () => {
   assert.equal(getTalentOnboardingStep(3), 3);
 });
 
+test("allows navigating back to completed onboarding steps", () => {
+  assert.equal(getAllowedTalentOnboardingStep("1", 2), 1);
+  assert.equal(getAllowedTalentOnboardingStep("2", 2), 2);
+  assert.equal(getAllowedTalentOnboardingStep("3", 2), 3);
+});
+
+test("uses next incomplete step for missing, invalid, or future onboarding steps", () => {
+  assert.equal(getAllowedTalentOnboardingStep(undefined, 1), 2);
+  assert.equal(getAllowedTalentOnboardingStep("nope", 1), 2);
+  assert.equal(getAllowedTalentOnboardingStep("3", 1), 2);
+});
+
+test("does not force verification on onboarding pages for unverified non-talent users", () => {
+  assert.equal(
+    shouldForceTalentVerification({
+      isTalent: false,
+      isVerified: false,
+    }),
+    false,
+  );
+});
+
+test("forces verification on onboarding pages for unverified talent users", () => {
+  assert.equal(
+    shouldForceTalentVerification({
+      isTalent: true,
+      isVerified: false,
+    }),
+    true,
+  );
+});

@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 
 import { TalentServiceCategorySelector } from "@/app/onboarding/talent/_components/talent-service-category-selector";
+import { TalentServiceCurrencyField } from "@/app/onboarding/talent/_components/talent-service-currency-field";
 import { TalentMediaUploadField } from "@/app/onboarding/talent/_components/talent-media-upload-field";
 import type { CategoryOption } from "@/app/onboarding/talent/_lib/get-category-options";
 import { Button } from "@/components/ui/button";
@@ -29,9 +30,6 @@ const priceUnitOptions = [
   { label: "Per session", value: "PER_SESSION" },
 ];
 
-const currencyInputClassName =
-  "h-10 rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] pr-4 text-sm sm:h-11 sm:rounded-xl";
-
 function getPriceRangeError(minPrice: string, maxPrice: string) {
   if (!minPrice || !maxPrice) {
     return "";
@@ -46,11 +44,13 @@ function getPriceRangeError(minPrice: string, maxPrice: string) {
 
 type TalentServiceOnboardingFormProps = {
   availableCategories: CategoryOption[];
+  onBack: () => void;
   onSkip: () => void;
 };
 
 export function TalentServiceOnboardingForm({
   availableCategories,
+  onBack,
   onSkip,
 }: TalentServiceOnboardingFormProps) {
   const [title, setTitle] = useState("");
@@ -166,7 +166,7 @@ export function TalentServiceOnboardingForm({
                   <span className="text-[color:var(--tone-red-base)]">*</span>
                 </Label>
                 <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2">
-                  <CurrencyField
+                  <TalentServiceCurrencyField
                     ariaLabel="Minimum price"
                     describedBy={
                       priceRangeError ? "service-price-range-error" : undefined
@@ -181,7 +181,7 @@ export function TalentServiceOnboardingForm({
                   <span className="text-sm font-semibold text-[color:var(--ink-muted)]">
                     -
                   </span>
-                  <CurrencyField
+                  <TalentServiceCurrencyField
                     ariaLabel="Maximum price"
                     describedBy={
                       priceRangeError ? "service-price-range-error" : undefined
@@ -256,6 +256,14 @@ export function TalentServiceOnboardingForm({
 
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
           <Button
+            className="min-h-11 rounded-full sm:h-12 sm:rounded-xl"
+            onClick={onBack}
+            type="button"
+            variant="outline"
+          >
+            Back
+          </Button>
+          <Button
             className="min-h-11 rounded-full bg-[color:var(--brand-orange)] px-5 text-sm font-semibold !text-white transition hover:bg-[color:var(--brand-orange-strong)] sm:h-12 sm:rounded-xl sm:px-8"
             type="submit"
           >
@@ -263,51 +271,6 @@ export function TalentServiceOnboardingForm({
           </Button>
         </div>
       </form>
-    </div>
-  );
-}
-
-type CurrencyFieldProps = {
-  ariaLabel: string;
-  describedBy?: string;
-  id: string;
-  isInvalid: boolean;
-  name: string;
-  onChange: (value: string) => void;
-  placeholder: string;
-  value: string;
-};
-
-function CurrencyField({
-  ariaLabel,
-  describedBy,
-  id,
-  isInvalid,
-  name,
-  onChange,
-  placeholder,
-  value,
-}: CurrencyFieldProps) {
-  return (
-    <div className="relative min-w-0">
-      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[color:var(--ink-muted)] sm:left-4 sm:text-sm">
-        PHP
-      </span>
-      <Input
-        aria-describedby={describedBy}
-        aria-invalid={isInvalid}
-        aria-label={ariaLabel}
-        className={`${currencyInputClassName} pl-12 sm:pl-14`}
-        id={id}
-        min="1"
-        name={name}
-        onChange={(event) => onChange(event.target.value)}
-        placeholder={placeholder}
-        required
-        step="0.01"
-        type="number"
-        value={value}
-      />
     </div>
   );
 }

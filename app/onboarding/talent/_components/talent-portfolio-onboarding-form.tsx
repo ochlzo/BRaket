@@ -10,10 +10,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { TalentMediaUploadField } from "@/app/onboarding/talent/_components/talent-media-upload-field";
 
 type TalentPortfolioOnboardingFormProps = {
+  onBack: () => void;
   onComplete: () => void;
 };
 
 export function TalentPortfolioOnboardingForm({
+  onBack,
   onComplete,
 }: TalentPortfolioOnboardingFormProps) {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -123,6 +125,14 @@ export function TalentPortfolioOnboardingForm({
         ) : null}
 
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+          <Button
+            className="min-h-11 rounded-full sm:h-12 sm:rounded-xl"
+            onClick={onBack}
+            type="button"
+            variant="outline"
+          >
+            Back
+          </Button>
           <Button
             className="min-h-11 rounded-full bg-[color:var(--brand-orange)] px-5 text-sm font-semibold !text-white transition hover:bg-[color:var(--brand-orange-strong)] sm:h-12 sm:rounded-xl sm:px-8"
             type="submit"

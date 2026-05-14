@@ -6,6 +6,7 @@ const profileStepModule = await import(
 );
 
 const {
+  buildTalentProfileStepInitialValues,
   parseTalentProfileStepFormData,
   validateTalentProfileStepInput,
 } = profileStepModule;
@@ -122,3 +123,48 @@ test("accepts optional blank website", () => {
   });
 });
 
+test("builds initial talent profile step values from existing profile data", () => {
+  const result = buildTalentProfileStepInitialValues({
+    bio: "Existing bio",
+    college: "College of Science",
+    course: "BS Information Technology",
+    headline: "Existing headline",
+    TalentSkills: [
+      {
+        proficiencyLevel: "ADVANCED",
+        Skill: { name: "Figma" },
+      },
+      {
+        proficiencyLevel: "INTERMEDIATE",
+        Skill: { name: "React" },
+      },
+    ],
+    website: "https://portfolio.example.com",
+    year_level: 4,
+  });
+
+  assert.deepEqual(result, {
+    bio: "Existing bio",
+    college: "College of Science",
+    course: "BS Information Technology",
+    headline: "Existing headline",
+    skills: [
+      { name: "Figma", level: "ADVANCED" },
+      { name: "React", level: "INTERMEDIATE" },
+    ],
+    website: "https://portfolio.example.com",
+    yearLevel: "4",
+  });
+});
+
+test("builds empty initial talent profile step values without a profile", () => {
+  assert.deepEqual(buildTalentProfileStepInitialValues(null), {
+    bio: "",
+    college: "",
+    course: "",
+    headline: "",
+    skills: [],
+    website: "",
+    yearLevel: "",
+  });
+});
