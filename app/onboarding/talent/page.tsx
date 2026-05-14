@@ -10,6 +10,10 @@ type OnboardingPageProps = {
 };
 
 function parseOnboardingStep(value: string | undefined) {
+  if (value === "3") {
+    return 3;
+  }
+
   return value === "2" ? 2 : 1;
 }
 
