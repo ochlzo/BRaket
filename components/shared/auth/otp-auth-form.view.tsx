@@ -18,6 +18,7 @@ type OtpAuthFormViewProps = {
   code: string;
   email: string;
   error: string;
+  googleAuthAction: ReactNode;
   handleSubmit: (form: HTMLFormElement) => Promise<void>;
   isSending: boolean;
   isSignup: boolean;
@@ -37,6 +38,7 @@ export function OtpAuthFormView({
   code,
   email,
   error,
+  googleAuthAction,
   handleSubmit,
   isSending,
   isSignup,
@@ -229,6 +231,19 @@ export function OtpAuthFormView({
         >
           Use email code instead
         </Button>
+      )}
+
+      {step === "password" && (
+        <div className="space-y-4">
+          <div className="relative flex items-center gap-4 py-1">
+            <Separator className="flex-1" />
+            <span className="text-xs font-medium text-[color:var(--ink-soft)]">
+              {isSignup ? "or continue with Google" : "or sign in with Google"}
+            </span>
+            <Separator className="flex-1" />
+          </div>
+          {googleAuthAction}
+        </div>
       )}
 
       <div className="relative flex items-center gap-4 py-1">
