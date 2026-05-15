@@ -22,6 +22,17 @@ test("routes unverified non-talent users to verification", () => {
   );
 });
 
+test("routes pending non-talent applicants to talent profile setup", () => {
+  assert.equal(
+    getTalentRegistrationPath({
+      isTalent: false,
+      isVerified: false,
+      verificationStatus: "pending",
+    }),
+    "/onboarding/talent?step=1",
+  );
+});
+
 test("routes verified non-talent users to the next onboarding step", () => {
   assert.equal(
     getTalentRegistrationPath({

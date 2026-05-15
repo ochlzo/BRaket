@@ -1,4 +1,5 @@
 import { TalentBuVerificationIntro } from "@/app/onboarding/talent/_components/talent-bu-verification-intro";
+import { getApplicantVerificationState } from "@/server/talent-verification/get-applicant-state";
 import { requireCurrentAppUser } from "@/server/users/current-user";
 
 type TalentVerifyPageProps = {
@@ -12,6 +13,10 @@ export default async function TalentVerifyPage({
   searchParams,
 }: TalentVerifyPageProps) {
   const currentUser = await requireCurrentAppUser();
+  const verification = await getApplicantVerificationState(
+    currentUser.id,
+    currentUser.isVerified,
+  );
   const { source, step } = await searchParams;
 
   return (
@@ -20,9 +25,11 @@ export default async function TalentVerifyPage({
         <div className="mx-auto w-full max-w-6xl">
           <TalentBuVerificationIntro
             backLabel={"profile"}
+            email={currentUser.email}
             isTalent={currentUser.isTalent}
             source={source}
             step={step}
+            verification={verification}
             verificationBasePath="/talent/verify"
           />
         </div>

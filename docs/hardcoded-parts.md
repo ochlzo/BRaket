@@ -13,7 +13,6 @@ This file lists codebase areas that currently rely on hardcoded values, static a
   - `app/browse/page.tsx`
   - `app/talent/[username]/page.tsx`
   - `app/book/[serviceId]/page.tsx`
-  - `app/dashboard/admin/page.tsx`
   - `app/dashboard/client/page.tsx`
   - `app/dashboard/client/bookings/page.tsx`
   - `app/dashboard/profile/page.tsx`

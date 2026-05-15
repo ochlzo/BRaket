@@ -10,6 +10,7 @@ export type TalentOnboardingStep = 1 | 2 | 3;
 type TalentRegistrationPathInput = {
   isTalent: boolean;
   isVerified: boolean;
+  verificationStatus?: "approved" | "none" | "pending" | "rejected";
 };
 
 type TalentVerificationInput = {
@@ -38,12 +39,13 @@ export function getAllowedTalentOnboardingStep(requestedStep: string | undefined
 export function getTalentRegistrationPath({
   isTalent,
   isVerified,
+  verificationStatus = "none",
 }: TalentRegistrationPathInput) {
-  if (!isVerified) {
+  if (!isVerified && verificationStatus !== "pending") {
     return VERIFICATION_PATH;
   }
 
-  if (isTalent) {
+  if (isTalent && isVerified) {
     return TALENT_PROFILE_PATH;
   }
 

@@ -22,6 +22,13 @@ export async function finalizeTalentOnboardingAction(): Promise<TalentFinalizati
     };
   }
 
+  if (!currentUser.isVerified) {
+    return {
+      message: "Wait for admin verification before finishing talent onboarding.",
+      ok: false,
+    };
+  }
+
   const talentProfile = await prisma.talentProfile.findUnique({
     select: {
       bio: true,

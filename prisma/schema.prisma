@@ -7,31 +7,51 @@ datasource db {
 }
 
 model User {
-  userId             String         @unique @map("user_id")
-  authId             String         @unique @map("auth_id")
-  email              String         @unique
-  username           String?        @unique
-  lastName           String?        @map("last_name")
-  firstName          String?        @map("first_name")
-  address            String?
-  avatarUrl          String?
-  background_img_url String?
-  facebook_url       String?
-  instagram_url      String?
-  x_url              String?
-  github_url         String?
-  linkedin_url       String?
-  createdAt          DateTime       @default(now()) @map("createdAt")
-  updatedAt          DateTime       @updatedAt @map("updatedAt")
-  contactNum         String?        @unique @db.VarChar(11)
-  initials           String?
-  is_verified        Boolean        @default(false)
-  is_talent          Boolean        @default(false)
-  ClientProfile      ClientProfile?
-  TalentProfile      TalentProfile?
+  userId                     String                      @unique @map("user_id")
+  authId                     String                      @unique @map("auth_id")
+  email                      String                      @unique
+  username                   String?                     @unique
+  lastName                   String?                     @map("last_name")
+  firstName                  String?                     @map("first_name")
+  address                    String?
+  avatarUrl                  String?
+  background_img_url         String?
+  facebook_url               String?
+  instagram_url              String?
+  x_url                      String?
+  github_url                 String?
+  linkedin_url               String?
+  createdAt                  DateTime                    @default(now()) @map("createdAt")
+  updatedAt                  DateTime                    @updatedAt @map("updatedAt")
+  contactNum                 String?                     @unique @db.VarChar(11)
+  initials                   String?
+  is_verified                Boolean                     @default(false)
+  is_talent                  Boolean                     @default(false)
+  ClientProfile              ClientProfile?
+  TalentProfile              TalentProfile?
+  TalentVerificationRequests TalentVerificationRequest[] @relation("TalentVerificationApplicant")
 
   @@id([userId, authId])
   @@map("User")
+}
+
+model TalentVerificationRequest {
+  requestId       String                   @id @default(uuid()) @map("request_id")
+  userId          String                   @map("user_id")
+  buEmail         String                   @map("bu_email")
+  buIdImageBucket String                   @map("bu_id_image_bucket")
+  buIdImagePath   String                   @map("bu_id_image_path")
+  status          TalentVerificationStatus @default(PENDING)
+  rejectionReason String?                  @map("rejection_reason")
+  reviewedByEmail String?                  @map("reviewed_by_email")
+  reviewedAt      DateTime?                @map("reviewed_at")
+  createdAt       DateTime                 @default(now()) @map("created_at")
+  updatedAt       DateTime                 @updatedAt @map("updated_at")
+  User            User                     @relation("TalentVerificationApplicant", fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@index([status, createdAt])
+  @@index([userId, status])
+  @@map("talent_verification_requests")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -211,4 +231,12 @@ enum ProficiencyLevel {
   EXPERT
 
   @@map("proficiency_level")
+}
+
+enum TalentVerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+
+  @@map("talent_verification_status")
 }

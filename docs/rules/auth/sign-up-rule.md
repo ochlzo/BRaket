@@ -45,8 +45,10 @@ Use this rule set for login, sign-up, OTP, session refresh, and post-auth user p
 - If `avatarUrl` is blank on signup, keep it empty server-side and persist a separate `initials` field from the auth display name or email so avatar fallbacks can render from stored initials instead of a synthetic URL.
 - Account-scoped dashboard and settings pages must resolve the authenticated user from Supabase + your real app user record; do not fall back to mock "current user" data for signed-in experiences.
 - When onboarding enriches the user profile, persist the canonical profile fields server-side and keep auth metadata in sync only as a transport/helper layer.
-- BU email verification must be handled through a dedicated Server Function that validates the signed-in Supabase user and only marks verification after confirming a `@bicol-u.edu.ph` email.
-- BU ID image uploads must use the configured Supabase Storage bucket (`NEXT_PUBLIC_SUPABASE_BU_ID_BUCKET`) and store the uploaded object path/URL on the signed-in user's metadata.
+- Talent BU verification must be handled through a dedicated Server Function that validates the signed-in Supabase user, requires a confirmed `@bicol-u.edu.ph` auth email, uploads the BU ID image to the configured private Supabase Storage bucket (`NEXT_PUBLIC_SUPABASE_BU_ID_BUCKET`), and creates a `TalentVerificationRequest`.
+- Do not mark `User.is_verified` from the applicant flow. Only the protected admin review flow may approve a `TalentVerificationRequest` and set `User.is_verified = true`.
+- Admin verification access must require an authenticated Supabase user whose email appears in `BRACKET_ADMIN_EMAILS`.
+- Admin routes must use the dedicated admin session guard. `/admin` redirects non-admin sessions to `/admin/login`, and `/admin/login` redirects valid admin sessions back to `/admin`.
 
 ## Signup Email Validation
 

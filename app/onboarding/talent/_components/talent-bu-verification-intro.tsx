@@ -1,8 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useActionState } from "react";
 import { ArrowLeft, ArrowRight, Mail } from "lucide-react";
 
+import { submitTalentVerificationAction } from "@/app/onboarding/talent/verification/_actions/submit-talent-verification-action";
+import { initialTalentVerificationState } from "@/app/onboarding/talent/verification/_actions/submit-talent-verification-state";
 import {
   Dialog,
   DialogContent,
@@ -14,26 +17,34 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { FileInput } from "@/components/ui/file-input";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import type { ApplicantVerificationState } from "@/server/talent-verification/get-applicant-state";
 import { getTalentVerificationMaybeLaterPath } from "@/lib/talent-onboarding/registration-route";
 
 type TalentBuVerificationIntroProps = {
   backLabel?: string;
+  email: string;
   isTalent: boolean;
   source?: string;
   step?: string;
+  verification: ApplicantVerificationState;
   verificationBasePath?: string;
 };
 
 export function TalentBuVerificationIntro({
   backLabel = "dashboard",
+  email,
   isTalent,
   source,
   step,
+  verification,
   verificationBasePath = "/talent/verify",
 }: TalentBuVerificationIntroProps) {
   const router = useRouter();
+  const [state, formAction, isPending] = useActionState(
+    submitTalentVerificationAction,
+    initialTalentVerificationState,
+  );
   const isFormStep = step === "form";
   const isDashboardSource = source === "dashboard";
   const maybeLaterPath = getTalentVerificationMaybeLaterPath(isTalent, source);
@@ -44,6 +55,10 @@ export function TalentBuVerificationIntro({
   const formPath = `${verificationBasePath}?step=form${sourceQuery}`;
 
   if (isFormStep) {
+    const isApproved = verification.status === "approved" || state.ok;
+    const isAlreadyPending = verification.status === "pending" && !state.ok;
+    const canSubmit = verification.status !== "pending" && !isApproved;
+
     return (
       <div className="mx-auto max-w-2xl rounded-3xl border border-[color:var(--line-strong)] bg-white p-6 shadow-[var(--shadow-surface-soft)] sm:p-8">
         <button
@@ -68,36 +83,72 @@ export function TalentBuVerificationIntro({
           </p>
         </div>
 
-        <form className="mt-8 space-y-5">
+        {isApproved ? (
+          <div className="mt-8 rounded-2xl border border-[color:var(--tone-green-base)]/30 bg-[color:var(--tone-green-soft)] p-5 text-sm text-[color:var(--tone-green-deep)]">
+            Your BU student verification is approved. You can continue talent
+            onboarding.
+          </div>
+        ) : null}
+
+        {isAlreadyPending ? (
+          <div className="mt-8 rounded-2xl border border-[color:var(--tone-amber-base)]/30 bg-[color:var(--tone-amber-soft)] p-5 text-sm text-[color:var(--tone-amber-deep)]">
+            Your request for {verification.buEmail || email} is waiting for
+            admin review.
+          </div>
+        ) : null}
+
+        {verification.status === "rejected" && !state.ok ? (
+          <div className="mt-8 rounded-2xl border border-[color:var(--tone-red-base)]/30 bg-[color:var(--tone-red-soft)] p-5 text-sm text-[color:var(--tone-red-deep)]">
+            Your previous request was rejected
+            {verification.rejectionReason
+              ? `: ${verification.rejectionReason}`
+              : "."}
+          </div>
+        ) : null}
+
+        {canSubmit ? (
+        <form action={formAction} className="mt-8 space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="bu-email">Bicol University email</Label>
-            <div className="relative">
-              <Mail className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[color:var(--ink-muted)]" />
-              <Input
-                className="h-12 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] pl-10"
-                id="bu-email"
-                name="email"
-                placeholder="you@bicol-u.edu.ph"
-                required
-                type="email"
-              />
+            <Label>Bicol University email</Label>
+            <div className="flex h-12 items-center gap-3 rounded-xl border border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-3 text-sm text-[color:var(--ink-body)]">
+              <Mail className="size-4 shrink-0 text-[color:var(--ink-muted)]" />
+              <span className="truncate font-semibold">{email}</span>
             </div>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="student-id">Upload student ID</Label>
             <FileInput
-              accept="image/jpeg,image/png,image/webp,application/pdf"
+              accept="image/jpeg,image/png,image/webp"
               id="student-id"
               name="studentId"
               required
             />
           </div>
 
-          <Button className="h-12 w-full rounded-2xl" size="lg" type="submit">
-            Submit verification
+          <Button
+            className="h-12 w-full rounded-2xl bg-[color:var(--brand-blue)] !text-white hover:bg-[color:var(--brand-blue-strong)]"
+            disabled={isPending}
+            size="lg"
+            type="submit"
+          >
+            {isPending ? "Submitting..." : "Submit verification"}
           </Button>
+
+          {state.message ? (
+            <p
+              className={`rounded-xl px-4 py-3 text-sm ${
+                state.ok
+                  ? "bg-[color:var(--tone-green-soft)] text-[color:var(--tone-green-deep)]"
+                  : "bg-[color:var(--tone-red-soft)] text-[color:var(--tone-red-deep)]"
+              }`}
+              role={state.ok ? "status" : "alert"}
+            >
+              {state.message}
+            </p>
+          ) : null}
         </form>
+        ) : null}
       </div>
     );
   }
