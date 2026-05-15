@@ -89,7 +89,7 @@ export function mapClientProfilePageData(
   const organizationName =
     compactText(source.clientProfile?.organization_name) ||
     displayName(firstName, lastName, username);
-  const joinedLabel = `Joined ${source.user.createdAt.toLocaleDateString("en-US", {
+  const joinedLabel = ` ${source.user.createdAt.toLocaleDateString("en-US", {
     month: "long",
     year: "numeric",
   })}`;
@@ -108,8 +108,7 @@ export function mapClientProfilePageData(
     authId: source.user.authId,
     avatarUrl: compactText(source.user.avatarUrl),
     backgroundImageUrl:
-      compactText(source.user.background_img_url) ||
-      DEFAULT_COVER_BACKGROUND,
+      compactText(source.user.background_img_url) || DEFAULT_COVER_BACKGROUND,
     businessAddress: compactText(clientProfile?.business_address),
     completedCommissionsCount:
       clientProfile?.completed_commissions_count ?? null,

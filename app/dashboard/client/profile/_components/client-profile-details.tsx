@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import type { ClientProfilePageData } from "@/lib/client-profile/types";
 import { ClientOrganizationDetailsEditor } from "./client-organization-details-editor";
 
@@ -110,25 +109,6 @@ export function ClientProfileDetails({ profile }: ClientProfileDetailsProps) {
             value={profile.joinedLabel}
           />
         </div>
-        {profile.socialLinks.length > 0 ? (
-          <>
-            <Separator />
-            <div className="flex flex-wrap gap-2">
-              {profile.socialLinks.map((social) => (
-                <a
-                  key={social.label}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--line-strong)] bg-white px-3 py-1.5 text-xs font-semibold text-[color:var(--ink-body)] transition hover:-translate-y-0.5 hover:border-[color:var(--brand-orange)] hover:text-[color:var(--brand-orange)]"
-                  href={social.href}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  {social.label}
-                  <ExternalLink className="size-3.5" />
-                </a>
-              ))}
-            </div>
-          </>
-        ) : null}
       </CardContent>
     </Card>
   );

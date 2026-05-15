@@ -7,6 +7,9 @@ import {
   UserRound,
 } from "lucide-react";
 
+import { getSettingsHref } from "@/lib/dashboard/settings-source";
+import type { UserRole } from "@/lib/types";
+
 const settingsSections = [
   {
     description: "Update account details, contact info, and username basics.",
@@ -35,7 +38,11 @@ const settingsSections = [
   },
 ] as const;
 
-export function SettingsHub() {
+type SettingsHubProps = {
+  source: UserRole;
+};
+
+export function SettingsHub({ source }: SettingsHubProps) {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <nav
@@ -83,7 +90,7 @@ export function SettingsHub() {
               <Link
                 key={section.label}
                 className={`${className} bg-[color:var(--surface-alt)] hover:border-[color:var(--brand-orange)] hover:bg-white`}
-                href={section.href}
+                href={getSettingsHref(source, section.href)}
               >
                 {content}
               </Link>

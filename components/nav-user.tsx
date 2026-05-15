@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useTransition, useSyncExternalStore } from "react";
 import {
   ChevronsUpDown,
@@ -32,6 +32,10 @@ import {
 } from "@/lib/auth/client-session";
 import { clearAppSession } from "@/lib/auth/session";
 import { getNavUserProfileMenu } from "@/lib/dashboard/nav-user-menu";
+import {
+  getSettingsHref,
+  getSettingsSourceFromPathname,
+} from "@/lib/dashboard/settings-source";
 import { createClient } from "@/lib/supabase/client";
 import { resolveTalentRegistrationPathAction } from "@/server/talent-onboarding/resolve-talent-registration-path";
 import type { UserRole } from "@/lib/types";
@@ -51,6 +55,7 @@ export function NavUser({
 }: NavUserProps) {
   const { isMobile } = useSidebar();
   const router = useRouter();
+  const pathname = usePathname();
   const [isRoutingTalent, startTalentRouting] = useTransition();
   const session = useSyncExternalStore(
     subscribeToAppSession,
@@ -77,6 +82,12 @@ export function NavUser({
           : path,
       );
     });
+  }
+
+  function handleSettingsClick() {
+    const source = getSettingsSourceFromPathname(pathname, role);
+
+    router.push(getSettingsHref(source));
   }
 
   const handleSignOut = async () => {
@@ -142,7 +153,7 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => router.push("/settings")}>
+              <DropdownMenuItem onClick={handleSettingsClick}>
                 <Settings />
                 Settings
               </DropdownMenuItem>
