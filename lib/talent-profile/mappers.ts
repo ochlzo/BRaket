@@ -95,6 +95,10 @@ export function mapTalentProfilePageData(
     })}`,
     lastName,
     linkedinUrl: compactText(source.user.linkedin_url),
+    talentAvgRating: talentProfile?.talent_avg_rating ?? null,
+    talentReviewCount: talentProfile?.talent_review_count ?? 0,
+    totalProjectsCompleted:
+      talentProfile?.completed_commissions_count ?? 0,
     skills:
       talentProfile?.TalentSkills.map((skill) => ({
         level: skill.proficiencyLevel,

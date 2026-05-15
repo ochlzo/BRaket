@@ -28,6 +28,9 @@ export type TalentProfilePageData = {
   joinedLabel: string;
   lastName: string;
   linkedinUrl: string;
+  talentAvgRating: number | null;
+  talentReviewCount: number;
+  totalProjectsCompleted: number;
   skills: TalentProfileSkill[];
   socialLinks: TalentProfileSocialLink[];
   username: string;
@@ -57,8 +60,11 @@ export type TalentProfilePageSource = {
   talentProfile: {
     bio: string;
     college: string;
+    completed_commissions_count: number;
     course: string;
     headline: string;
+    talent_avg_rating: number | null;
+    talent_review_count: number;
     website: string | null;
     year_level: number;
     TalentSkills: Array<{

@@ -1,17 +1,15 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import {
-  Facebook,
-  Github,
-  Instagram,
-  Linkedin,
-  MoreHorizontal,
-  Twitter,
-} from "lucide-react";
+import { GraduationCap, MoreHorizontal } from "lucide-react";
 
 import { ProfileImageEditor } from "@/components/shared/profile-images/profile-image-editor";
 import { UserAvatar } from "@/components/shared/user-avatar";
+import {
+  BriefcaseIcon,
+  MapPinIcon,
+  StarIcon,
+} from "@/components/shared/icons/marketing-icons";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +24,10 @@ type TalentProfileHeroProps = {
   user: CurrentAppUser;
 };
 
+function compactText(value: string | null | undefined) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
 function coverBackgroundStyle(value: string) {
   if (/gradient\(/i.test(value)) {
     return { background: value };
@@ -38,179 +40,174 @@ function coverBackgroundStyle(value: string) {
   };
 }
 
-function compactText(value: string | null | undefined) {
-  return typeof value === "string" ? value.trim() : "";
+function profileLocation(profile: TalentProfilePageData) {
+  return compactText(profile.college) || "College pending";
 }
 
-function socialHandleFromRaw(value: string, label: string) {
-  if (/^https?:\/\//i.test(value)) {
-    try {
-      const url = new URL(value);
-      const segments = url.pathname.split("/").filter(Boolean);
+function courseAcronym(value: string) {
+  const course = compactText(value);
 
-      if (label === "LinkedIn" && segments[0] === "in" && segments[1]) {
-        return segments[1];
-      }
-
-      if (label === "Facebook" && url.pathname.includes("profile.php")) {
-        return (
-          url.searchParams.get("id") || segments[segments.length - 1] || ""
-        );
-      }
-
-      return (
-        segments[segments.length - 1] || url.hostname.replace(/^www\./, "")
-      );
-    } catch {
-      return value;
-    }
+  if (!course) {
+    return "Course pending";
   }
 
-  return value.replace(/^@/, "");
+  const words = course
+    .replace(/\([^)]*\)/g, "")
+    .split(/[\s-/]+/)
+    .filter((word) => !/^(and|in|of|the|for)$/i.test(word));
+
+  return words.map((word) => word[0]?.toUpperCase()).join("") || course;
+}
+
+function ordinalYear(value: number | null) {
+  if (!value) {
+    return "Year pending";
+  }
+
+  const mod100 = value % 100;
+  const suffix =
+    mod100 >= 11 && mod100 <= 13
+      ? "th"
+      : value % 10 === 1
+        ? "st"
+        : value % 10 === 2
+          ? "nd"
+          : value % 10 === 3
+            ? "rd"
+            : "th";
+
+  return `${value}${suffix} year`;
+}
+
+function ratingLabel(value: number | null) {
+  return (value ?? 0).toFixed(1);
+}
+
+function reviewLabel(count: number) {
+  return `${count} ${count === 1 ? "review" : "reviews"}`;
+}
+
+function projectsCompletedLabel(count: number) {
+  return `${count} ${count === 1 ? "project" : "projects"} completed`;
 }
 
 export function TalentProfileHero({ profile, user }: TalentProfileHeroProps) {
   const router = useRouter();
-  const socialLinkByLabel = new Map(
-    profile.socialLinks.map((item) => [item.label, item.href]),
-  );
-  const socialItems = [
-    {
-      href: socialLinkByLabel.get("Facebook"),
-      icon: Facebook,
-      label: "Facebook",
-      value: compactText(profile.facebookUrl),
-    },
-    {
-      href: socialLinkByLabel.get("Instagram"),
-      icon: Instagram,
-      label: "Instagram",
-      value: compactText(profile.instagramUrl),
-    },
-    {
-      href: socialLinkByLabel.get("X"),
-      icon: Twitter,
-      label: "X",
-      value: compactText(profile.xUrl),
-    },
-    {
-      href: socialLinkByLabel.get("GitHub"),
-      icon: Github,
-      label: "GitHub",
-      value: compactText(profile.githubUrl),
-    },
-    {
-      href: socialLinkByLabel.get("LinkedIn"),
-      icon: Linkedin,
-      label: "LinkedIn",
-      value: compactText(profile.linkedinUrl),
-    },
-  ]
-    .filter((item) => item.value)
-    .map((item) => ({
-      ...item,
-      displayName: socialHandleFromRaw(item.value, item.label),
-    }))
-    .filter((item) => item.displayName.length > 0);
   const headline = profile.headline || "Talent profile";
+  const location = profileLocation(profile);
+  const academicLabel = `${ordinalYear(profile.yearLevel)} ${courseAcronym(profile.course)}`;
+  function renderProfileMenu() {
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={
+            <button
+              aria-label="Profile menu"
+              className="inline-flex size-11 shrink-0 items-center justify-center rounded-full text-[color:var(--ink-muted)] transition-colors hover:bg-[color:var(--surface-alt)] hover:text-[color:var(--foreground)]"
+              type="button"
+            />
+          }
+        >
+          <MoreHorizontal className="size-5" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="min-w-56">
+          <DropdownMenuItem onClick={() => router.push("/settings/account")}>
+            Edit personal details
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => router.push("/onboarding/talent?step=1")}
+          >
+            Edit talent profile
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  }
 
   return (
-    <article className="overflow-hidden rounded-none border-0 bg-transparent shadow-none sm:rounded-[1.4rem] sm:border sm:border-[color:var(--line-strong)] sm:bg-[color:var(--surface)] sm:shadow-[var(--shadow-panel-elevated)]">
+    <section className="overflow-hidden rounded-none border-0 bg-[color:var(--surface)] shadow-none sm:rounded-[1.4rem] sm:border sm:border-[color:var(--line-strong)] sm:shadow-[var(--shadow-panel-elevated)]">
       <div
-        className="relative min-h-32 overflow-hidden sm:min-h-40"
+        className="relative min-h-40 overflow-hidden sm:min-h-52"
         style={coverBackgroundStyle(profile.backgroundImageUrl)}
       >
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(18,24,35,.08),rgba(18,24,35,.4))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(18,24,35,.04),rgba(18,24,35,.28))]" />
       </div>
 
-      <div className="relative space-y-4 px-4 pb-4 pt-1 sm:space-y-5 sm:px-6 sm:pb-6 sm:pt-5">
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <button
-                aria-label="Profile menu"
-                className="absolute right-1 top-0 z-20 inline-flex size-8 items-center justify-center rounded-full text-[color:var(--ink-muted)] transition-colors hover:bg-[color:var(--surface-alt)] hover:text-[color:var(--foreground)] sm:right-3 sm:top-2"
-                type="button"
-              />
-            }
-          >
-            <MoreHorizontal className="size-5" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="min-w-56">
-            <DropdownMenuItem onClick={() => router.push("/settings/account")}>
-              Edit personal details
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => router.push("/onboarding/talent?step=1")}
-            >
-              Edit talent profile
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <div className="-mt-7 flex flex-col gap-3 sm:mt-0 sm:flex-row sm:items-end sm:justify-between">
-          <div className="flex min-w-0 items-start gap-6 sm:items-end sm:gap-4">
-            <div className="relative shrink-0 overflow-visible">
-              <ProfileImageEditor
-                initials={user.initials}
-                avatarUrl={profile.avatarUrl || user.avatarUrl}
-                backgroundImageUrl={profile.backgroundImageUrl}
-                displayName={profile.displayName}
-                trigger={
-                  <UserAvatar
-                    alt={user.displayName}
-                    className="size-20 rounded-2xl border-[3px] border-white bg-[color:var(--surface-alt)] p-1 shadow-[var(--shadow-panel-soft)] after:rounded-2xl sm:size-24"
-                    fallbackClassName="rounded-full text-lg font-black text-[color:var(--ink-muted)]"
-                    imageClassName="rounded-full"
-                    initials={user.initials}
-                    src={profile.avatarUrl || user.avatarUrl}
-                  />
-                }
-                triggerClassName="block rounded-2xl transition hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--brand-orange)]/40"
-              />
+      <div className="mx-auto max-w-5xl px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
+          <div className="flex items-start justify-between gap-3 sm:block">
+            <div className="relative shrink-0 self-start">
+              <div className="h-24 w-24 sm:h-40 sm:w-40">
+                <ProfileImageEditor
+                  initials={user.initials}
+                  avatarUrl={profile.avatarUrl || user.avatarUrl}
+                  backgroundImageUrl={profile.backgroundImageUrl}
+                  displayName={profile.displayName}
+                  trigger={
+                    <UserAvatar
+                      alt={user.displayName}
+                      className="h-24 w-24 rounded-3xl border-4 border-white bg-[color:var(--surface-alt)] shadow-lg after:rounded-3xl sm:h-40 sm:w-40"
+                      fallbackClassName="rounded-3xl text-2xl font-black text-[color:var(--ink-muted)] sm:text-4xl"
+                      imageClassName="rounded-3xl"
+                      initials={user.initials}
+                      src={profile.avatarUrl || user.avatarUrl}
+                    />
+                  }
+                  triggerClassName="block rounded-3xl transition hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--brand-orange)]/40"
+                />
+              </div>
+              {profile.isVerified ? (
+                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-[color:var(--tone-green-base)] px-3 py-1 text-xs font-bold text-white shadow-md">
+                  Verified
+                </div>
+              ) : null}
             </div>
-            <div className="min-w-0 flex-1 pr-10 pt-10 sm:pb-1 sm:pr-0 sm:pt-0">
-              <h1 className="break-words text-2xl font-bold leading-tight tracking-[-0.03em] text-[color:var(--foreground)] sm:typo-card-title-2xl">
-                {profile.displayName}
-              </h1>
-              <p className="mt-1 text-xs font-medium text-[color:var(--ink-muted)] sm:text-sm">
-                {profile.username}
-              </p>
-              <p className="mt-1 text-xs font-semibold text-[color:var(--ink-body)] sm:text-sm">
-                {headline}
-              </p>
+
+            <div className="sm:hidden">{renderProfileMenu()}</div>
+          </div>
+
+          <div className="min-w-0 flex-1 space-y-3 sm:pt-2">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <h1 className="break-words text-2xl font-extrabold leading-tight tracking-normal text-foreground sm:text-4xl">
+                  {profile.displayName}
+                </h1>
+                <p className="mt-1 break-words text-sm font-medium text-[color:var(--ink-muted)] sm:text-lg">
+                  {headline}
+                </p>
+              </div>
+
+              <div className="hidden sm:block">{renderProfileMenu()}</div>
+            </div>
+
+            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-[color:var(--ink-muted)]">
+              <span className="flex items-center gap-1.5 whitespace-nowrap">
+                <MapPinIcon className="h-4 w-4" />
+                <span>{location}</span>
+              </span>
+              <span className="flex items-center gap-1.5 whitespace-nowrap">
+                <GraduationCap className="h-4 w-4" />
+                <span>{academicLabel}</span>
+              </span>
+              <span className="flex items-center gap-1.5 whitespace-nowrap">
+                <span className="text-[color:var(--brand-orange)]">
+                  <StarIcon className="h-4 w-4 fill-current" />
+                </span>
+                <span className="font-semibold text-foreground">
+                  {ratingLabel(profile.talentAvgRating)}
+                </span>
+                ({reviewLabel(profile.talentReviewCount)})
+              </span>
+              <span className="flex items-center gap-1.5 whitespace-nowrap">
+                <BriefcaseIcon className="h-4 w-4" />
+                <span>
+                  {projectsCompletedLabel(profile.totalProjectsCompleted)}
+                </span>
+              </span>
             </div>
           </div>
         </div>
-
-        <p className="w-full text-sm leading-6 text-[color:var(--ink-body)] sm:text-base sm:leading-7">
-          {profile.bio || "No bio."}
-        </p>
-
-        {socialItems.length > 0 ? (
-          <div className="flex justify-center overflow-x-auto pb-1 sm:justify-end">
-            <div className="flex w-max items-center gap-1.5 whitespace-nowrap sm:ml-auto sm:gap-2">
-              {socialItems.map(({ displayName, href, icon: Icon, label }) => (
-                <a
-                  key={label}
-                  aria-label={`${label}: ${displayName}`}
-                  className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[color:var(--line)] bg-[color:var(--surface-alt)] px-2 py-1 text-[10px] font-semibold text-[color:var(--ink-muted)] transition hover:border-[color:var(--line-strong)] hover:text-[color:var(--foreground)] sm:gap-2 sm:px-3 sm:py-1.5 sm:text-xs"
-                  href={href}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  <span className="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-[color:var(--surface)] text-[color:var(--ink-muted)] sm:size-6">
-                    <Icon className="size-3" />
-                  </span>
-                  <span className="max-w-24 truncate sm:max-w-32">
-                    {displayName}
-                  </span>
-                </a>
-              ))}
-            </div>
-          </div>
-        ) : null}
       </div>
-    </article>
+    </section>
   );
 }
