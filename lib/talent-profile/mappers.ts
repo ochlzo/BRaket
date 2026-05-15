@@ -1,12 +1,16 @@
 import type {
   TalentProfilePageData,
   TalentProfilePageSource,
+  TalentProfilePortfolioItem,
+  TalentProfileServiceItem,
   TalentProfileSocialLink,
 } from "./types";
 import { DEFAULT_PROFILE_COVER_BACKGROUND } from "@/lib/profile-cover";
 
 export const DEFAULT_TALENT_COVER_BACKGROUND =
   DEFAULT_PROFILE_COVER_BACKGROUND;
+
+type TalentProfileSource = NonNullable<TalentProfilePageSource["talentProfile"]>;
 
 function compactText(value: string | null | undefined) {
   return typeof value === "string" ? value.trim() : "";
@@ -57,6 +61,48 @@ function normalizeWebsiteUrl(value: string | null | undefined) {
   return `https://${url.replace(/^\/\//, "")}`;
 }
 
+function readPrice(value: { toString: () => string }) {
+  const parsed = Number(value.toString());
+
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function buildServices(
+  services: TalentProfileSource["Services"],
+): TalentProfileServiceItem[] {
+  return services.map((service) => ({
+    categories: service.ServiceCategories.map((entry) =>
+      compactText(entry.Category.name),
+    ).filter(Boolean),
+    description: compactText(service.description),
+    id: service.serviceId,
+    maxPrice: readPrice(service.maxPrice),
+    media: service.ServiceMedia.map((media) => ({
+      id: media.serviceDetailId,
+      url: media.mediaUrl,
+    })),
+    minPrice: readPrice(service.minPrice),
+    priceUnit: service.priceUnit,
+    title: compactText(service.title),
+  }));
+}
+
+function buildPortfolioItems(
+  portfolio: TalentProfileSource["TalentPortfolio"],
+): TalentProfilePortfolioItem[] {
+  return portfolio.map((item) => ({
+    createdAt: item.createdAt.toISOString(),
+    description: compactText(item.description),
+    id: item.talent_portfolio_id,
+    media: item.TalentPortfolioMedia.map((media) => ({
+      id: media.tportfolio_media_id,
+      url: media.media_url,
+    })),
+    title: compactText(item.title),
+    updatedAt: item.updatedAt.toISOString(),
+  }));
+}
+
 export function mapTalentProfilePageData(
   source: TalentProfilePageSource,
 ): TalentProfilePageData {
@@ -95,6 +141,10 @@ export function mapTalentProfilePageData(
     })}`,
     lastName,
     linkedinUrl: compactText(source.user.linkedin_url),
+    portfolio: talentProfile
+      ? buildPortfolioItems(talentProfile.TalentPortfolio)
+      : [],
+    services: talentProfile ? buildServices(talentProfile.Services) : [],
     talentAvgRating: talentProfile?.talent_avg_rating ?? null,
     talentReviewCount: talentProfile?.talent_review_count ?? 0,
     totalProjectsCompleted:

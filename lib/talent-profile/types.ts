@@ -10,6 +10,31 @@ export type TalentProfileSkill = {
   name: string;
 };
 
+export type TalentProfileMediaItem = {
+  id: string;
+  url: string;
+};
+
+export type TalentProfileServiceItem = {
+  categories: string[];
+  description: string;
+  id: string;
+  maxPrice: number;
+  media: TalentProfileMediaItem[];
+  minPrice: number;
+  priceUnit: string;
+  title: string;
+};
+
+export type TalentProfilePortfolioItem = {
+  createdAt: string;
+  description: string;
+  id: string;
+  media: TalentProfileMediaItem[];
+  title: string;
+  updatedAt: string;
+};
+
 export type TalentProfilePageData = {
   authId: string;
   avatarUrl: string;
@@ -28,6 +53,8 @@ export type TalentProfilePageData = {
   joinedLabel: string;
   lastName: string;
   linkedinUrl: string;
+  portfolio: TalentProfilePortfolioItem[];
+  services: TalentProfileServiceItem[];
   talentAvgRating: number | null;
   talentReviewCount: number;
   totalProjectsCompleted: number;
@@ -70,6 +97,32 @@ export type TalentProfilePageSource = {
     TalentSkills: Array<{
       proficiencyLevel: ProficiencyLevel;
       Skill: { name: string };
+    }>;
+    Services: Array<{
+      description: string;
+      maxPrice: { toString: () => string };
+      minPrice: { toString: () => string };
+      priceUnit: string;
+      ServiceCategories: Array<{
+        Category: { name: string };
+      }>;
+      ServiceMedia: Array<{
+        mediaUrl: string;
+        serviceDetailId: string;
+      }>;
+      serviceId: string;
+      title: string;
+    }>;
+    TalentPortfolio: Array<{
+      createdAt: Date;
+      description: string;
+      talent_portfolio_id: string;
+      TalentPortfolioMedia: Array<{
+        media_url: string;
+        tportfolio_media_id: string;
+      }>;
+      title: string;
+      updatedAt: Date;
     }>;
   } | null;
 };

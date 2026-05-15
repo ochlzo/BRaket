@@ -21,6 +21,27 @@ export async function getTalentProfilePageData(
               Skill: true,
             },
           },
+          Services: {
+            orderBy: { createdAt: "desc" },
+            include: {
+              ServiceCategories: {
+                include: {
+                  Category: true,
+                },
+              },
+              ServiceMedia: {
+                orderBy: { createdAt: "asc" },
+              },
+            },
+          },
+          TalentPortfolio: {
+            orderBy: { createdAt: "desc" },
+            include: {
+              TalentPortfolioMedia: {
+                orderBy: { createdAt: "asc" },
+              },
+            },
+          },
         },
       },
     },
