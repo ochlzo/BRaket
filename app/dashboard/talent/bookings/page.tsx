@@ -1,14 +1,13 @@
 import Link from "next/link";
 
-import { DashboardLayout } from "@/components/shared/layout/dashboard-layout";
+import { TalentDashboardLayout } from "@/components/shared/layout/talent-dashboard-layout";
 import { requireCurrentAppUser } from "@/server/users/current-user";
 
 export default async function TalentBookingsPage() {
   await requireCurrentAppUser("talent");
 
   return (
-    <DashboardLayout
-      role="talent"
+    <TalentDashboardLayout
       subtitle="Manage your live commission requests here as they arrive."
       title="My Bookings"
     >
@@ -27,6 +26,6 @@ export default async function TalentBookingsPage() {
           Create a Service
         </Link>
       </div>
-    </DashboardLayout>
+    </TalentDashboardLayout>
   );
 }

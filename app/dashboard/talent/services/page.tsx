@@ -1,13 +1,13 @@
 import Link from "next/link";
 
-import { DashboardLayout } from "@/components/shared/layout/dashboard-layout";
+import { TalentDashboardLayout } from "@/components/shared/layout/talent-dashboard-layout";
 import { requireCurrentAppUser } from "@/server/users/current-user";
 
 export default async function MyServicesPage() {
   await requireCurrentAppUser("talent");
 
   return (
-    <DashboardLayout
+    <TalentDashboardLayout
       action={
         <Link
           href="/dashboard/talent/services/new"
@@ -16,7 +16,6 @@ export default async function MyServicesPage() {
           Create New Service
         </Link>
       }
-      role="talent"
       subtitle="Manage the real services attached to your account."
       title="My Services"
     >
@@ -35,6 +34,6 @@ export default async function MyServicesPage() {
           Create Your First Service
         </Link>
       </div>
-    </DashboardLayout>
+    </TalentDashboardLayout>
   );
 }

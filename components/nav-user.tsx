@@ -31,6 +31,7 @@ import {
   subscribeToAppSession,
 } from "@/lib/auth/client-session";
 import { clearAppSession } from "@/lib/auth/session";
+import { getNavUserProfileMenu } from "@/lib/dashboard/nav-user-menu";
 import { createClient } from "@/lib/supabase/client";
 import { resolveTalentRegistrationPathAction } from "@/server/talent-onboarding/resolve-talent-registration-path";
 import type { UserRole } from "@/lib/types";
@@ -59,10 +60,15 @@ export function NavUser({
   const displayName =
     session?.displayName ?? (role === "talent" ? "Talent User" : "Client User");
   const username = session?.username ?? role;
-  const TalentMenuIcon = isTalent ? UserRound : UserPlus;
-  const talentMenuLabel = isTalent ? "Talent Profile" : "Register Talent";
+  const profileMenu = getNavUserProfileMenu({ isTalent, role });
+  const ProfileMenuIcon = profileMenu.icon === "user" ? UserRound : UserPlus;
 
-  function handleTalentMenuClick() {
+  function handleProfileMenuClick() {
+    if (profileMenu.href) {
+      router.push(profileMenu.href);
+      return;
+    }
+
     startTalentRouting(async () => {
       const path = await resolveTalentRegistrationPathAction();
       router.push(
@@ -142,10 +148,10 @@ export function NavUser({
               </DropdownMenuItem>
               <DropdownMenuItem
                 disabled={isRoutingTalent}
-                onClick={handleTalentMenuClick}
+                onClick={handleProfileMenuClick}
               >
-                <TalentMenuIcon />
-                {talentMenuLabel}
+                <ProfileMenuIcon />
+                {profileMenu.label}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

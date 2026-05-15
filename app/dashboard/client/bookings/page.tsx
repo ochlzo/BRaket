@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { BookingStatsGrid } from "@/app/dashboard/client/bookings/_components/booking-stats-grid";
-import { DashboardLayout } from "@/components/shared/layout/dashboard-layout";
+import { ClientDashboardLayout } from "@/components/shared/layout/client-dashboard-layout";
 import { requireCurrentAppUser } from "@/server/users/current-user";
 
 export default async function ClientBookingsPage() {
@@ -12,8 +12,7 @@ export default async function ClientBookingsPage() {
   const completedBookings = 0;
 
   return (
-    <DashboardLayout
-      role="client"
+    <ClientDashboardLayout
       subtitle="Track your real project requests and bookings here."
       title="My Bookings"
     >
@@ -39,6 +38,6 @@ export default async function ClientBookingsPage() {
           </Link>
         </div>
       </div>
-    </DashboardLayout>
+    </ClientDashboardLayout>
   );
 }
