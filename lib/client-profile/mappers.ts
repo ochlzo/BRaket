@@ -5,9 +5,9 @@ import type {
   ClientProfilePortfolioItem,
   ClientProfileSocialLink,
 } from "./types";
+import { DEFAULT_PROFILE_COVER_BACKGROUND } from "@/lib/profile-cover";
 
-export const DEFAULT_COVER_BACKGROUND =
-  "linear-gradient(120deg, var(--brand-orange) 0%, var(--brand-orange-accent) 40%, var(--brand-blue) 100%)";
+export const DEFAULT_COVER_BACKGROUND = DEFAULT_PROFILE_COVER_BACKGROUND;
 
 type PortfolioSource = NonNullable<
   ClientProfilePageSource["clientProfile"]
