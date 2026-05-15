@@ -1,28 +1,29 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useState } from "react";
-import { PencilLine } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
-import { ProfileImageForm } from "./client-profile-image-form";
+import { ProfileImageForm } from "./profile-image-form";
 
-type ClientProfileImageEditorProps = {
+type ProfileImageEditorProps = {
   initials: string;
   avatarUrl: string;
   backgroundImageUrl: string;
   displayName: string;
+  trigger: ReactNode;
   triggerClassName?: string;
 };
 
-export function ClientProfileImageEditor({
+export function ProfileImageEditor({
   initials,
   avatarUrl,
   backgroundImageUrl,
   displayName,
+  trigger,
   triggerClassName,
-}: ClientProfileImageEditorProps) {
+}: ProfileImageEditorProps) {
   const [open, setOpen] = useState(false);
   const [formSession, setFormSession] = useState(0);
 
@@ -39,16 +40,15 @@ export function ClientProfileImageEditor({
     >
       <DialogTrigger
         render={
-          <Button
-            aria-label="Edit profile images"
-            className={`shadow-[var(--shadow-brand-orange-sm)] ${triggerClassName ?? ""}`.trim()}
-            size="icon-sm"
+          <button
+            aria-label="Update profile images"
+            className={triggerClassName}
             title="Edit profile images"
+            type="button"
           />
         }
       >
-        <PencilLine className="size-4" />
-        <span className="sr-only">Edit profile images</span>
+        {trigger}
       </DialogTrigger>
 
       <DialogContent

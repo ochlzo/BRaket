@@ -52,11 +52,6 @@ export type UpdateClientProfileAboutState = {
   ok: boolean;
 };
 
-export type UpdateClientProfileImagesState = {
-  message: string;
-  ok: boolean;
-};
-
 export type ClientProfilePageData = {
   about: string;
   averageRating: number | null;

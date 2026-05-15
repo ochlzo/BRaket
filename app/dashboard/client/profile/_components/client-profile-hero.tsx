@@ -1,11 +1,11 @@
 "use client";
 
-import { ClientProfileImageEditor } from "./client-profile-image-editor";
 import { ClientProfileBioEditor } from "./client-profile-bio-editor";
 import type { ClientProfilePageData } from "@/lib/client-profile/types";
 import type { CurrentAppUser } from "@/server/users/current-user";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ProfileImageEditor } from "@/components/shared/profile-images/profile-image-editor";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import {
   DropdownMenu,
@@ -125,7 +125,7 @@ export function ClientProfileHero({ profile, user }: ClientProfileHeroProps) {
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(18,24,35,.08),rgba(18,24,35,.4))]" />
       </div>
 
-      <div className="relative space-y-4 px-4 pb-4 pt-1 sm:space-y-5 sm:px-6 sm:pb-6">
+      <div className="relative space-y-4 px-4 pb-4 pt-1 sm:space-y-5 sm:px-6 sm:pb-6 sm:pt-5">
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
@@ -158,23 +158,25 @@ export function ClientProfileHero({ profile, user }: ClientProfileHeroProps) {
           open={bioEditorOpen}
           onOpenChange={setBioEditorOpen}
         />
-        <div className="-mt-7 flex flex-col gap-3 sm:-mt-10 sm:flex-row sm:items-end sm:justify-between">
+        <div className="-mt-7 flex flex-col gap-3 sm:mt-0 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex min-w-0 items-start gap-6 sm:items-end sm:gap-4">
             <div className="relative shrink-0 overflow-visible">
-              <UserAvatar
-                alt={user.displayName}
-                className="size-20 rounded-none border-[3px] border-white bg-[color:var(--surface-alt)] shadow-[var(--shadow-panel-soft)] after:rounded-none sm:size-24"
-                fallbackClassName="rounded-none text-lg font-black text-[color:var(--ink-muted)]"
-                imageClassName="rounded-none"
-                initials={user.initials}
-                src={user.avatarUrl}
-              />
-              <ClientProfileImageEditor
+              <ProfileImageEditor
                 initials={user.initials}
                 avatarUrl={user.avatarUrl}
                 backgroundImageUrl={profile.backgroundImageUrl}
                 displayName={user.displayName}
-                triggerClassName="absolute bottom-0 right-0 z-20 h-8 w-8 translate-x-[35%] translate-y-[35%] rounded-full border border-white/70 bg-[color:var(--brand-orange)] text-white shadow-[var(--shadow-brand-orange-md)] hover:bg-[color:var(--brand-orange-strong)]"
+                trigger={
+                  <UserAvatar
+                    alt={user.displayName}
+                    className="size-20 rounded-2xl border-[3px] border-white bg-[color:var(--surface-alt)] p-1 shadow-[var(--shadow-panel-soft)] after:rounded-2xl sm:size-24"
+                    fallbackClassName="rounded-full text-lg font-black text-[color:var(--ink-muted)]"
+                    imageClassName="rounded-full"
+                    initials={user.initials}
+                    src={user.avatarUrl}
+                  />
+                }
+                triggerClassName="block rounded-2xl transition hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--brand-orange)]/40"
               />
             </div>
             <div className="min-w-0 flex-1 pt-10 pr-10 sm:pt-0 sm:pb-1 sm:pr-0">

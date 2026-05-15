@@ -23,7 +23,7 @@ test("current user avatar surfaces use the shared avatar wrapper", () => {
       import.meta.url,
     ),
     new URL(
-      "../../app/dashboard/client/profile/_components/client-profile-image-panels.tsx",
+      "./profile-images/profile-image-panels.tsx",
       import.meta.url,
     ),
     new URL(
