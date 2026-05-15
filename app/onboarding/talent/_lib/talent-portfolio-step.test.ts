@@ -7,6 +7,7 @@ const portfolioStepModule = await import(
 
 const {
   buildTalentPortfolioStepInitialValues,
+  getTalentPortfolioStepDirtyFields,
   parseTalentPortfolioStepFormData,
   validateTalentPortfolioStepInput,
 } = portfolioStepModule;
@@ -136,5 +137,32 @@ test("rejects missing, unsupported, oversized, and too many images", () => {
       title: "Campus branding kit",
     }).fieldErrors?.media,
     "You can upload at most 10 images per portfolio.",
+  );
+});
+
+test("tracks dirty talent portfolio fields against initial values", () => {
+  const initialValues = buildTalentPortfolioStepInitialValues({
+    description: "Visual identity and launch assets.",
+    talent_portfolio_id: "portfolio-1",
+    TalentPortfolioMedia: [{ media_url: "https://example.com/one.png" }],
+    title: "Campus branding kit",
+  });
+  const file = createImageFile("new.png", "image/png", 1024);
+
+  assert.deepEqual(
+    getTalentPortfolioStepDirtyFields(initialValues, {
+      description: initialValues.description,
+      files: [],
+      title: initialValues.title,
+    }),
+    [],
+  );
+  assert.deepEqual(
+    getTalentPortfolioStepDirtyFields(initialValues, {
+      description: "Updated visual identity and launch assets.",
+      files: [file],
+      title: initialValues.title,
+    }),
+    ["description", "media"],
   );
 });

@@ -32,7 +32,7 @@ export default function BrowsePage() {
     const categoryMatch =
       activeCategory === "all" || service.category === activeCategory;
 
-    // Price match
+    // Price match UI
     const priceMatch = maxPrice === null || service.price <= maxPrice;
 
     return searchMatch && categoryMatch && priceMatch;

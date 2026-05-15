@@ -13,14 +13,14 @@ const {
   resolveCanonicalUsername,
 } = sessionModule;
 
-test("redirects all signup flows to the client dashboard", () => {
-  assert.equal(getAuthRedirectPath("talent", "signup"), "/dashboard/client");
-  assert.equal(getAuthRedirectPath("client", "signup"), "/dashboard/client");
+test("redirects all signup flows to browse", () => {
+  assert.equal(getAuthRedirectPath("talent", "signup"), "/browse");
+  assert.equal(getAuthRedirectPath("client", "signup"), "/browse");
 });
 
-test("keeps login redirects role-aware", () => {
-  assert.equal(getAuthRedirectPath("talent", "login"), "/dashboard/talent");
-  assert.equal(getAuthRedirectPath("client", "login"), "/dashboard/client");
+test("redirects login without a callback to browse", () => {
+  assert.equal(getAuthRedirectPath("talent", "login"), "/browse");
+  assert.equal(getAuthRedirectPath("client", "login"), "/browse");
 });
 
 test("uses safe callback URLs for login redirects", () => {
@@ -42,7 +42,7 @@ test("ignores unsafe callback URLs", () => {
   assert.equal(normalizeCallbackUrl("https://evil.example/path"), null);
   assert.equal(normalizeCallbackUrl("//evil.example/path"), null);
   assert.equal(normalizeCallbackUrl("/login"), null);
-  assert.equal(getAuthRedirectPath("client", "login", "https://evil.example"), "/dashboard/client");
+  assert.equal(getAuthRedirectPath("client", "login", "https://evil.example"), "/browse");
 });
 
 test("builds login redirects with callback parameters", () => {

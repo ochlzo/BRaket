@@ -5,9 +5,14 @@ import { revalidatePath } from "next/cache";
 
 import {
   parseTalentServiceStepFormData,
+  type TalentServiceStepDirtyField,
   type TalentServiceStepState,
   validateTalentServiceStepInput,
 } from "@/app/onboarding/talent/_lib/talent-service-step";
+import {
+  hasDirtyField,
+  parseDirtyFields,
+} from "@/app/onboarding/talent/_lib/dirty-fields";
 import { validateTalentOnboardingFinalization } from "@/app/onboarding/talent/_lib/talent-finalization";
 import {
   removeUploadedServiceAssets,
@@ -24,6 +29,15 @@ const EMPTY_STATE: TalentServiceStepState = {
   message: "",
   ok: false,
 };
+const SERVICE_DIRTY_FIELDS: TalentServiceStepDirtyField[] = [
+  "title",
+  "description",
+  "categoryIds",
+  "minPrice",
+  "maxPrice",
+  "priceUnit",
+  "media",
+];
 
 class OnboardingFinalizationError extends Error {}
 
@@ -108,64 +122,85 @@ export async function saveTalentServiceStepAction(
     return validationWithExistingMedia;
   }
 
+  const dirtyFields = parseDirtyFields(formData, SERVICE_DIRTY_FIELDS);
   let uploadedAssets: UploadedTalentServiceAsset[] = [];
 
   try {
-    uploadedAssets = await uploadServiceMedia(currentUser.authId, input.files);
+    if (hasDirtyField(dirtyFields, "media")) {
+      uploadedAssets = await uploadServiceMedia(currentUser.authId, input.files);
+    }
 
     await prisma.$transaction(async (tx) => {
       const serviceId = existingService?.serviceId ?? crypto.randomUUID();
       const timestamp = new Date();
-      const existingCategories = await tx.category.findMany({
-        select: { categoryId: true },
-        where: { categoryId: { in: input.categoryIds } },
-      });
-      const existingCategoryIds = new Set(
-        existingCategories.map((category) => category.categoryId),
+      const shouldUpsertService = dirtyFields.some(
+        (field) => field !== "categoryIds" && field !== "media",
       );
-      const customCategoryNames = input.categoryIds.filter(
-        (categoryId) => !existingCategoryIds.has(categoryId),
-      );
-      const createdCategories = await Promise.all(
-        customCategoryNames.map((name) =>
-          tx.category.create({
-            data: { categoryId: crypto.randomUUID(), name },
-          }),
-        ),
-      );
-      const categoryIds = Array.from(new Set([
-        ...existingCategories.map((category) => category.categoryId),
-        ...createdCategories.map((category) => category.categoryId),
-      ]));
 
-      await tx.service.upsert({
-        create: {
-          description: input.description,
-          maxPrice: input.maxPrice,
-          minPrice: input.minPrice,
-          priceUnit: input.priceUnit as PriceUnit,
-          serviceId,
-          talentProfileId: talentProfile.talent_profile_id,
-          title: input.title,
-        },
-        update: {
-          description: input.description,
-          maxPrice: input.maxPrice,
-          minPrice: input.minPrice,
-          priceUnit: input.priceUnit as PriceUnit,
-          title: input.title,
-        },
-        where: { serviceId },
-      });
+      if (!existingService || shouldUpsertService) {
+        await tx.service.upsert({
+          create: {
+            description: input.description,
+            maxPrice: input.maxPrice,
+            minPrice: input.minPrice,
+            priceUnit: input.priceUnit as PriceUnit,
+            serviceId,
+            talentProfileId: talentProfile.talent_profile_id,
+            title: input.title,
+          },
+          update: {
+            ...(hasDirtyField(dirtyFields, "description")
+              ? { description: input.description }
+              : {}),
+            ...(hasDirtyField(dirtyFields, "maxPrice")
+              ? { maxPrice: input.maxPrice }
+              : {}),
+            ...(hasDirtyField(dirtyFields, "minPrice")
+              ? { minPrice: input.minPrice }
+              : {}),
+            ...(hasDirtyField(dirtyFields, "priceUnit")
+              ? { priceUnit: input.priceUnit as PriceUnit }
+              : {}),
+            ...(hasDirtyField(dirtyFields, "title")
+              ? { title: input.title }
+              : {}),
+          },
+          where: { serviceId },
+        });
+      }
 
-      await tx.serviceCategory.deleteMany({ where: { serviceId } });
-      await tx.serviceCategory.createMany({
-        data: categoryIds.map((categoryId) => ({
-          categoryId,
-          serviceCategoryId: crypto.randomUUID(),
-          serviceId,
-        })),
-      });
+      if (!existingService || hasDirtyField(dirtyFields, "categoryIds")) {
+        const existingCategories = await tx.category.findMany({
+          select: { categoryId: true },
+          where: { categoryId: { in: input.categoryIds } },
+        });
+        const existingCategoryIds = new Set(
+          existingCategories.map((category) => category.categoryId),
+        );
+        const customCategoryNames = input.categoryIds.filter(
+          (categoryId) => !existingCategoryIds.has(categoryId),
+        );
+        const createdCategories = await Promise.all(
+          customCategoryNames.map((name) =>
+            tx.category.create({
+              data: { categoryId: crypto.randomUUID(), name },
+            }),
+          ),
+        );
+        const categoryIds = Array.from(new Set([
+          ...existingCategories.map((category) => category.categoryId),
+          ...createdCategories.map((category) => category.categoryId),
+        ]));
+
+        await tx.serviceCategory.deleteMany({ where: { serviceId } });
+        await tx.serviceCategory.createMany({
+          data: categoryIds.map((categoryId) => ({
+            categoryId,
+            serviceCategoryId: crypto.randomUUID(),
+            serviceId,
+          })),
+        });
+      }
 
       if (uploadedAssets.length > 0) {
         await tx.serviceMedia.createMany({

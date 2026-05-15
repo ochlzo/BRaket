@@ -19,24 +19,36 @@ import { Label } from "@/components/ui/label";
 import { getTalentVerificationMaybeLaterPath } from "@/lib/talent-onboarding/registration-route";
 
 type TalentBuVerificationIntroProps = {
+  backLabel?: string;
   isTalent: boolean;
+  source?: string;
   step?: string;
+  verificationBasePath?: string;
 };
 
 export function TalentBuVerificationIntro({
+  backLabel = "dashboard",
   isTalent,
+  source,
   step,
+  verificationBasePath = "/talent/verify",
 }: TalentBuVerificationIntroProps) {
   const router = useRouter();
   const isFormStep = step === "form";
-  const maybeLaterPath = getTalentVerificationMaybeLaterPath(isTalent);
+  const isDashboardSource = source === "dashboard";
+  const maybeLaterPath = getTalentVerificationMaybeLaterPath(isTalent, source);
+  const sourceQuery = isDashboardSource ? "&source=dashboard" : "";
+  const introPath = isDashboardSource
+    ? `${verificationBasePath}?source=dashboard`
+    : verificationBasePath;
+  const formPath = `${verificationBasePath}?step=form${sourceQuery}`;
 
   if (isFormStep) {
     return (
       <div className="mx-auto max-w-2xl rounded-3xl border border-[color:var(--line-strong)] bg-white p-6 shadow-[var(--shadow-surface-soft)] sm:p-8">
         <button
           className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-[color:var(--ink-muted)] transition hover:text-foreground"
-          onClick={() => router.push("/onboarding/talent/verification")}
+          onClick={() => router.push(introPath)}
           type="button"
         >
           <ArrowLeft className="size-4" />
@@ -91,7 +103,16 @@ export function TalentBuVerificationIntro({
   }
 
   return (
-    <div className="mx-auto max-w-5xl text-center">
+    <div className="relative mx-auto max-w-5xl text-center">
+      {isDashboardSource ? (
+        <a
+          className="absolute left-0 top-0 inline-flex -translate-y-16 items-center text-sm font-bold text-foreground transition hover:text-[color:var(--brand-orange)] sm:-translate-x-3 sm:-translate-y-4"
+          href="/dashboard/client"
+        >
+          &larr; Back to {backLabel}
+        </a>
+      ) : null}
+
       <div className="mx-auto flex w-fit items-center gap-3">
         <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[color:var(--brand-blue)] to-[color:var(--brand-orange)] text-3xl font-black text-white">
           B
@@ -128,7 +149,7 @@ export function TalentBuVerificationIntro({
       <div className="mx-auto mt-9 grid max-w-xl gap-4 sm:grid-cols-2">
         <Button
           className="h-14 rounded-2xl bg-[color:var(--brand-blue)] text-base font-bold text-white hover:bg-[color:var(--brand-blue-strong)]"
-          onClick={() => router.push("/onboarding/talent/verification?step=form")}
+          onClick={() => router.push(formPath)}
           size="lg"
           type="button"
         >

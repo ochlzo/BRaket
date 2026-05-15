@@ -21,6 +21,7 @@ export type TalentProfileStepState = {
 };
 
 export type TalentProfileStepInitialValues = TalentProfileStepInput;
+export type TalentProfileStepDirtyField = keyof TalentProfileStepInput;
 
 export type ProficiencyLevelInput =
   | "BEGINNER"
@@ -116,6 +117,25 @@ function parseSkills(value: FormDataEntryValue | null) {
   }
 }
 
+function normalizeSkillList(skills: TalentProfileSkillInput[]) {
+  return skills
+    .map((skill) => ({
+      level: skill.level,
+      name: skill.name.trim().toLowerCase(),
+    }))
+    .sort((first, second) => first.name.localeCompare(second.name));
+}
+
+function areSkillsEqual(
+  first: TalentProfileSkillInput[],
+  second: TalentProfileSkillInput[],
+) {
+  return (
+    JSON.stringify(normalizeSkillList(first)) ===
+    JSON.stringify(normalizeSkillList(second))
+  );
+}
+
 export function parseTalentProfileStepFormData(
   formData: FormData,
 ): TalentProfileStepInput {
@@ -149,6 +169,32 @@ export function buildTalentProfileStepInitialValues(
     website: profile.website ?? "",
     yearLevel: String(profile.year_level),
   };
+}
+
+export function getTalentProfileStepDirtyFields(
+  initialValues: TalentProfileStepInitialValues,
+  input: TalentProfileStepInput,
+): TalentProfileStepDirtyField[] {
+  const dirtyFields: TalentProfileStepDirtyField[] = [];
+
+  for (const field of [
+    "headline",
+    "website",
+    "bio",
+    "college",
+    "course",
+    "yearLevel",
+  ] as const) {
+    if (initialValues[field] !== input[field]) {
+      dirtyFields.push(field);
+    }
+  }
+
+  if (!areSkillsEqual(initialValues.skills, input.skills)) {
+    dirtyFields.push("skills");
+  }
+
+  return dirtyFields;
 }
 
 export function validateTalentProfileStepInput(

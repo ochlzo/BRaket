@@ -14,6 +14,7 @@ import {
   TalentStudentDetailsFields,
 } from "@/app/onboarding/talent/_components/talent-profile-form-fields";
 import {
+  getTalentProfileStepDirtyFields,
   type TalentProfileStepInitialValues,
   validateTalentProfileStepInput,
 } from "@/app/onboarding/talent/_lib/talent-profile-step";
@@ -28,6 +29,7 @@ type TalentOnboardingFormProps = {
     username: string;
   };
   initialValues: TalentProfileStepInitialValues;
+  onCancel: () => void;
   onComplete: () => void;
 };
 
@@ -35,6 +37,7 @@ export function TalentOnboardingForm({
   availableSkills,
   currentUser,
   initialValues,
+  onCancel,
   onComplete,
 }: TalentOnboardingFormProps) {
   const [headline, setHeadline] = useState(initialValues.headline);
@@ -136,6 +139,13 @@ export function TalentOnboardingForm({
       return;
     }
 
+    const dirtyFields = getTalentProfileStepDirtyFields(initialValues, input);
+
+    if (dirtyFields.length === 0) {
+      onComplete();
+      return;
+    }
+
     const formData = new FormData();
     formData.set("headline", headline);
     formData.set("website", website);
@@ -144,6 +154,7 @@ export function TalentOnboardingForm({
     formData.set("course", course);
     formData.set("yearLevel", yearLevel);
     formData.set("skills", JSON.stringify(selectedSkills));
+    formData.set("dirtyFields", JSON.stringify(dirtyFields));
 
     try {
       setIsSubmitting(true);
@@ -206,7 +217,7 @@ export function TalentOnboardingForm({
 
         <Separator />
 
-        <TalentFormFooter isSubmitting={isSubmitting} />
+        <TalentFormFooter isSubmitting={isSubmitting} onCancel={onCancel} />
       </form>
     </div>
   );

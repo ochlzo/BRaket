@@ -4,9 +4,14 @@ import { revalidatePath } from "next/cache";
 
 import {
   parseTalentPortfolioStepFormData,
+  type TalentPortfolioStepDirtyField,
   type TalentPortfolioStepState,
   validateTalentPortfolioStepInput,
 } from "@/app/onboarding/talent/_lib/talent-portfolio-step";
+import {
+  hasDirtyField,
+  parseDirtyFields,
+} from "@/app/onboarding/talent/_lib/dirty-fields";
 import { prisma } from "@/lib/prisma";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { TALENT_PORTFOLIO_MEDIA_BUCKET } from "@/lib/supabase/storage";
@@ -16,6 +21,11 @@ const EMPTY_STATE: TalentPortfolioStepState = {
   message: "",
   ok: false,
 };
+const PORTFOLIO_DIRTY_FIELDS: TalentPortfolioStepDirtyField[] = [
+  "title",
+  "description",
+  "media",
+];
 
 type UploadedTalentPortfolioAsset = {
   objectPath: string;
@@ -93,10 +103,20 @@ export async function saveTalentPortfolioStepAction(
     return validationWithExistingMedia;
   }
 
+  const dirtyFields = parseDirtyFields(formData, PORTFOLIO_DIRTY_FIELDS);
+
+  if (dirtyFields.length === 0) {
+    return {
+      message: "No portfolio changes to save.",
+      ok: true,
+      successToken: crypto.randomUUID(),
+    };
+  }
+
   const uploadedAssets: UploadedTalentPortfolioAsset[] = [];
 
   try {
-    if (input.files.length > 0) {
+    if (hasDirtyField(dirtyFields, "media") && input.files.length > 0) {
       const supabase = createAdminClient();
 
       for (const [index, file] of input.files.entries()) {
@@ -129,12 +149,16 @@ export async function saveTalentPortfolioStepAction(
       const timestamp = new Date();
 
       if (existingPortfolio) {
+        const portfolioUpdateData = {
+          ...(hasDirtyField(dirtyFields, "description")
+            ? { description: input.description }
+            : {}),
+          ...(hasDirtyField(dirtyFields, "title") ? { title: input.title } : {}),
+          updatedAt: timestamp,
+        };
+
         await tx.talentPortfolio.update({
-          data: {
-            description: input.description,
-            title: input.title,
-            updatedAt: timestamp,
-          },
+          data: portfolioUpdateData,
           where: { talent_portfolio_id: portfolioId },
         });
       } else {

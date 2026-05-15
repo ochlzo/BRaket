@@ -12,6 +12,8 @@ import { TalentMediaUploadField } from "@/app/onboarding/talent/_components/tale
 import { TalentServicePriceUnitField } from "@/app/onboarding/talent/_components/talent-service-price-unit-field";
 import type { CategoryOption } from "@/app/onboarding/talent/_lib/get-category-options";
 import {
+  getTalentServicePriceRangeError,
+  getTalentServiceStepDirtyFields,
   type TalentServiceStepInitialValues,
   validateTalentServiceStepInput,
 } from "@/app/onboarding/talent/_lib/talent-service-step";
@@ -20,18 +22,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-
-function getPriceRangeError(minPrice: string, maxPrice: string) {
-  if (!minPrice || !maxPrice) {
-    return "";
-  }
-
-  if (Number(minPrice) >= Number(maxPrice)) {
-    return "Min price must be less than max price.";
-  }
-
-  return "";
-}
 
 type TalentServiceOnboardingFormProps = {
   availableCategories: CategoryOption[];
@@ -57,7 +47,7 @@ export function TalentServiceOnboardingForm({
   const [sampleFiles, setSampleFiles] = useState<File[]>([]);
   const [notice, setNotice] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const priceRangeError = getPriceRangeError(minPrice, maxPrice);
+  const priceRangeError = getTalentServicePriceRangeError(minPrice, maxPrice);
 
   function showToastError(message: string) {
     const toastId = toast.error(message, {
@@ -95,10 +85,21 @@ export function TalentServiceOnboardingForm({
       return;
     }
 
+    const dirtyFields = getTalentServiceStepDirtyFields(initialValues, {
+      categoryIds: selectedCategoryIds,
+      description,
+      files: sampleFiles,
+      maxPrice,
+      minPrice,
+      priceUnit,
+      title,
+    });
+
     const formData = new FormData(event.currentTarget);
     formData.set("serviceId", initialValues.serviceId);
     formData.set("categoryIds", JSON.stringify(selectedCategoryIds));
     formData.set("priceUnit", priceUnit);
+    formData.set("dirtyFields", JSON.stringify(dirtyFields));
 
     try {
       setIsSubmitting(true);

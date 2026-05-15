@@ -11,6 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { TalentMediaUploadField } from "@/app/onboarding/talent/_components/talent-media-upload-field";
 import {
+  getTalentPortfolioStepDirtyFields,
   type TalentPortfolioStepInitialValues,
   validateTalentPortfolioStepInput,
 } from "@/app/onboarding/talent/_lib/talent-portfolio-step";
@@ -64,8 +65,20 @@ export function TalentPortfolioOnboardingForm({
       return;
     }
 
+    const dirtyFields = getTalentPortfolioStepDirtyFields(initialValues, {
+      description,
+      files: selectedFiles,
+      title,
+    });
+
+    if (dirtyFields.length === 0) {
+      onComplete();
+      return;
+    }
+
     const formData = new FormData(event.currentTarget);
     formData.set("portfolioId", initialValues.portfolioId);
+    formData.set("dirtyFields", JSON.stringify(dirtyFields));
 
     try {
       setIsSubmitting(true);

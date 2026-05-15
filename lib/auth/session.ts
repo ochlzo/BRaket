@@ -2,6 +2,7 @@ import type { UserRole } from "@/lib/types";
 
 export const APP_SESSION_KEY = "braket_session";
 export const APP_SESSION_CHANGE_EVENT = "braket_session_change";
+const DEFAULT_POST_AUTH_PATH = "/browse";
 
 export type AuthMode = "login" | "signup";
 
@@ -154,10 +155,10 @@ export function getAuthRedirectPath(
   }
 
   if (mode === "signup") {
-    return "/dashboard/client";
+    return DEFAULT_POST_AUTH_PATH;
   }
 
-  return role === "talent" ? "/dashboard/talent" : "/dashboard/client";
+  return DEFAULT_POST_AUTH_PATH;
 }
 
 export function getDashboardProfilePath(role: UserRole) {

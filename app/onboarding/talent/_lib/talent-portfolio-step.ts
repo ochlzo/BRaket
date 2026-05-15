@@ -33,6 +33,11 @@ export type TalentPortfolioStepState = {
   successToken?: string;
 };
 
+export type TalentPortfolioStepDirtyField =
+  | "description"
+  | "media"
+  | "title";
+
 export function parseTalentPortfolioStepFormData(
   formData: FormData,
 ): TalentPortfolioStepInput {
@@ -78,6 +83,27 @@ export function buildTalentPortfolioStepInitialValues(
     portfolioId: portfolio.talent_portfolio_id,
     title: portfolio.title,
   };
+}
+
+export function getTalentPortfolioStepDirtyFields(
+  initialValues: TalentPortfolioStepInitialValues,
+  input: Pick<TalentPortfolioStepInput, "description" | "files" | "title">,
+): TalentPortfolioStepDirtyField[] {
+  const dirtyFields: TalentPortfolioStepDirtyField[] = [];
+
+  if (initialValues.title !== input.title) {
+    dirtyFields.push("title");
+  }
+
+  if (initialValues.description !== input.description) {
+    dirtyFields.push("description");
+  }
+
+  if (input.files.length > 0) {
+    dirtyFields.push("media");
+  }
+
+  return dirtyFields;
 }
 
 export function isTalentPortfolioMediaType(type: string) {

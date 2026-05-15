@@ -7,6 +7,7 @@ const serviceStepModule = await import(
 
 const {
   buildTalentServiceStepInitialValues,
+  getTalentServiceStepDirtyFields,
   parseTalentServiceStepFormData,
   validateTalentServiceStepInput,
 } = serviceStepModule;
@@ -177,4 +178,46 @@ test("builds service step prefill values from existing service data", () => {
     serviceId: "service-1",
     title: "Event poster design",
   });
+});
+
+test("tracks dirty talent service fields against initial values", () => {
+  const initialValues = buildTalentServiceStepInitialValues({
+    ServiceCategories: [
+      { categoryId: "category-1" },
+      { categoryId: "category-2" },
+    ],
+    ServiceMedia: [{ mediaUrl: "https://example.com/one.png" }],
+    description: "Poster package with source files.",
+    maxPrice: { toString: () => "1500" },
+    minPrice: { toString: () => "500" },
+    priceUnit: "PER_PROJECT",
+    serviceId: "service-1",
+    title: "Event poster design",
+  });
+  const file = createImageFile("new.png", "image/png", 1024);
+
+  assert.deepEqual(
+    getTalentServiceStepDirtyFields(initialValues, {
+      categoryIds: ["category-2", "category-1"],
+      description: initialValues.description,
+      files: [],
+      maxPrice: initialValues.maxPrice,
+      minPrice: initialValues.minPrice,
+      priceUnit: initialValues.priceUnit,
+      title: initialValues.title,
+    }),
+    [],
+  );
+  assert.deepEqual(
+    getTalentServiceStepDirtyFields(initialValues, {
+      categoryIds: initialValues.categoryIds,
+      description: initialValues.description,
+      files: [file],
+      maxPrice: "1800",
+      minPrice: initialValues.minPrice,
+      priceUnit: initialValues.priceUnit,
+      title: "Updated event poster design",
+    }),
+    ["title", "maxPrice", "media"],
+  );
 });

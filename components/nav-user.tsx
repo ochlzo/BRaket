@@ -65,7 +65,11 @@ export function NavUser({
   function handleTalentMenuClick() {
     startTalentRouting(async () => {
       const path = await resolveTalentRegistrationPathAction();
-      router.push(path);
+      router.push(
+        path === "/onboarding/talent/verification"
+          ? "/talent/verify?source=dashboard"
+          : path,
+      );
     });
   }
 

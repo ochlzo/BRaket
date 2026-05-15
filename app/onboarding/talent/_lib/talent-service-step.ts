@@ -59,6 +59,15 @@ export type TalentServiceStepState = {
   successToken?: string;
 };
 
+export type TalentServiceStepDirtyField =
+  | "categoryIds"
+  | "description"
+  | "maxPrice"
+  | "media"
+  | "minPrice"
+  | "priceUnit"
+  | "title";
+
 type TalentServiceStepSource = {
   description: string;
   maxPrice: { toString: () => string };
@@ -109,6 +118,13 @@ function parseCategoryIds(value: FormDataEntryValue | null) {
   }
 }
 
+function areStringSetsEqual(first: string[], second: string[]) {
+  const normalizedFirst = [...first].sort();
+  const normalizedSecond = [...second].sort();
+
+  return JSON.stringify(normalizedFirst) === JSON.stringify(normalizedSecond);
+}
+
 export function parseTalentServiceStepFormData(
   formData: FormData,
 ): TalentServiceStepInput {
@@ -149,6 +165,48 @@ export function buildTalentServiceStepInitialValues(
     serviceId: service.serviceId,
     title: service.title,
   };
+}
+
+export function getTalentServiceStepDirtyFields(
+  initialValues: TalentServiceStepInitialValues,
+  input: Omit<TalentServiceStepInput, "existingMediaCount" | "serviceId">,
+): TalentServiceStepDirtyField[] {
+  const dirtyFields: TalentServiceStepDirtyField[] = [];
+
+  for (const field of [
+    "title",
+    "description",
+    "minPrice",
+    "maxPrice",
+    "priceUnit",
+  ] as const) {
+    if (initialValues[field] !== input[field]) {
+      dirtyFields.push(field);
+    }
+  }
+
+  if (!areStringSetsEqual(initialValues.categoryIds, input.categoryIds)) {
+    dirtyFields.push("categoryIds");
+  }
+
+  if (input.files.length > 0) {
+    dirtyFields.push("media");
+  }
+
+  return dirtyFields;
+}
+
+export function getTalentServicePriceRangeError(
+  minPrice: string,
+  maxPrice: string,
+) {
+  if (!minPrice || !maxPrice) {
+    return "";
+  }
+
+  return Number(minPrice) >= Number(maxPrice)
+    ? "Min price must be less than max price."
+    : "";
 }
 
 export function isTalentServiceMediaType(type: string) {

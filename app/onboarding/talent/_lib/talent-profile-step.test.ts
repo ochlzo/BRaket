@@ -7,6 +7,7 @@ const profileStepModule = await import(
 
 const {
   buildTalentProfileStepInitialValues,
+  getTalentProfileStepDirtyFields,
   parseTalentProfileStepFormData,
   validateTalentProfileStepInput,
 } = profileStepModule;
@@ -167,4 +168,37 @@ test("builds empty initial talent profile step values without a profile", () => 
     website: "",
     yearLevel: "",
   });
+});
+
+test("tracks dirty talent profile fields against initial values", () => {
+  const initialValues = buildTalentProfileStepInitialValues({
+    bio: "A".repeat(150),
+    college: "College of Science",
+    course: "BS Information Technology",
+    headline: "UI/UX Designer & Prototyping Specialist",
+    TalentSkills: [
+      { proficiencyLevel: "ADVANCED", Skill: { name: "Figma" } },
+      { proficiencyLevel: "INTERMEDIATE", Skill: { name: "React" } },
+      { proficiencyLevel: "BEGINNER", Skill: { name: "Writing" } },
+    ],
+    website: "https://portfolio.example.com",
+    year_level: 3,
+  });
+
+  assert.deepEqual(
+    getTalentProfileStepDirtyFields(initialValues, initialValues),
+    [],
+  );
+  assert.deepEqual(
+    getTalentProfileStepDirtyFields(initialValues, {
+      ...initialValues,
+      headline: "Updated UI/UX Designer & Prototyping Specialist",
+      skills: [
+        { name: "Figma", level: "ADVANCED" },
+        { name: "React", level: "ADVANCED" },
+        { name: "Writing", level: "BEGINNER" },
+      ],
+    }),
+    ["headline", "skills"],
+  );
 });

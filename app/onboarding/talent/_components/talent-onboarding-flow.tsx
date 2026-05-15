@@ -61,6 +61,7 @@ export function TalentOnboardingFlow({
       availableSkills={availableSkills}
       currentUser={currentUser}
       initialValues={initialProfileValues}
+      onCancel={() => router.push("/talent/verify")}
       onComplete={() => router.push("/onboarding/talent?step=2")}
     />
   );

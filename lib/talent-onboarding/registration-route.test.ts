@@ -84,13 +84,21 @@ test("forces verification on onboarding pages for unverified talent users", () =
   );
 });
 
-test("sends existing talents to the talent dashboard when skipping verification", () => {
-  assert.equal(getTalentVerificationMaybeLaterPath(true), "/dashboard/talent");
+test("sends users to the main app when skipping verification outside dashboard", () => {
+  assert.equal(getTalentVerificationMaybeLaterPath(true), "/browse");
+  assert.equal(getTalentVerificationMaybeLaterPath(false), "/browse");
 });
 
-test("sends non-talents back to talent onboarding when skipping verification", () => {
+test("sends existing talents to the talent dashboard from dashboard source", () => {
   assert.equal(
-    getTalentVerificationMaybeLaterPath(false),
+    getTalentVerificationMaybeLaterPath(true, "dashboard"),
+    "/dashboard/talent",
+  );
+});
+
+test("sends non-talents back to talent onboarding from dashboard source", () => {
+  assert.equal(
+    getTalentVerificationMaybeLaterPath(false, "dashboard"),
     "/onboarding/talent?step=1",
   );
 });

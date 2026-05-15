@@ -1,16 +1,16 @@
 import { TalentBuVerificationIntro } from "@/app/onboarding/talent/_components/talent-bu-verification-intro";
 import { requireCurrentAppUser } from "@/server/users/current-user";
 
-type TalentVerificationPageProps = {
+type TalentVerifyPageProps = {
   searchParams: Promise<{
     source?: string;
     step?: string;
   }>;
 };
 
-export default async function TalentVerificationPage({
+export default async function TalentVerifyPage({
   searchParams,
-}: TalentVerificationPageProps) {
+}: TalentVerifyPageProps) {
   const currentUser = await requireCurrentAppUser();
   const { source, step } = await searchParams;
 
@@ -19,10 +19,11 @@ export default async function TalentVerificationPage({
       <section className="flex min-h-[calc(100vh-7rem)] items-center justify-center">
         <div className="mx-auto w-full max-w-6xl">
           <TalentBuVerificationIntro
+            backLabel={"profile"}
             isTalent={currentUser.isTalent}
             source={source}
             step={step}
-            verificationBasePath="/onboarding/talent/verification"
+            verificationBasePath="/talent/verify"
           />
         </div>
       </section>
