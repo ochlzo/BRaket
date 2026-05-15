@@ -27,8 +27,10 @@ model User {
   initials                   String?
   is_verified                Boolean                     @default(false)
   is_talent                  Boolean                     @default(false)
+  ClientBookings             Booking[]                   @relation("ClientBookings")
   ClientProfile              ClientProfile?
   TalentProfile              TalentProfile?
+  TalentBookings             Booking[]                   @relation("TalentBookings")
   TalentVerificationRequests TalentVerificationRequest[] @relation("TalentVerificationApplicant")
 
   @@id([userId, authId])
@@ -173,9 +175,33 @@ model Service {
   description       String
   ServiceCategories ServiceCategory[]
   ServiceMedia      ServiceMedia[]
+  Bookings          Booking[]
   TalentProfile     TalentProfile     @relation(fields: [talentProfileId], references: [talent_profile_id], onDelete: Cascade)
 
   @@map("Services")
+}
+
+model Booking {
+  bookingId      String        @id @default(uuid()) @map("booking_id")
+  serviceId      String        @map("service_id")
+  clientUserId   String        @map("client_user_id")
+  talentUserId   String        @map("talent_user_id")
+  projectDetails String        @map("project_details")
+  budget         Decimal?      @db.Decimal(10, 2)
+  notes          String?
+  declineReason  String?       @map("decline_reason")
+  responseToken  String        @unique @default(uuid()) @map("response_token")
+  status         BookingStatus @default(PENDING)
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+  Client         User          @relation("ClientBookings", fields: [clientUserId], references: [userId], onDelete: Cascade)
+  Service        Service       @relation(fields: [serviceId], references: [serviceId], onDelete: Cascade)
+  Talent         User          @relation("TalentBookings", fields: [talentUserId], references: [userId], onDelete: Cascade)
+
+  @@index([clientUserId, status, createdAt])
+  @@index([talentUserId, status, createdAt])
+  @@index([serviceId, createdAt])
+  @@map("bookings")
 }
 
 model Category {
@@ -239,4 +265,15 @@ enum TalentVerificationStatus {
   REJECTED
 
   @@map("talent_verification_status")
+}
+
+enum BookingStatus {
+  PENDING
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  DECLINED
+
+  @@map("booking_status")
 }
