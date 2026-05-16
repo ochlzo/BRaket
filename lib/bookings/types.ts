@@ -1,4 +1,4 @@
-import type { BookingStatus } from "@prisma/client";
+import type { BookingStatus, ReviewTarget } from "@prisma/client";
 
 export type BookingActionState = {
   message: string;
@@ -13,6 +13,13 @@ export type BookingParty = {
   username: string;
 };
 
+export type BookingReviewItem = {
+  comment: string;
+  createdAt: string;
+  rating: number;
+  target: ReviewTarget;
+};
+
 export type BookingListItem = {
   budget: number | null;
   client: BookingParty;
@@ -21,6 +28,8 @@ export type BookingListItem = {
   id: string;
   notes: string;
   projectDetails: string;
+  reviewFromClient: BookingReviewItem | null;
+  reviewFromTalent: BookingReviewItem | null;
   service: {
     id: string;
     priceLabel: string;
@@ -38,6 +47,8 @@ export type BookingServiceSummary = {
   talent: BookingParty & {
     headline: string;
     isVerified: boolean;
+    profileHref: string;
+    servicesHref: string;
   };
   title: string;
 };

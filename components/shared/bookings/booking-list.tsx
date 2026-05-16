@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import type { BookingListItem } from "@/lib/bookings/types";
 import { updateBookingStatusFormAction } from "@/server/bookings/actions";
+import { BookingReviews } from "./booking-reviews";
 
 type BookingListProps = {
   bookings: BookingListItem[];
@@ -177,6 +178,7 @@ export function BookingList({
                   Decline reason: {booking.declineReason}
                 </p>
               ) : null}
+              <BookingReviews booking={booking} viewer={viewer} />
             </div>
 
             <div className="shrink-0 space-y-3 lg:w-48 lg:text-right">

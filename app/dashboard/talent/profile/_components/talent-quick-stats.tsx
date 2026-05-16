@@ -25,6 +25,7 @@ export function TalentQuickStats({ profile }: TalentQuickStatsProps) {
     {
       label: "Rating",
       value: ratingLabel(profile.talentAvgRating),
+      href: "#talent-reviews",
     },
   ];
 
@@ -40,7 +41,13 @@ export function TalentQuickStats({ profile }: TalentQuickStatsProps) {
               {stat.label}
             </dt>
             <dd className="text-sm font-extrabold text-[color:var(--foreground)]">
-              {stat.value}
+              {"href" in stat ? (
+                <a className="underline-offset-4 hover:underline" href={stat.href}>
+                  {stat.value}
+                </a>
+              ) : (
+                stat.value
+              )}
             </dd>
           </div>
         ))}

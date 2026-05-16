@@ -42,19 +42,6 @@ export default async function BookingRequestPage({ params }: Props) {
             </div>
           ) : (
             <>
-              <div className="mb-8">
-                <Link
-                  className="text-sm font-semibold text-[color:var(--brand-orange)] hover:underline"
-                  href={
-                    service.talent.username
-                      ? `/talent/${service.talent.username}`
-                      : "/browse"
-                  }
-                >
-                  Back to profile
-                </Link>
-              </div>
-
               <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
                 <div className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-8">
                   <h1 className="text-2xl font-extrabold tracking-normal text-foreground">
@@ -68,11 +55,7 @@ export default async function BookingRequestPage({ params }: Props) {
                   <Separator className="my-6" />
 
                   <BookingRequestForm
-                    cancelHref={
-                      service.talent.username
-                        ? `/talent/${service.talent.username}`
-                        : "/browse"
-                    }
+                    cancelHref="/browse"
                     serviceId={service.id}
                   />
                 </div>
@@ -104,7 +87,10 @@ export default async function BookingRequestPage({ params }: Props) {
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-6">
+                  <Link
+                    className="block rounded-2xl border border-[color:var(--line-strong)] bg-white p-6 transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-panel-soft)]"
+                    href={service.talent.profileHref}
+                  >
                     <h2 className="typo-card-title-lg mb-4 text-foreground">
                       About the Talent
                     </h2>
@@ -126,7 +112,7 @@ export default async function BookingRequestPage({ params }: Props) {
                         </p>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 </aside>
               </div>
             </>

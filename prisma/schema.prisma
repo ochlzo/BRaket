@@ -28,7 +28,10 @@ model User {
   is_verified                Boolean                     @default(false)
   is_talent                  Boolean                     @default(false)
   ClientBookings             Booking[]                   @relation("ClientBookings")
+  ClientReviewsReceived      Review[]                    @relation("ClientReviewsReceived")
   ClientProfile              ClientProfile?
+  ReviewsGiven               Review[]                    @relation("ReviewsGiven")
+  TalentReviewsReceived      Review[]                    @relation("TalentReviewsReceived")
   TalentProfile              TalentProfile?
   TalentBookings             Booking[]                   @relation("TalentBookings")
   TalentVerificationRequests TalentVerificationRequest[] @relation("TalentVerificationApplicant")
@@ -195,6 +198,7 @@ model Booking {
   createdAt      DateTime      @default(now()) @map("created_at")
   updatedAt      DateTime      @updatedAt @map("updated_at")
   Client         User          @relation("ClientBookings", fields: [clientUserId], references: [userId], onDelete: Cascade)
+  Reviews        Review[]
   Service        Service       @relation(fields: [serviceId], references: [serviceId], onDelete: Cascade)
   Talent         User          @relation("TalentBookings", fields: [talentUserId], references: [userId], onDelete: Cascade)
 
@@ -202,6 +206,28 @@ model Booking {
   @@index([talentUserId, status, createdAt])
   @@index([serviceId, createdAt])
   @@map("bookings")
+}
+
+model Review {
+  reviewId       String          @id @default(uuid()) @map("review_id")
+  bookingId      String          @map("booking_id")
+  reviewerUserId String          @map("reviewer_user_id")
+  clientUserId   String          @map("client_user_id")
+  talentUserId   String          @map("talent_user_id")
+  target         ReviewTarget
+  rating         Int
+  comment        String
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+  Booking        Booking         @relation(fields: [bookingId], references: [bookingId], onDelete: Cascade)
+  Client         User            @relation("ClientReviewsReceived", fields: [clientUserId], references: [userId], onDelete: Cascade)
+  Reviewer       User            @relation("ReviewsGiven", fields: [reviewerUserId], references: [userId], onDelete: Cascade)
+  Talent         User            @relation("TalentReviewsReceived", fields: [talentUserId], references: [userId], onDelete: Cascade)
+
+  @@unique([bookingId, reviewerUserId, target])
+  @@index([clientUserId, target, createdAt])
+  @@index([talentUserId, target, createdAt])
+  @@map("reviews")
 }
 
 model Category {
@@ -276,4 +302,11 @@ enum BookingStatus {
   DECLINED
 
   @@map("booking_status")
+}
+
+enum ReviewTarget {
+  CLIENT
+  TALENT
+
+  @@map("review_target")
 }

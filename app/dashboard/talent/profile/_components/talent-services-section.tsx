@@ -1,8 +1,10 @@
 import type { TalentProfileServiceItem } from "@/lib/talent-profile/types";
+import Link from "next/link";
 
 import { TalentMediaCollage } from "./talent-media-collage";
 
 type TalentServicesSectionProps = {
+  showBookLinks?: boolean;
   services: TalentProfileServiceItem[];
 };
 
@@ -26,7 +28,13 @@ function categoryLabel(service: TalentProfileServiceItem) {
   return service.categories[0] || "Service";
 }
 
-function TalentServiceCard({ service }: { service: TalentProfileServiceItem }) {
+function TalentServiceCard({
+  service,
+  showBookLink,
+}: {
+  service: TalentProfileServiceItem;
+  showBookLink: boolean;
+}) {
   return (
     <article className="rounded-[1.1rem] border border-[color:var(--line-strong)] bg-[color:var(--surface)] p-4 shadow-[var(--shadow-surface-soft)]">
       <div className="flex items-start justify-between gap-3">
@@ -55,21 +63,40 @@ function TalentServiceCard({ service }: { service: TalentProfileServiceItem }) {
         </div>
       ) : null}
 
-      {/* Book Now placement reserved here; hidden on the owner's talent profile. */}
+      {showBookLink ? (
+        <div className="mt-4 flex justify-end">
+          <Link
+            className="inline-flex items-center rounded-full bg-[color:var(--brand-blue)] px-4 py-2 text-sm font-bold text-white transition hover:bg-[color:var(--brand-blue-strong)]"
+            href={`/book/${service.id}`}
+          >
+            Book Service
+          </Link>
+        </div>
+      ) : null}
     </article>
   );
 }
 
-export function TalentServicesSection({ services }: TalentServicesSectionProps) {
+export function TalentServicesSection({
+  services,
+  showBookLinks = false,
+}: TalentServicesSectionProps) {
   return (
-    <section className="overflow-hidden rounded-none border-0 bg-transparent sm:rounded-[1.2rem] sm:border sm:border-[color:var(--line-strong)] sm:bg-[color:var(--surface)] sm:shadow-[var(--shadow-panel-soft)]">
+    <section
+      className="scroll-mt-24 overflow-hidden rounded-none border-0 bg-transparent sm:rounded-[1.2rem] sm:border sm:border-[color:var(--line-strong)] sm:bg-[color:var(--surface)] sm:shadow-[var(--shadow-panel-soft)]"
+      id="services"
+    >
       <div className="border-b border-[color:var(--line-strong)] px-4 py-4 sm:px-5">
         <h2 className="typo-card-title-xl">Services</h2>
       </div>
       <div className="space-y-4 px-4 py-4 sm:px-5">
         {services.length > 0 ? (
           services.map((service) => (
-            <TalentServiceCard key={service.id} service={service} />
+            <TalentServiceCard
+              key={service.id}
+              service={service}
+              showBookLink={showBookLinks}
+            />
           ))
         ) : (
           <div className="rounded-[1.1rem] border border-dashed border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-5 py-8 text-center">

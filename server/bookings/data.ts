@@ -36,6 +36,10 @@ function mapParty(user: {
   };
 }
 
+function talentProfileHref(username: string) {
+  return username ? `/talent/${username}` : "/browse";
+}
+
 function priceLabel(minPrice: { toString: () => string }, maxPrice: { toString: () => string }) {
   const min = Number(minPrice.toString());
   const max = Number(maxPrice.toString());
@@ -80,6 +84,10 @@ export async function getBookingServiceSummary(
       ...mapParty(service.TalentProfile.User),
       headline: service.TalentProfile.headline,
       isVerified: service.TalentProfile.User.is_verified,
+      profileHref: talentProfileHref(service.TalentProfile.User.username ?? ""),
+      servicesHref: `${talentProfileHref(
+        service.TalentProfile.User.username ?? "",
+      )}#services`,
     },
     title: service.title,
   };
@@ -121,6 +129,9 @@ export async function getBookingsForUser(
   const bookings = await prisma.booking.findMany({
     include: {
       Client: true,
+      Reviews: {
+        orderBy: { createdAt: "asc" },
+      },
       Service: true,
       Talent: true,
     },
@@ -130,22 +141,50 @@ export async function getBookingsForUser(
       : { clientUserId: currentUser.id },
   });
 
-  return bookings.map((booking) => ({
-    budget: booking.budget ? Number(booking.budget.toString()) : null,
-    client: mapParty(booking.Client),
-    createdAt: booking.createdAt.toISOString(),
-    declineReason: booking.declineReason ?? "",
-    id: booking.bookingId,
-    notes: booking.notes ?? "",
-    projectDetails: booking.projectDetails,
-    service: {
-      id: booking.Service.serviceId,
-      priceLabel: priceLabel(booking.Service.minPrice, booking.Service.maxPrice),
-      title: booking.Service.title,
-    },
-    status: booking.status,
-    talent: mapParty(booking.Talent),
-  }));
+  return bookings.map((booking) => {
+    const reviewFromClient = booking.Reviews.find(
+      (review) => review.target === "TALENT",
+    );
+    const reviewFromTalent = booking.Reviews.find(
+      (review) => review.target === "CLIENT",
+    );
+
+    return {
+      budget: booking.budget ? Number(booking.budget.toString()) : null,
+      client: mapParty(booking.Client),
+      createdAt: booking.createdAt.toISOString(),
+      declineReason: booking.declineReason ?? "",
+      id: booking.bookingId,
+      notes: booking.notes ?? "",
+      projectDetails: booking.projectDetails,
+      reviewFromClient: reviewFromClient
+        ? {
+            comment: reviewFromClient.comment,
+            createdAt: reviewFromClient.createdAt.toISOString(),
+            rating: reviewFromClient.rating,
+            target: reviewFromClient.target,
+          }
+        : null,
+      reviewFromTalent: reviewFromTalent
+        ? {
+            comment: reviewFromTalent.comment,
+            createdAt: reviewFromTalent.createdAt.toISOString(),
+            rating: reviewFromTalent.rating,
+            target: reviewFromTalent.target,
+          }
+        : null,
+      service: {
+        id: booking.Service.serviceId,
+        priceLabel: priceLabel(
+          booking.Service.minPrice,
+          booking.Service.maxPrice,
+        ),
+        title: booking.Service.title,
+      },
+      status: booking.status,
+      talent: mapParty(booking.Talent),
+    };
+  });
 }
 
 export function countBookingsByStatus(bookings: BookingListItem[]) {

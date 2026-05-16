@@ -14,6 +14,22 @@ export async function getClientProfilePageData(
       userId: currentUser.id,
     },
     include: {
+      ClientReviewsReceived: {
+        include: {
+          Booking: {
+            include: {
+              Service: true,
+            },
+          },
+          Reviewer: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        where: {
+          target: "CLIENT",
+        },
+      },
       ClientProfile: {
         include: {
           ClientPortfolio: {
@@ -54,6 +70,7 @@ export async function getClientProfilePageData(
         userId: currentUser.id,
         username: currentUser.username || null,
         x_url: null,
+        ClientReviewsReceived: [],
       },
     });
   }
@@ -78,6 +95,7 @@ export async function getClientProfilePageData(
       userId: user.userId,
       username: user.username ?? null,
       x_url: user.x_url ?? null,
+      ClientReviewsReceived: user.ClientReviewsReceived,
     },
   });
 }
