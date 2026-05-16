@@ -17,6 +17,15 @@ export type ClientProfilePortfolioItem = {
   updatedAt: string;
 };
 
+export type ClientProfileReviewItem = {
+  bookingServiceTitle: string;
+  comment: string;
+  createdAt: string;
+  id: string;
+  rating: number;
+  reviewerName: string;
+};
+
 export type ClientProfileEditorValues = {
   about: string;
   avatarUrl: string;
@@ -72,9 +81,12 @@ export type ClientProfilePageData = {
   linkedinUrl: string;
   organizationName: string;
   portfolio: ClientProfilePortfolioItem[];
+  receivedReviews: ClientProfileReviewItem[];
   reputationScore: number | null;
+  reputationLabel: string;
   reviewCount: number;
   socialLinks: ClientProfileSocialLink[];
+  userId: string;
   username: string;
   website: string;
   xUrl: string;
@@ -99,6 +111,22 @@ export type ClientProfilePageSource = {
     userId: string;
     username: string | null;
     x_url: string | null;
+    ClientReviewsReceived: Array<{
+      comment: string;
+      createdAt: Date;
+      rating: number;
+      reviewId: string;
+      Booking: {
+        Service: {
+          title: string;
+        };
+      };
+      Reviewer: {
+        firstName: string | null;
+        lastName: string | null;
+        username: string | null;
+      };
+    }>;
   };
   clientProfile: {
     about: string | null;

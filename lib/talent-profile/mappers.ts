@@ -2,6 +2,7 @@ import type {
   TalentProfilePageData,
   TalentProfilePageSource,
   TalentProfilePortfolioItem,
+  TalentProfileReviewItem,
   TalentProfileServiceItem,
   TalentProfileSocialLink,
 } from "./types";
@@ -103,6 +104,43 @@ function buildPortfolioItems(
   }));
 }
 
+function reputationLabel(averageRating: number | null, reviewCount: number) {
+  if (reviewCount === 0 || averageRating === null) {
+    return "No reviews yet";
+  }
+
+  if (averageRating >= 4.5) {
+    return "Excellent talent";
+  }
+
+  if (averageRating >= 4) {
+    return "Good talent";
+  }
+
+  if (averageRating >= 3) {
+    return "Reliable talent";
+  }
+
+  return "Needs more trust signals";
+}
+
+function buildReceivedReviews(
+  reviews: TalentProfilePageSource["user"]["TalentReviewsReceived"],
+): TalentProfileReviewItem[] {
+  return reviews.map((review) => ({
+    bookingServiceTitle: compactText(review.Booking.Service.title),
+    comment: compactText(review.comment),
+    createdAt: review.createdAt.toISOString(),
+    id: review.reviewId,
+    rating: review.rating,
+    reviewerName: displayName(
+      compactText(review.Reviewer.firstName),
+      compactText(review.Reviewer.lastName),
+      compactText(review.Reviewer.username),
+    ),
+  }));
+}
+
 export function mapTalentProfilePageData(
   source: TalentProfilePageSource,
 ): TalentProfilePageData {
@@ -110,6 +148,16 @@ export function mapTalentProfilePageData(
   const lastName = compactText(source.user.lastName);
   const username = compactText(source.user.username) || source.user.userId;
   const talentProfile = source.talentProfile;
+  const receivedReviews = buildReceivedReviews(source.user.TalentReviewsReceived);
+  const talentReviewCount = receivedReviews.length;
+  const completedBookingsCount = source.user.TalentBookings.filter(
+    (booking) => booking.status === "COMPLETED",
+  ).length;
+  const talentAvgRating =
+    talentReviewCount > 0
+      ? receivedReviews.reduce((total, review) => total + review.rating, 0) /
+        talentReviewCount
+      : null;
   const socialLinks = [
     socialLinkFromRaw("Facebook", source.user.facebook_url),
     socialLinkFromRaw("Instagram", source.user.instagram_url),
@@ -144,11 +192,13 @@ export function mapTalentProfilePageData(
     portfolio: talentProfile
       ? buildPortfolioItems(talentProfile.TalentPortfolio)
       : [],
+    receivedReviews,
+    reputationLabel: reputationLabel(talentAvgRating, talentReviewCount),
     services: talentProfile ? buildServices(talentProfile.Services) : [],
-    talentAvgRating: talentProfile?.talent_avg_rating ?? null,
-    talentReviewCount: talentProfile?.talent_review_count ?? 0,
-    totalProjectsCompleted:
-      talentProfile?.completed_commissions_count ?? 0,
+    talentAvgRating,
+    talentReviewCount,
+    totalProjectsCompleted: completedBookingsCount,
+    userId: source.user.userId,
     skills:
       talentProfile?.TalentSkills.map((skill) => ({
         level: skill.proficiencyLevel,

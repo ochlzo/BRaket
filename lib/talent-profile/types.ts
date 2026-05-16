@@ -35,6 +35,15 @@ export type TalentProfilePortfolioItem = {
   updatedAt: string;
 };
 
+export type TalentProfileReviewItem = {
+  bookingServiceTitle: string;
+  comment: string;
+  createdAt: string;
+  id: string;
+  rating: number;
+  reviewerName: string;
+};
+
 export type TalentProfilePageData = {
   authId: string;
   avatarUrl: string;
@@ -54,10 +63,13 @@ export type TalentProfilePageData = {
   lastName: string;
   linkedinUrl: string;
   portfolio: TalentProfilePortfolioItem[];
+  receivedReviews: TalentProfileReviewItem[];
+  reputationLabel: string;
   services: TalentProfileServiceItem[];
   talentAvgRating: number | null;
   talentReviewCount: number;
   totalProjectsCompleted: number;
+  userId: string;
   skills: TalentProfileSkill[];
   socialLinks: TalentProfileSocialLink[];
   username: string;
@@ -83,6 +95,25 @@ export type TalentProfilePageSource = {
     userId: string;
     username: string | null;
     x_url: string | null;
+    TalentBookings: Array<{
+      status: string;
+    }>;
+    TalentReviewsReceived: Array<{
+      comment: string;
+      createdAt: Date;
+      rating: number;
+      reviewId: string;
+      Booking: {
+        Service: {
+          title: string;
+        };
+      };
+      Reviewer: {
+        firstName: string | null;
+        lastName: string | null;
+        username: string | null;
+      };
+    }>;
   };
   talentProfile: {
     bio: string;

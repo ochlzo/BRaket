@@ -3,6 +3,7 @@ import type {
   ClientProfilePageData,
   ClientProfilePageSource,
   ClientProfilePortfolioItem,
+  ClientProfileReviewItem,
   ClientProfileSocialLink,
 } from "./types";
 import { DEFAULT_PROFILE_COVER_BACKGROUND } from "@/lib/profile-cover";
@@ -79,6 +80,43 @@ function buildPortfolioItems(
   }));
 }
 
+function reputationLabel(averageRating: number | null, reviewCount: number) {
+  if (reviewCount === 0 || averageRating === null) {
+    return "No reviews yet";
+  }
+
+  if (averageRating >= 4.5) {
+    return "Excellent client";
+  }
+
+  if (averageRating >= 4) {
+    return "Good client";
+  }
+
+  if (averageRating >= 3) {
+    return "Reliable client";
+  }
+
+  return "Needs more trust signals";
+}
+
+function buildReceivedReviews(
+  reviews: ClientProfilePageSource["user"]["ClientReviewsReceived"],
+): ClientProfileReviewItem[] {
+  return reviews.map((review) => ({
+    bookingServiceTitle: compactText(review.Booking.Service.title),
+    comment: compactText(review.comment),
+    createdAt: review.createdAt.toISOString(),
+    id: review.reviewId,
+    rating: review.rating,
+    reviewerName: displayName(
+      compactText(review.Reviewer.firstName),
+      compactText(review.Reviewer.lastName),
+      compactText(review.Reviewer.username),
+    ),
+  }));
+}
+
 export function mapClientProfilePageData(
   source: ClientProfilePageSource,
 ): ClientProfilePageData {
@@ -94,6 +132,13 @@ export function mapClientProfilePageData(
     year: "numeric",
   })}`;
   const clientProfile = source.clientProfile;
+  const receivedReviews = buildReceivedReviews(source.user.ClientReviewsReceived);
+  const reviewCount = receivedReviews.length;
+  const averageRating =
+    reviewCount > 0
+      ? receivedReviews.reduce((total, review) => total + review.rating, 0) /
+        reviewCount
+      : null;
   const socialLinks = [
     socialLinkFromRaw("Facebook", source.user.facebook_url),
     socialLinkFromRaw("Instagram", source.user.instagram_url),
@@ -104,7 +149,7 @@ export function mapClientProfilePageData(
 
   return {
     about: compactText(clientProfile?.about),
-    averageRating: clientProfile?.client_avg_rating ?? null,
+    averageRating,
     authId: source.user.authId,
     avatarUrl: compactText(source.user.avatarUrl),
     backgroundImageUrl:
@@ -126,9 +171,12 @@ export function mapClientProfilePageData(
     portfolio: clientProfile
       ? buildPortfolioItems(clientProfile.ClientPortfolio)
       : [],
-    reputationScore: clientProfile?.client_reputation_score ?? null,
-    reviewCount: clientProfile?.client_review_count ?? 0,
+    receivedReviews,
+    reputationScore: averageRating ? averageRating * 20 : null,
+    reputationLabel: reputationLabel(averageRating, reviewCount),
+    reviewCount,
     socialLinks,
+    userId: source.user.userId,
     username,
     website: normalizeWebsiteUrl(clientProfile?.website),
     xUrl: compactText(source.user.x_url),

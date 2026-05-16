@@ -1,15 +1,16 @@
-import Link from "next/link";
-
 import { BookingStatsGrid } from "@/app/dashboard/client/bookings/_components/booking-stats-grid";
+import { BookingList } from "@/components/shared/bookings/booking-list";
 import { ClientDashboardLayout } from "@/components/shared/layout/client-dashboard-layout";
+import {
+  countBookingsByStatus,
+  getBookingsForUser,
+} from "@/server/bookings/data";
 import { requireCurrentAppUser } from "@/server/users/current-user";
 
 export default async function ClientBookingsPage() {
-  await requireCurrentAppUser("client");
-
-  const activeBookings = 0;
-  const bookingsCount = 0;
-  const completedBookings = 0;
+  const currentUser = await requireCurrentAppUser("client");
+  const bookings = await getBookingsForUser(currentUser);
+  const counts = countBookingsByStatus(bookings);
 
   return (
     <ClientDashboardLayout
@@ -18,25 +19,17 @@ export default async function ClientBookingsPage() {
     >
       <div className="flex flex-col gap-4">
         <BookingStatsGrid
-          activeBookings={activeBookings}
-          bookingsCount={bookingsCount}
-          completedBookings={completedBookings}
+          activeBookings={counts.active}
+          bookingsCount={counts.total}
+          completedBookings={counts.completed}
         />
-        <div className="rounded-2xl border border-dashed border-[color:var(--line-strong)] bg-white px-8 py-16 text-center">
-          <p className="text-lg font-semibold text-foreground">
-            No bookings found
-          </p>
-          <p className="mt-2 text-sm text-[color:var(--ink-muted)]">
-            This account no longer inherits demo bookings. Once you submit a real
-            project request, it will appear here.
-          </p>
-          <Link
-            href="/browse"
-            className="mt-5 inline-flex items-center rounded-xl bg-[color:var(--brand-orange)] px-5 py-3 text-sm font-semibold !text-white transition hover:bg-[color:var(--brand-orange-strong)]"
-          >
-            Browse Talent
-          </Link>
-        </div>
+        <BookingList
+          bookings={bookings}
+          emptyActionHref="/browse"
+          emptyActionLabel="Browse Talent"
+          emptyDescription="Once you submit a real project request, it will appear here."
+          viewer="client"
+        />
       </div>
     </ClientDashboardLayout>
   );

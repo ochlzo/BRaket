@@ -3,6 +3,7 @@ import type { CurrentAppUser } from "@/server/users/current-user";
 
 import { TalentProfileBody } from "./talent-profile-body";
 import { TalentProfileHero } from "./talent-profile-hero";
+import { TalentProfileStats } from "./talent-profile-stats";
 
 type TalentProfilePageContentProps = {
   profile: TalentProfilePageData;
@@ -16,6 +17,7 @@ export function TalentProfilePageContent({
   return (
     <div className="-mx-4 space-y-4 bg-[color:var(--surface)] pb-4 sm:mx-0 sm:bg-transparent sm:space-y-6 sm:pb-6">
       <TalentProfileHero profile={profile} user={user} />
+      <TalentProfileStats profile={profile} />
       <TalentProfileBody profile={profile} />
     </div>
   );

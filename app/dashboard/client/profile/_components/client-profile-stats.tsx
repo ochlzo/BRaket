@@ -14,20 +14,31 @@ function StatCard({
   mobileNote,
   value,
   note,
+  valueHref,
 }: {
   icon: ReactNode;
   label: string;
   mobileNote?: string;
   note: string;
   value: string;
+  valueHref?: string;
 }) {
   return (
     <Card className="gap-0 rounded-none border-0 bg-transparent py-0 shadow-none ring-0 sm:gap-4 sm:rounded-xl sm:border sm:border-[color:var(--line-strong)] sm:bg-[color:var(--surface)] sm:py-4 sm:shadow-[var(--shadow-panel-soft)] sm:ring-1 sm:ring-foreground/10">
       <CardContent className="grid min-w-0 place-items-center gap-0 px-2 py-3 text-center sm:flex sm:items-center sm:justify-between sm:gap-4 sm:px-4 sm:py-4 sm:text-left">
         <div className="min-w-0">
-          <p className="text-lg font-extrabold tracking-[-0.05em] text-[color:var(--foreground)] sm:text-3xl">
-            {value}
-          </p>
+          {valueHref ? (
+            <a
+              className="text-lg font-extrabold tracking-[-0.05em] text-[color:var(--foreground)] underline-offset-4 hover:underline sm:text-3xl"
+              href={valueHref}
+            >
+              {value}
+            </a>
+          ) : (
+            <p className="text-lg font-extrabold tracking-[-0.05em] text-[color:var(--foreground)] sm:text-3xl">
+              {value}
+            </p>
+          )}
           <p className="mt-0.5 text-[10px] font-medium leading-tight text-[color:var(--ink-muted)] sm:mt-1 sm:text-sm">
             {label}
           </p>
@@ -62,6 +73,7 @@ export function ClientProfileStats({ profile }: ClientProfileStatsProps) {
         mobileNote={`${profile.reviewCount} review${profile.reviewCount === 1 ? "" : "s"}`}
         note={`${profile.reviewCount} review${profile.reviewCount === 1 ? "" : "s"} from talents`}
         value={profile.reviewCount > 0 ? rating.toFixed(1) : "0.0"}
+        valueHref="#client-reviews"
       />
       <StatCard
         icon={<Award className="size-5" />}
