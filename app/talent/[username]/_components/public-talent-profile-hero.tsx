@@ -1,6 +1,7 @@
 import { GraduationCap } from "lucide-react";
 
 import { UserAvatar } from "@/components/shared/user-avatar";
+import { ReportButton } from "@/components/shared/moderation/report-button";
 import {
   BriefcaseIcon,
   MapPinIcon,
@@ -86,13 +87,22 @@ export function PublicTalentProfileHero({
           </div>
 
           <div className="min-w-0 flex-1 space-y-3 sm:pt-2">
-            <div>
-              <h1 className="break-words text-2xl font-extrabold leading-tight tracking-normal text-foreground sm:text-4xl">
-                {profile.displayName}
-              </h1>
-              <p className="mt-1 break-words text-sm font-medium text-[color:var(--ink-muted)] sm:text-lg">
-                {profile.headline || "Talent profile"}
-              </p>
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h1 className="break-words text-2xl font-extrabold leading-tight tracking-normal text-foreground sm:text-4xl">
+                  {profile.displayName}
+                </h1>
+                <p className="mt-1 break-words text-sm font-medium text-[color:var(--ink-muted)] sm:text-lg">
+                  {profile.headline || "Talent profile"}
+                </p>
+              </div>
+              <ReportButton
+                label="Report profile"
+                targetId={profile.userId}
+                targetLabel={`${profile.displayName} talent profile`}
+                targetPath={`/talent/${profile.username}`}
+                targetType="PROFILE"
+              />
             </div>
 
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-[color:var(--ink-muted)]">

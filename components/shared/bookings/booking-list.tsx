@@ -1,6 +1,7 @@
 import type { BookingStatus } from "@prisma/client";
 import Link from "next/link";
 
+import { ReportButton } from "@/components/shared/moderation/report-button";
 import type { BookingListItem } from "@/lib/bookings/types";
 import { updateBookingStatusFormAction } from "@/server/bookings/actions";
 import { BookingReviews } from "./booking-reviews";
@@ -156,6 +157,13 @@ export function BookingList({
                 <span className="text-xs font-medium text-[color:var(--ink-muted)]">
                   {new Date(booking.createdAt).toLocaleDateString()}
                 </span>
+                <ReportButton
+                  label="Report"
+                  targetId={booking.id}
+                  targetLabel={`${booking.service.title} booking`}
+                  targetPath={`/dashboard/${viewer}/bookings`}
+                  targetType="BOOKING"
+                />
               </div>
               <h2 className="mt-3 text-lg font-extrabold tracking-normal text-foreground">
                 {booking.service.title}

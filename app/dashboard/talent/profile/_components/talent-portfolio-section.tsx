@@ -1,17 +1,35 @@
 import type { TalentProfilePortfolioItem } from "@/lib/talent-profile/types";
 
+import { ReportButton } from "@/components/shared/moderation/report-button";
 import { TalentMediaCollage } from "./talent-media-collage";
 
 type TalentPortfolioSectionProps = {
   portfolio: TalentProfilePortfolioItem[];
+  showReportLinks?: boolean;
 };
 
-function TalentPortfolioPost({ item }: { item: TalentProfilePortfolioItem }) {
+function TalentPortfolioPost({
+  item,
+  showReportLink,
+}: {
+  item: TalentProfilePortfolioItem;
+  showReportLink: boolean;
+}) {
   return (
     <article className="rounded-[1.1rem] border border-[color:var(--line-strong)] bg-[color:var(--surface)] p-4 shadow-[var(--shadow-surface-soft)]">
-      <h3 className="text-base font-extrabold tracking-normal text-[color:var(--foreground)]">
-        {item.title}
-      </h3>
+      <div className="flex items-start justify-between gap-3">
+        <h3 className="text-base font-extrabold tracking-normal text-[color:var(--foreground)]">
+          {item.title}
+        </h3>
+        {showReportLink ? (
+          <ReportButton
+            label="Report portfolio"
+            targetId={item.id}
+            targetLabel={item.title}
+            targetType="PORTFOLIO"
+          />
+        ) : null}
+      </div>
       {item.media.length > 0 ? (
         <div className="mt-3">
           <TalentMediaCollage
@@ -31,6 +49,7 @@ function TalentPortfolioPost({ item }: { item: TalentProfilePortfolioItem }) {
 
 export function TalentPortfolioSection({
   portfolio,
+  showReportLinks = false,
 }: TalentPortfolioSectionProps) {
   return (
     <section className="rounded-[1.2rem] border border-[color:var(--line-strong)] bg-[color:var(--surface)] shadow-[var(--shadow-panel-soft)]">
@@ -40,7 +59,11 @@ export function TalentPortfolioSection({
       <div className="space-y-4 p-4">
         {portfolio.length > 0 ? (
           portfolio.map((item) => (
-            <TalentPortfolioPost item={item} key={item.id} />
+            <TalentPortfolioPost
+              item={item}
+              key={item.id}
+              showReportLink={showReportLinks}
+            />
           ))
         ) : (
           <div className="rounded-[1.1rem] border border-dashed border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-5 py-8 text-center">

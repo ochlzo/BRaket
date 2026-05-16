@@ -39,6 +39,7 @@ export type TalentProfileReviewItem = {
   bookingServiceTitle: string;
   comment: string;
   createdAt: string;
+  id: string;
   rating: number;
   reviewerName: string;
 };
@@ -68,6 +69,7 @@ export type TalentProfilePageData = {
   talentAvgRating: number | null;
   talentReviewCount: number;
   totalProjectsCompleted: number;
+  userId: string;
   skills: TalentProfileSkill[];
   socialLinks: TalentProfileSocialLink[];
   username: string;
@@ -100,6 +102,7 @@ export type TalentProfilePageSource = {
       comment: string;
       createdAt: Date;
       rating: number;
+      reviewId: string;
       Booking: {
         Service: {
           title: string;

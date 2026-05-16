@@ -131,6 +131,7 @@ function buildReceivedReviews(
     bookingServiceTitle: compactText(review.Booking.Service.title),
     comment: compactText(review.comment),
     createdAt: review.createdAt.toISOString(),
+    id: review.reviewId,
     rating: review.rating,
     reviewerName: displayName(
       compactText(review.Reviewer.firstName),
@@ -197,6 +198,7 @@ export function mapTalentProfilePageData(
     talentAvgRating,
     talentReviewCount,
     totalProjectsCompleted: completedBookingsCount,
+    userId: source.user.userId,
     skills:
       talentProfile?.TalentSkills.map((skill) => ({
         level: skill.proficiencyLevel,

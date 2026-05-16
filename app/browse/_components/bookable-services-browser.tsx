@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Search, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 
+import { ReportButton } from "@/components/shared/moderation/report-button";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import type { BookableServiceCard } from "@/lib/bookings/types";
 
@@ -156,9 +157,18 @@ export function BookableServicesBrowser({
                   className="flex flex-col rounded-2xl border border-[color:var(--line-strong)] bg-white p-5 shadow-[var(--shadow-surface-soft)] transition hover:-translate-y-1 hover:shadow-lg"
                   key={service.id}
                 >
-                  <span className="self-start rounded-full bg-[color:var(--tone-indigo-soft)] px-3 py-1 text-xs font-bold text-[color:var(--tone-indigo-deep)]">
-                    {service.categories[0] ?? "Service"}
-                  </span>
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="self-start rounded-full bg-[color:var(--tone-indigo-soft)] px-3 py-1 text-xs font-bold text-[color:var(--tone-indigo-deep)]">
+                      {service.categories[0] ?? "Service"}
+                    </span>
+                    <ReportButton
+                      label="Report"
+                      targetId={service.id}
+                      targetLabel={`${service.title} by ${service.talent.displayName}`}
+                      targetPath={`/book/${service.id}`}
+                      targetType="SERVICE"
+                    />
+                  </div>
                   <h2 className="mt-4 line-clamp-2 text-lg font-extrabold tracking-normal text-foreground">
                     {service.title}
                   </h2>

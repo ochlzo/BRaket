@@ -1,13 +1,18 @@
 import { ShieldCheck, UsersRound, Wrench } from "lucide-react";
 
+import { AdminModerationConsole } from "@/app/admin/_components/admin-moderation-console";
 import { AdminVerificationConsole } from "@/app/admin/_components/admin-verification-console";
 import { BrandMark } from "@/components/shared/branding/brand-mark";
 import { getAdminVerificationDashboardData } from "@/server/talent-verification/admin-data";
+import { getAdminContentReports } from "@/server/moderation/admin-data";
 import { requireAdminUser } from "@/server/admin/access";
 
 export default async function AdminPage() {
   const admin = await requireAdminUser();
-  const data = await getAdminVerificationDashboardData();
+  const [data, reports] = await Promise.all([
+    getAdminVerificationDashboardData(),
+    getAdminContentReports(),
+  ]);
   const stats = [
     {
       icon: UsersRound,
@@ -71,6 +76,22 @@ export default async function AdminPage() {
         </div>
 
         <AdminVerificationConsole requests={data.pendingRequests} />
+
+        <section className="mt-10">
+          <div className="mb-5">
+            <p className="text-sm font-bold uppercase tracking-[0.16em] text-[color:var(--brand-orange)]">
+              User reports
+            </p>
+            <h2 className="mt-2 text-2xl font-black tracking-[-0.03em]">
+              Moderation Queue
+            </h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-[color:var(--ink-muted)]">
+              Review reports submitted from profiles, services, bookings,
+              portfolio items, and reviews.
+            </p>
+          </div>
+          <AdminModerationConsole reports={reports} />
+        </section>
       </section>
     </main>
   );

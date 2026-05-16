@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 
 import { ProfileReviewsPanel } from "@/components/shared/profile-reviews/profile-reviews-panel";
+import { ReportButton } from "@/components/shared/moderation/report-button";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { PageShell } from "@/components/shared/layout/page-shell";
 import { appNavigation } from "@/lib/content/navigation";
@@ -75,6 +76,17 @@ export default async function PublicClientProfilePage({
                 <p className="mt-2 max-w-2xl text-sm leading-6 text-[color:var(--ink-body)]">
                   {profile.about || "No client bio yet."}
                 </p>
+                <div className="mt-4">
+                  <ReportButton
+                    label="Report profile"
+                    targetId={profile.userId}
+                    targetLabel={`${
+                      profile.organizationName || profile.displayName
+                    } client profile`}
+                    targetPath={`/client/${profile.username}`}
+                    targetType="PROFILE"
+                  />
+                </div>
               </div>
             </div>
           </section>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { BookingRequestForm } from "@/app/book/[serviceId]/_components/booking-request-form";
+import { ReportButton } from "@/components/shared/moderation/report-button";
 import { Separator } from "@/components/ui/separator";
 import { PageShell } from "@/components/shared/layout/page-shell";
 import { UserAvatar } from "@/components/shared/user-avatar";
@@ -62,9 +63,18 @@ export default async function BookingRequestPage({ params }: Props) {
 
                 <aside className="space-y-5">
                   <div className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-6">
-                    <h2 className="typo-card-title-lg mb-4 text-foreground">
-                      Service Summary
-                    </h2>
+                    <div className="mb-4 flex items-start justify-between gap-3">
+                      <h2 className="typo-card-title-lg text-foreground">
+                        Service Summary
+                      </h2>
+                      <ReportButton
+                        label="Report service"
+                        targetId={service.id}
+                        targetLabel={`${service.title} by ${service.talent.displayName}`}
+                        targetPath={`/book/${service.id}`}
+                        targetType="SERVICE"
+                      />
+                    </div>
                     <div className="space-y-3">
                       <span className="inline-block rounded-full bg-[color:var(--tone-indigo-soft)] px-3 py-1 text-xs font-semibold text-[color:var(--tone-indigo-deep)]">
                         {service.categories[0] ?? "Service"}

@@ -107,6 +107,7 @@ function buildReceivedReviews(
     bookingServiceTitle: compactText(review.Booking.Service.title),
     comment: compactText(review.comment),
     createdAt: review.createdAt.toISOString(),
+    id: review.reviewId,
     rating: review.rating,
     reviewerName: displayName(
       compactText(review.Reviewer.firstName),
@@ -175,6 +176,7 @@ export function mapClientProfilePageData(
     reputationLabel: reputationLabel(averageRating, reviewCount),
     reviewCount,
     socialLinks,
+    userId: source.user.userId,
     username,
     website: normalizeWebsiteUrl(clientProfile?.website),
     xUrl: compactText(source.user.x_url),

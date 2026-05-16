@@ -30,6 +30,7 @@ model User {
   ClientBookings             Booking[]                   @relation("ClientBookings")
   ClientReviewsReceived      Review[]                    @relation("ClientReviewsReceived")
   ClientProfile              ClientProfile?
+  ReportsSubmitted           ContentReport[]             @relation("ReportsSubmitted")
   ReviewsGiven               Review[]                    @relation("ReviewsGiven")
   TalentReviewsReceived      Review[]                    @relation("TalentReviewsReceived")
   TalentProfile              TalentProfile?
@@ -184,6 +185,29 @@ model Service {
   @@map("Services")
 }
 
+model ContentReport {
+  reportId        String           @id @default(uuid()) @map("report_id")
+  reporterUserId  String           @map("reporter_user_id")
+  targetType      ReportTargetType @map("target_type")
+  targetId        String           @map("target_id")
+  targetLabel     String           @map("target_label")
+  targetPath      String?          @map("target_path")
+  reason          ReportReason
+  details         String?
+  status          ReportStatus     @default(PENDING)
+  adminNotes      String?          @map("admin_notes")
+  reviewedByEmail String?          @map("reviewed_by_email")
+  reviewedAt      DateTime?        @map("reviewed_at")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+  Reporter        User             @relation("ReportsSubmitted", fields: [reporterUserId], references: [userId], onDelete: Cascade)
+
+  @@unique([reporterUserId, targetType, targetId])
+  @@index([status, createdAt])
+  @@index([targetType, targetId])
+  @@map("content_reports")
+}
+
 model Booking {
   bookingId      String        @id @default(uuid()) @map("booking_id")
   serviceId      String        @map("service_id")
@@ -309,4 +333,36 @@ enum ReviewTarget {
   TALENT
 
   @@map("review_target")
+}
+
+enum ReportTargetType {
+  PROFILE
+  SERVICE
+  REVIEW
+  BOOKING
+  PORTFOLIO
+
+  @@map("report_target_type")
+}
+
+enum ReportReason {
+  SCAM_OR_FRAUD
+  HARASSMENT_OR_ABUSE
+  FAKE_PROFILE
+  INAPPROPRIATE_CONTENT
+  ACADEMIC_DISHONESTY
+  COPYRIGHT_ISSUE
+  SPAM
+  OTHER
+
+  @@map("report_reason")
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  ACTIONED
+  DISMISSED
+
+  @@map("report_status")
 }

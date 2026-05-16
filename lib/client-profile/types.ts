@@ -21,6 +21,7 @@ export type ClientProfileReviewItem = {
   bookingServiceTitle: string;
   comment: string;
   createdAt: string;
+  id: string;
   rating: number;
   reviewerName: string;
 };
@@ -85,6 +86,7 @@ export type ClientProfilePageData = {
   reputationLabel: string;
   reviewCount: number;
   socialLinks: ClientProfileSocialLink[];
+  userId: string;
   username: string;
   website: string;
   xUrl: string;
@@ -113,6 +115,7 @@ export type ClientProfilePageSource = {
       comment: string;
       createdAt: Date;
       rating: number;
+      reviewId: string;
       Booking: {
         Service: {
           title: string;

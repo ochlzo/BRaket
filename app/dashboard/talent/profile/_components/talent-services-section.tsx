@@ -1,6 +1,7 @@
 import type { TalentProfileServiceItem } from "@/lib/talent-profile/types";
 import Link from "next/link";
 
+import { ReportButton } from "@/components/shared/moderation/report-button";
 import { TalentMediaCollage } from "./talent-media-collage";
 
 type TalentServicesSectionProps = {
@@ -41,9 +42,20 @@ function TalentServiceCard({
         <span className="inline-flex max-w-[65%] items-center rounded-full bg-[color:var(--tone-orange-pale)] px-3 py-1.5 text-xs font-bold text-[color:var(--tone-orange-deep)]">
           <span className="truncate">{categoryLabel(service)}</span>
         </span>
-        <span className="shrink-0 text-sm font-extrabold text-[color:var(--foreground)]">
-          {formatPrice(service)}
-        </span>
+        <div className="flex shrink-0 items-center gap-2">
+          <span className="text-sm font-extrabold text-[color:var(--foreground)]">
+            {formatPrice(service)}
+          </span>
+          {showBookLink ? (
+            <ReportButton
+              label="Report service"
+              targetId={service.id}
+              targetLabel={service.title}
+              targetPath={`/book/${service.id}`}
+              targetType="SERVICE"
+            />
+          ) : null}
+        </div>
       </div>
 
       <h3 className="mt-3 text-base font-extrabold tracking-normal text-[color:var(--foreground)]">
@@ -64,7 +76,7 @@ function TalentServiceCard({
       ) : null}
 
       {showBookLink ? (
-        <div className="mt-4 flex justify-end">
+        <div className="mt-4 flex flex-wrap justify-end gap-2">
           <Link
             className="inline-flex items-center rounded-full bg-[color:var(--brand-blue)] px-4 py-2 text-sm font-bold text-white transition hover:bg-[color:var(--brand-blue-strong)]"
             href={`/book/${service.id}`}

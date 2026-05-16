@@ -34,7 +34,10 @@ export function TalentProfileBody({
       </div>
       <div className="space-y-4 sm:space-y-6">
         <TalentQuickStats profile={profile} />
-        <TalentPortfolioSection portfolio={profile.portfolio} />
+        <TalentPortfolioSection
+          portfolio={profile.portfolio}
+          showReportLinks={showBookLinks}
+        />
       </div>
     </div>
   );

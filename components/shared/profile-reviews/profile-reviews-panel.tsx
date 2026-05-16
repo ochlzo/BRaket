@@ -1,7 +1,10 @@
+import { ReportButton } from "@/components/shared/moderation/report-button";
+
 type ProfileReview = {
   bookingServiceTitle: string;
   comment: string;
   createdAt: string;
+  id: string;
   rating: number;
   reviewerName: string;
 };
@@ -76,7 +79,16 @@ export function ProfileReviewsPanel({
                     {new Date(review.createdAt).toLocaleDateString()}
                   </p>
                 </div>
-                <Stars rating={review.rating} />
+                <div className="flex items-center gap-2">
+                  <Stars rating={review.rating} />
+                  <ReportButton
+                    label="Report review"
+                    targetId={review.id}
+                    targetLabel={`Review by ${review.reviewerName} for ${review.bookingServiceTitle}`}
+                    targetPath={`#${id}`}
+                    targetType="REVIEW"
+                  />
+                </div>
               </div>
               <p className="mt-3 whitespace-pre-line text-sm leading-6 text-[color:var(--ink-body)]">
                 {review.comment}
