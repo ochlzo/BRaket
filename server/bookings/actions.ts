@@ -208,6 +208,7 @@ export async function updateBookingStatusAction(
     select: {
       bookingId: true,
       clientUserId: true,
+      status: true,
       talentUserId: true,
     },
     where: { bookingId },
@@ -229,13 +230,29 @@ export async function updateBookingStatusAction(
     return { ...EMPTY_STATE, message: "Only the client can cancel this request." };
   }
 
-  await prisma.booking.update({
-    data: { status: nextStatus },
-    where: { bookingId },
+  await prisma.$transaction(async (tx) => {
+    await tx.booking.update({
+      data: { status: nextStatus },
+      where: { bookingId },
+    });
+
+    if (nextStatus === "COMPLETED" && booking.status !== "COMPLETED") {
+      await tx.talentProfile.update({
+        data: {
+          completed_commissions_count: {
+            increment: 1,
+          },
+        },
+        where: {
+          user_id: booking.talentUserId,
+        },
+      });
+    }
   });
 
   revalidatePath("/dashboard/client/bookings");
   revalidatePath("/dashboard/talent/bookings");
+  revalidatePath("/dashboard/talent/profile");
 
   return { message: "Booking updated.", ok: true };
 }

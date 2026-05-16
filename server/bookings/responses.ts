@@ -4,8 +4,10 @@ import { revalidatePath } from "next/cache";
 
 import { prisma } from "@/lib/prisma";
 import { sendClientBookingResponseEmail } from "@/server/bookings/email";
+import { getCurrentAppUser } from "@/server/users/current-user";
 
 type BookingResponseResult = {
+  code?: "answered" | "invalid-reason" | "not-found" | "not-talent";
   message: string;
   ok: boolean;
 };
@@ -62,6 +64,30 @@ async function notifyClient(booking: BookingWithResponseRelations) {
   return result;
 }
 
+async function authorizeTalentResponse(
+  booking: BookingWithResponseRelations,
+): Promise<BookingResponseResult> {
+  const currentUser = await getCurrentAppUser();
+
+  if (!currentUser) {
+    return {
+      code: "not-talent",
+      message: "Please sign in as the talent before responding.",
+      ok: false,
+    };
+  }
+
+  if (booking.talentUserId !== currentUser.id) {
+    return {
+      code: "not-talent",
+      message: "This request belongs to another talent account.",
+      ok: false,
+    };
+  }
+
+  return { message: "", ok: true };
+}
+
 export async function getBookingResponseSummary(responseToken: string) {
   const booking = await getBookingByResponseToken(responseToken);
 
@@ -70,11 +96,18 @@ export async function getBookingResponseSummary(responseToken: string) {
   }
 
   return {
+    budget: booking.budget ? Number(booking.budget.toString()) : null,
     clientName: displayName(booking.Client),
+    clientProfileHref: booking.Client.username
+      ? `/client/${booking.Client.username}`
+      : "",
     declineReason: booking.declineReason ?? "",
+    notes: booking.notes ?? "",
+    projectDetails: booking.projectDetails,
     serviceTitle: booking.Service.title,
     status: booking.status,
     talentName: displayName(booking.Talent),
+    talentUserId: booking.talentUserId,
   };
 }
 
@@ -84,7 +117,17 @@ export async function acceptBookingByResponseToken(
   const booking = await getBookingByResponseToken(responseToken);
 
   if (!booking) {
-    return { message: "We could not find that booking request.", ok: false };
+    return {
+      code: "not-found",
+      message: "We could not find that booking request.",
+      ok: false,
+    };
+  }
+
+  const authorization = await authorizeTalentResponse(booking);
+
+  if (!authorization.ok) {
+    return authorization;
   }
 
   if (booking.status === "ACCEPTED") {
@@ -93,6 +136,7 @@ export async function acceptBookingByResponseToken(
 
   if (booking.status !== "PENDING") {
     return {
+      code: "answered",
       message: "This booking request has already been answered.",
       ok: false,
     };
@@ -126,11 +170,25 @@ export async function declineBookingByResponseToken(
   const declineReason = reason.trim();
 
   if (!booking) {
-    return { message: "We could not find that booking request.", ok: false };
+    return {
+      code: "not-found",
+      message: "We could not find that booking request.",
+      ok: false,
+    };
+  }
+
+  const authorization = await authorizeTalentResponse(booking);
+
+  if (!authorization.ok) {
+    return authorization;
   }
 
   if (declineReason.length < 10) {
-    return { message: "Please share a short reason for declining.", ok: false };
+    return {
+      code: "invalid-reason",
+      message: "Please share a short reason for declining.",
+      ok: false,
+    };
   }
 
   if (booking.status === "DECLINED") {
@@ -139,6 +197,7 @@ export async function declineBookingByResponseToken(
 
   if (booking.status !== "PENDING") {
     return {
+      code: "answered",
       message: "This booking request has already been answered.",
       ok: false,
     };

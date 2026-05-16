@@ -149,6 +149,9 @@ export function mapTalentProfilePageData(
   const talentProfile = source.talentProfile;
   const receivedReviews = buildReceivedReviews(source.user.TalentReviewsReceived);
   const talentReviewCount = receivedReviews.length;
+  const completedBookingsCount = source.user.TalentBookings.filter(
+    (booking) => booking.status === "COMPLETED",
+  ).length;
   const talentAvgRating =
     talentReviewCount > 0
       ? receivedReviews.reduce((total, review) => total + review.rating, 0) /
@@ -193,8 +196,7 @@ export function mapTalentProfilePageData(
     services: talentProfile ? buildServices(talentProfile.Services) : [],
     talentAvgRating,
     talentReviewCount,
-    totalProjectsCompleted:
-      talentProfile?.completed_commissions_count ?? 0,
+    totalProjectsCompleted: completedBookingsCount,
     skills:
       talentProfile?.TalentSkills.map((skill) => ({
         level: skill.proficiencyLevel,

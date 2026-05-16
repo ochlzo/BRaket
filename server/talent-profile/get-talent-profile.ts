@@ -13,6 +13,14 @@ export async function getTalentProfilePageData(
       userId: currentUser.id,
     },
     include: {
+      TalentBookings: {
+        select: {
+          status: true,
+        },
+        where: {
+          status: "COMPLETED",
+        },
+      },
       TalentReviewsReceived: {
         include: {
           Booking: {
@@ -82,6 +90,7 @@ export async function getTalentProfilePageData(
         userId: currentUser.id,
         username: currentUser.username || null,
         x_url: null,
+        TalentBookings: [],
         TalentReviewsReceived: [],
       },
     });
@@ -105,6 +114,7 @@ export async function getTalentProfilePageData(
       userId: user.userId,
       username: user.username ?? null,
       x_url: user.x_url ?? null,
+      TalentBookings: user.TalentBookings,
       TalentReviewsReceived: user.TalentReviewsReceived,
     },
   });
@@ -124,6 +134,14 @@ export async function getPublicTalentProfilePageData(
       username: normalizedUsername,
     },
     include: {
+      TalentBookings: {
+        select: {
+          status: true,
+        },
+        where: {
+          status: "COMPLETED",
+        },
+      },
       TalentReviewsReceived: {
         include: {
           Booking: {
@@ -193,6 +211,7 @@ export async function getPublicTalentProfilePageData(
       is_verified: user.is_verified,
       lastName: user.lastName ?? null,
       linkedin_url: user.linkedin_url ?? null,
+      TalentBookings: user.TalentBookings,
       TalentReviewsReceived: user.TalentReviewsReceived,
       userId: user.userId,
       username: user.username ?? null,

@@ -93,6 +93,9 @@ export type TalentProfilePageSource = {
     userId: string;
     username: string | null;
     x_url: string | null;
+    TalentBookings: Array<{
+      status: string;
+    }>;
     TalentReviewsReceived: Array<{
       comment: string;
       createdAt: Date;

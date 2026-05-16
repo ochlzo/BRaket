@@ -72,8 +72,7 @@ export async function sendTalentBookingRequestEmail({
   const safeServiceTitle = escapeHtml(service.title);
   const safeProjectDetails = escapeHtml(booking.projectDetails);
   const safeNotes = booking.notes ? escapeHtml(booking.notes) : "";
-  const acceptUrl = responseBaseUrl ? `${responseBaseUrl}/accept` : dashboardUrl;
-  const declineUrl = responseBaseUrl ? `${responseBaseUrl}/decline` : dashboardUrl;
+  const reviewUrl = responseBaseUrl ?? dashboardUrl;
   const budget = formatBudget(booking.budget);
   const subject = `New booking request for ${service.title}`;
   const text = [
@@ -87,8 +86,7 @@ export async function sendTalentBookingRequestEmail({
     "",
     booking.notes ? `Notes: ${booking.notes}` : "",
     "",
-    `Accept the request: ${acceptUrl}`,
-    `Decline with a reason: ${declineUrl}`,
+    `View the client and request: ${reviewUrl}`,
     `Dashboard: ${dashboardUrl}`,
   ]
     .filter(Boolean)
@@ -109,14 +107,11 @@ export async function sendTalentBookingRequestEmail({
           : ""
       }
       <p>
-        <a href="${escapeHtml(acceptUrl)}" style="display:inline-block;padding:10px 14px;border-radius:10px;background:#2563eb;color:#ffffff;text-decoration:none">
-          Accept request
-        </a>
-        <a href="${escapeHtml(declineUrl)}" style="display:inline-block;margin-left:8px;padding:10px 14px;border-radius:10px;background:#ffffff;color:#1f2937;border:1px solid #d1d5db;text-decoration:none">
-          Decline with reason
+        <a href="${escapeHtml(reviewUrl)}" style="display:inline-block;padding:10px 14px;border-radius:10px;background:#2563eb;color:#ffffff;text-decoration:none">
+          View client and request
         </a>
       </p>
-      <p style="font-size:13px;color:#6b7280">You can also review this in your dashboard: ${escapeHtml(dashboardUrl)}</p>
+      <p style="font-size:13px;color:#6b7280">Open the request to view the client profile before accepting or declining. You can also review this in your dashboard: ${escapeHtml(dashboardUrl)}</p>
     </div>
   `;
 
