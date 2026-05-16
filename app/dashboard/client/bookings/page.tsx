@@ -9,7 +9,7 @@ import { requireCurrentAppUser } from "@/server/users/current-user";
 
 export default async function ClientBookingsPage() {
   const currentUser = await requireCurrentAppUser("client");
-  const bookings = await getBookingsForUser(currentUser);
+  const bookings = await getBookingsForUser(currentUser, "client");
   const counts = countBookingsByStatus(bookings);
 
   return (

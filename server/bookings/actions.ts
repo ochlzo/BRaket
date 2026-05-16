@@ -79,13 +79,6 @@ export async function createBookingRequestAction(
     };
   }
 
-  if (currentUser.isTalent) {
-    return {
-      ...EMPTY_STATE,
-      message: "Talent accounts cannot book their own services.",
-    };
-  }
-
   const serviceId = readText(formData, "serviceId");
   const projectDetails = readText(formData, "projectDetails");
   const notes = readText(formData, "notes");

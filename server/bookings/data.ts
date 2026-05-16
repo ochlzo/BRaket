@@ -125,6 +125,7 @@ export async function getBookableServices(): Promise<BookableServiceCard[]> {
 
 export async function getBookingsForUser(
   currentUser: CurrentAppUser,
+  viewer: "client" | "talent",
 ): Promise<BookingListItem[]> {
   const bookings = await prisma.booking.findMany({
     include: {
@@ -136,9 +137,10 @@ export async function getBookingsForUser(
       Talent: true,
     },
     orderBy: { createdAt: "desc" },
-    where: currentUser.isTalent
-      ? { talentUserId: currentUser.id }
-      : { clientUserId: currentUser.id },
+    where:
+      viewer === "talent"
+        ? { talentUserId: currentUser.id }
+        : { clientUserId: currentUser.id },
   });
 
   return bookings.map((booking) => {
