@@ -12,7 +12,7 @@ export type AdminUser = {
 };
 
 export function getAdminEmailAllowlist() {
-  return parseAdminEmails(process.env.BRACKET_ADMIN_EMAILS);
+  return parseAdminEmails(process.env.BRAKET_ADMIN_EMAILS);
 }
 
 export async function getAdminUser(): Promise<AdminUser | null> {

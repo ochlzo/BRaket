@@ -9,6 +9,7 @@ import {
   type TalentServiceStepState,
   validateTalentServiceStepInput,
 } from "@/app/onboarding/talent/_lib/talent-service-step";
+import { validateTalentServiceCategorySelection } from "@/app/onboarding/talent/_lib/talent-service-categories";
 import {
   hasDirtyField,
   parseDirtyFields,
@@ -129,6 +130,19 @@ export async function saveTalentServiceStepAction(
     return validationWithExistingMedia;
   }
 
+  const selectedCategories = await prisma.category.findMany({
+    select: { categoryId: true },
+    where: { categoryId: { in: input.categoryIds } },
+  });
+  const categoryValidation = validateTalentServiceCategorySelection(
+    input,
+    selectedCategories.map((category) => category.categoryId),
+  );
+
+  if (!categoryValidation.ok) {
+    return categoryValidation;
+  }
+
   const dirtyFields = parseDirtyFields(formData, SERVICE_DIRTY_FIELDS);
   let uploadedAssets: UploadedTalentServiceAsset[] = [];
 
@@ -177,27 +191,7 @@ export async function saveTalentServiceStepAction(
       }
 
       if (!existingService || hasDirtyField(dirtyFields, "categoryIds")) {
-        const existingCategories = await tx.category.findMany({
-          select: { categoryId: true },
-          where: { categoryId: { in: input.categoryIds } },
-        });
-        const existingCategoryIds = new Set(
-          existingCategories.map((category) => category.categoryId),
-        );
-        const customCategoryNames = input.categoryIds.filter(
-          (categoryId) => !existingCategoryIds.has(categoryId),
-        );
-        const createdCategories = await Promise.all(
-          customCategoryNames.map((name) =>
-            tx.category.create({
-              data: { categoryId: crypto.randomUUID(), name },
-            }),
-          ),
-        );
-        const categoryIds = Array.from(new Set([
-          ...existingCategories.map((category) => category.categoryId),
-          ...createdCategories.map((category) => category.categoryId),
-        ]));
+        const categoryIds = Array.from(new Set(input.categoryIds));
 
         await tx.serviceCategory.deleteMany({ where: { serviceId } });
         await tx.serviceCategory.createMany({

@@ -4,6 +4,9 @@ import test from "node:test";
 const serviceStepModule = await import(
   new URL("./talent-service-step.ts", import.meta.url).href,
 );
+const serviceCategoriesModule = await import(
+  new URL("./talent-service-categories.ts", import.meta.url).href,
+);
 
 const {
   buildTalentServiceStepInitialValues,
@@ -11,6 +14,7 @@ const {
   parseTalentServiceStepFormData,
   validateTalentServiceStepInput,
 } = serviceStepModule;
+const { validateTalentServiceCategorySelection } = serviceCategoriesModule;
 
 function createImageFile(name: string, type: string, size: number) {
   return new File([new Uint8Array(size)], name, { type });
@@ -86,6 +90,27 @@ test("rejects no selected categories", () => {
 
   assert.equal(result.ok, false);
   assert.equal(result.fieldErrors?.categories, "Select at least 1 category.");
+});
+
+test("rejects category values that are not existing category ids", () => {
+  const result = validateTalentServiceCategorySelection(
+    {
+      categoryIds: ["category-1", "free form category"],
+      description: "Poster package with source files.",
+      files: [],
+      maxPrice: "1500",
+      minPrice: "500",
+      priceUnit: "PER_PROJECT",
+      title: "Event poster design",
+    },
+    ["category-1", "category-2"],
+  );
+
+  assert.equal(result.ok, false);
+  assert.equal(
+    result.fieldErrors?.categories,
+    "Select a category from the available options.",
+  );
 });
 
 test("rejects invalid service price ranges", () => {

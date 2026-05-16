@@ -47,7 +47,7 @@ Use this rule set for login, sign-up, OTP, session refresh, and post-auth user p
 - When onboarding enriches the user profile, persist the canonical profile fields server-side and keep auth metadata in sync only as a transport/helper layer.
 - Talent BU verification must be handled through a dedicated Server Function that validates the signed-in Supabase user, requires a confirmed `@bicol-u.edu.ph` auth email, uploads the BU ID image to the configured private Supabase Storage bucket (`NEXT_PUBLIC_SUPABASE_BU_ID_BUCKET`), and creates a `TalentVerificationRequest`.
 - Do not mark `User.is_verified` from the applicant flow. Only the protected admin review flow may approve a `TalentVerificationRequest` and set `User.is_verified = true`.
-- Admin verification access must require an authenticated Supabase user whose email appears in `BRACKET_ADMIN_EMAILS`.
+- Admin verification access must require an authenticated Supabase user whose email appears in `BRAKET_ADMIN_EMAILS`.
 - Admin routes must use the dedicated admin session guard. `/admin` redirects non-admin sessions to `/admin/login`, and `/admin/login` redirects valid admin sessions back to `/admin`.
 
 ## Signup Email Validation

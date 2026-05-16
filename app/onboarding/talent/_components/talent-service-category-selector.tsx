@@ -1,4 +1,4 @@
-import { useState, type KeyboardEvent } from "react";
+import { useState } from "react";
 
 import type { CategoryOption } from "@/app/onboarding/talent/_lib/get-category-options";
 import {
@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/combobox";
 import { Label } from "@/components/ui/label";
 
-const MIN_CATEGORY_NAME_LENGTH = 3;
 const MAX_CATEGORY_SELECTIONS = 5;
 
 type TalentServiceCategorySelectorProps = {
@@ -37,84 +36,15 @@ export function TalentServiceCategorySelector({
   const filteredCategories = availableCategories.filter((category) =>
     category.name.toLowerCase().includes(categorySearch.toLowerCase()),
   );
-  const trimmedCategorySearch = categorySearch.trim();
-  const hasAddableCategorySearch =
-    trimmedCategorySearch.length >= MIN_CATEGORY_NAME_LENGTH;
   const hasReachedCategoryLimit =
     selectedCategoryIds.length >= MAX_CATEGORY_SELECTIONS;
-
-  function getCategoryToAdd(value: string) {
-    const trimmedValue = value.trim();
-    const matchingCategory = availableCategories.find(
-      (category) => category.name.toLowerCase() === trimmedValue.toLowerCase(),
-    );
-
-    return matchingCategory?.categoryId ?? trimmedValue;
-  }
-
-  function getCategoryLabel(value: string) {
-    return categoryNameById.get(value) ?? value;
-  }
-
-  function hasSelectedCategory(value: string) {
-    const label = getCategoryLabel(value);
-
-    return selectedCategoryIds.some(
-      (categoryId) =>
-        categoryId === value ||
-        getCategoryLabel(categoryId).toLowerCase() === label.toLowerCase(),
-    );
-  }
-
-  function addCategory(value: string) {
-    const categoryToAdd = getCategoryToAdd(value);
-
-    if (hasReachedCategoryLimit) {
-      setCategoryError(`Select up to ${MAX_CATEGORY_SELECTIONS} categories.`);
-      return;
-    }
-
-    if (hasSelectedCategory(categoryToAdd)) {
-      setCategorySearch("");
-      return;
-    }
-
-    setSelectedCategoryIds([...selectedCategoryIds, categoryToAdd]);
-    setCategorySearch("");
-  }
-
-  function tryAddCategory(value: string) {
-    const trimmedValue = value.trim();
-
-    if (trimmedValue.length < MIN_CATEGORY_NAME_LENGTH) {
-      setCategoryError(
-        `Enter at least ${MIN_CATEGORY_NAME_LENGTH} characters to add a category.`,
-      );
-      return;
-    }
-
-    addCategory(trimmedValue);
-    setCategoryError("");
-  }
 
   function handleCategorySearchChange(value: string) {
     setCategorySearch(value);
 
-    if (
-      value.trim().length >= MIN_CATEGORY_NAME_LENGTH ||
-      !hasReachedCategoryLimit
-    ) {
+    if (!hasReachedCategoryLimit) {
       setCategoryError("");
     }
-  }
-
-  function handleCategorySearchKeyDown(event: KeyboardEvent<HTMLInputElement>) {
-    if (event.key !== "Enter") {
-      return;
-    }
-
-    event.preventDefault();
-    tryAddCategory(categorySearch);
   }
 
   function handleCategoryValueChange(value: string[]) {
@@ -177,24 +107,12 @@ export function TalentServiceCategorySelector({
           <ComboboxChipsInput
             className="text-sm placeholder:text-[color:var(--ink-muted)]"
             id="service-categories"
-            onKeyDown={handleCategorySearchKeyDown}
             placeholder={
               selectedCategoryIds.length > 0
-                ? "Add another category..."
-                : "Find or add categories..."
+                ? "Search categories..."
+                : "Find categories..."
             }
           />
-          {hasAddableCategorySearch ? (
-            <button
-              aria-disabled={hasReachedCategoryLimit}
-              className="ml-auto shrink-0 rounded-full px-2.5 text-xs font-semibold text-[color:var(--brand-orange)] transition hover:bg-[color:var(--surface-alt)] sm:px-3"
-              onClick={() => tryAddCategory(categorySearch)}
-              onMouseDown={(event) => event.preventDefault()}
-              type="button"
-            >
-              Add
-            </button>
-          ) : null}
         </ComboboxChips>
         <ComboboxContent
           anchor={anchorRef}
@@ -210,7 +128,7 @@ export function TalentServiceCategorySelector({
               </ComboboxItem>
             ))}
             <ComboboxEmpty>
-              Can&apos;t find the category? Use Add to include it.
+              No matching categories.
             </ComboboxEmpty>
           </ComboboxList>
         </ComboboxContent>
