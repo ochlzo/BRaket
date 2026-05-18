@@ -32,4 +32,6 @@ export async function updateTalentAvailabilityAction(formData: FormData) {
   if (user.username) {
     revalidatePath(`/talent/${user.username}`);
   }
+
+  return { availabilityStatus: status };
 }
