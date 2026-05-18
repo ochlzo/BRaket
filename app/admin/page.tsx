@@ -1,4 +1,5 @@
 import {
+  LayoutDashboard,
   FileWarning,
   ShieldCheck,
   Star,
@@ -7,17 +8,22 @@ import {
   Wrench,
 } from "lucide-react";
 
+import { AdminDashboardOverview } from "@/app/admin/_components/admin-dashboard-overview";
 import { AdminModerationConsole } from "@/app/admin/_components/admin-moderation-console";
 import {
   AdminSidebar,
+  type AdminSidebarGroup,
   type AdminSidebarItem,
 } from "@/app/admin/_components/admin-sidebar";
+import { AdminUserManagementConsole } from "@/app/admin/_components/admin-user-management-console";
 import { AdminVerificationConsole } from "@/app/admin/_components/admin-verification-console";
 import { adminViewCopy, resolveAdminView } from "@/app/admin/_lib/admin-view";
 import { BrandMark } from "@/components/shared/branding/brand-mark";
 import { getAdminVerificationDashboardData } from "@/server/talent-verification/admin-data";
 import { getAdminContentReports } from "@/server/moderation/admin-data";
 import { requireAdminUser } from "@/server/admin/access";
+import { getAdminDashboardData } from "@/server/admin/dashboard-data";
+import { getAdminManagedUsers } from "@/server/admin/users-data";
 
 type AdminPageProps = {
   searchParams: Promise<{
@@ -29,9 +35,12 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   const admin = await requireAdminUser();
   const { view } = await searchParams;
   const activeView = resolveAdminView(view);
-  const [data, reports] = await Promise.all([
+  const [dashboardData, data, reports, clients, talents] = await Promise.all([
+    getAdminDashboardData(),
     getAdminVerificationDashboardData(),
     getAdminContentReports(),
+    getAdminManagedUsers("client"),
+    getAdminManagedUsers("talent"),
   ]);
   const serviceReports = reports.filter((report) => report.targetType === "SERVICE");
   const userReports = reports.filter((report) => report.targetType === "PROFILE");
@@ -59,55 +68,102 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       value: data.activeServices,
     },
   ];
-  const navItems: AdminSidebarItem[] = [
+  const approvalItems: AdminSidebarItem[] = [
     {
       count: data.pendingRequests.length,
-      href: "/admin",
+      href: "/admin?view=talent-approval",
       icon: ShieldCheck,
-      label: "Talent approval",
+      label: "Verification queue",
       view: "talent-approval",
     },
+  ];
+  const userItems: AdminSidebarItem[] = [
+    {
+      count: clients.length,
+      href: "/admin?view=clients",
+      icon: UsersRound,
+      label: "Clients",
+      view: "clients",
+    },
+    {
+      count: talents.length,
+      href: "/admin?view=talents",
+      icon: UserCheck,
+      label: "Talents",
+      view: "talents",
+    },
+  ];
+  const reportItems: AdminSidebarItem[] = [
     {
       count: serviceReports.length,
       href: "/admin?view=service-reports",
       icon: Wrench,
-      label: "Reports: service",
+      label: "Service reports",
       view: "service-reports",
     },
     {
       count: userReports.length,
       href: "/admin?view=user-reports",
       icon: UsersRound,
-      label: "Reports: users",
+      label: "User reports",
       view: "user-reports",
     },
     {
       count: reviewReports.length,
       href: "/admin?view=review-reports",
       icon: Star,
-      label: "Reports: reviews",
+      label: "Review reports",
       view: "review-reports",
     },
     {
       count: talentReports.length,
       href: "/admin?view=talent-reports",
       icon: UserCheck,
-      label: "Reports: talent",
+      label: "Talent reports",
       view: "talent-reports",
     },
     {
       count: clientReports.length,
       href: "/admin?view=client-reports",
       icon: FileWarning,
-      label: "Reports: client",
+      label: "Client reports",
       view: "client-reports",
+    },
+  ];
+  const navGroups: AdminSidebarGroup[] = [
+    {
+      count: dashboardData.pendingApprovals + dashboardData.pendingReports,
+      href: "/admin",
+      icon: LayoutDashboard,
+      items: [],
+      label: "Dashboard",
+      showCount: false,
+      view: "dashboard",
+    },
+    {
+      count: data.pendingRequests.length,
+      icon: ShieldCheck,
+      items: approvalItems,
+      label: "Talent Approval",
+    },
+    {
+      count: clients.length + talents.length,
+      icon: UsersRound,
+      items: userItems,
+      label: "Users",
+    },
+    {
+      count: reports.length,
+      icon: FileWarning,
+      items: reportItems,
+      label: "Reports",
     },
   ];
   const activeCopy = adminViewCopy[activeView];
 
   return (
     <main className="min-h-screen bg-[color:var(--surface-alt)] text-foreground lg:pl-72">
-      <AdminSidebar activeView={activeView} items={navItems} />
+      <AdminSidebar activeView={activeView} groups={navGroups} />
 
       <header className="border-b border-[color:var(--line-strong)] bg-white">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
@@ -151,8 +207,17 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
             </div>
           </div>
 
+          {activeView === "dashboard" ? (
+            <AdminDashboardOverview data={dashboardData} />
+          ) : null}
           {activeView === "talent-approval" ? (
             <AdminVerificationConsole requests={data.pendingRequests} />
+          ) : null}
+          {activeView === "clients" ? (
+            <AdminUserManagementConsole role="client" users={clients} />
+          ) : null}
+          {activeView === "talents" ? (
+            <AdminUserManagementConsole role="talent" users={talents} />
           ) : null}
           {activeView === "service-reports" ? (
             <AdminModerationConsole reports={serviceReports} />

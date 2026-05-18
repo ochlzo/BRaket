@@ -1,5 +1,8 @@
 export type AdminView =
+  | "dashboard"
   | "talent-approval"
+  | "clients"
+  | "talents"
   | "service-reports"
   | "user-reports"
   | "review-reports"
@@ -14,6 +17,16 @@ export const adminViewCopy: Record<
     body: "Review reports against client profiles and client account behavior.",
     eyebrow: "Client reports",
     title: "Client Report Queue",
+  },
+  dashboard: {
+    body: "A quick read on users, bookings, services, approvals, and reports that need attention.",
+    eyebrow: "Admin dashboard",
+    title: "Operations Overview",
+  },
+  clients: {
+    body: "Create, review, edit, and remove signed-in client accounts.",
+    eyebrow: "Client accounts",
+    title: "Client Management",
   },
   "review-reports": {
     body: "Review reports submitted against ratings and written feedback.",
@@ -30,6 +43,11 @@ export const adminViewCopy: Record<
     eyebrow: "Talent verification",
     title: "Talent Approval Queue",
   },
+  talents: {
+    body: "Create, review, edit, verify, and remove signed-in talent accounts.",
+    eyebrow: "Talent accounts",
+    title: "Talent Management",
+  },
   "talent-reports": {
     body: "Review reports against talent profiles and talent account behavior.",
     eyebrow: "Talent reports",
@@ -45,5 +63,5 @@ export const adminViewCopy: Record<
 export function resolveAdminView(value?: string): AdminView {
   return value && value in adminViewCopy
     ? (value as AdminView)
-    : "talent-approval";
+    : "dashboard";
 }
