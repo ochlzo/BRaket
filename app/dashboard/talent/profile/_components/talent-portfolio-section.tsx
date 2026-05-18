@@ -1,7 +1,7 @@
 import type { TalentProfilePortfolioItem } from "@/lib/talent-profile/types";
 
 import { ReportButton } from "@/components/shared/moderation/report-button";
-import { TalentMediaCollage } from "./talent-media-collage";
+import { TalentMediaCollage } from "@/app/dashboard/talent/_components/talent-media-collage";
 
 type TalentPortfolioSectionProps = {
   portfolio: TalentProfilePortfolioItem[];

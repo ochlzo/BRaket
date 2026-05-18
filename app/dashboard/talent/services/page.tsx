@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { TalentServiceMediaShowcase } from "@/app/dashboard/talent/_components/talent-service-media-showcase";
 import { TalentDashboardLayout } from "@/components/shared/layout/talent-dashboard-layout";
 import type { TalentServiceListItem } from "@/lib/bookings/types";
 import { getServicesForTalent } from "@/server/bookings/data";
@@ -54,6 +55,15 @@ function MyServiceCard({ service }: { service: TalentServiceListItem }) {
           </Link>
         </div>
       </div>
+
+      {service.media.length > 0 ? (
+        <div className="mt-4">
+          <TalentServiceMediaShowcase
+            media={service.media}
+            title={service.title}
+          />
+        </div>
+      ) : null}
     </article>
   );
 }

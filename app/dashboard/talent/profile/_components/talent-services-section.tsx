@@ -2,7 +2,7 @@ import type { TalentProfileServiceItem } from "@/lib/talent-profile/types";
 import Link from "next/link";
 
 import { ReportButton } from "@/components/shared/moderation/report-button";
-import { TalentMediaCollage } from "./talent-media-collage";
+import { TalentMediaCollage } from "@/app/dashboard/talent/_components/talent-media-collage";
 
 type TalentServicesSectionProps = {
   showBookLinks?: boolean;
