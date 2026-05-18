@@ -25,7 +25,7 @@ const clientNavItems: SidebarNavItem[] = [
   {
     href: getDashboardProfilePath("client"),
     icon: UserRound,
-    label: "Client Profile",
+    label: "User Profile",
   },
   {
     href: "/dashboard/client/bookings",

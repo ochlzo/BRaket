@@ -86,6 +86,7 @@ export type ClientProfilePageData = {
   reputationLabel: string;
   reviewCount: number;
   socialLinks: ClientProfileSocialLink[];
+  talentEmail: string;
   userId: string;
   username: string;
   website: string;
@@ -111,6 +112,9 @@ export type ClientProfilePageSource = {
     userId: string;
     username: string | null;
     x_url: string | null;
+    TalentVerificationRequests: Array<{
+      buEmail: string;
+    }>;
     ClientReviewsReceived: Array<{
       comment: string;
       createdAt: Date;

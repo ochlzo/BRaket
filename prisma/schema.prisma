@@ -7,38 +7,55 @@ datasource db {
 }
 
 model User {
-  userId                     String                      @unique @map("user_id")
-  authId                     String                      @unique @map("auth_id")
-  email                      String                      @unique
-  username                   String?                     @unique
-  lastName                   String?                     @map("last_name")
-  firstName                  String?                     @map("first_name")
-  address                    String?
-  avatarUrl                  String?
-  background_img_url         String?
-  facebook_url               String?
-  instagram_url              String?
-  x_url                      String?
-  github_url                 String?
-  linkedin_url               String?
-  createdAt                  DateTime                    @default(now()) @map("createdAt")
-  updatedAt                  DateTime                    @updatedAt @map("updatedAt")
-  contactNum                 String?                     @unique @db.VarChar(11)
-  initials                   String?
-  is_verified                Boolean                     @default(false)
-  is_talent                  Boolean                     @default(false)
-  ClientBookings             Booking[]                   @relation("ClientBookings")
-  ClientReviewsReceived      Review[]                    @relation("ClientReviewsReceived")
-  ClientProfile              ClientProfile?
-  ReportsSubmitted           ContentReport[]             @relation("ReportsSubmitted")
-  ReviewsGiven               Review[]                    @relation("ReviewsGiven")
-  TalentReviewsReceived      Review[]                    @relation("TalentReviewsReceived")
-  TalentProfile              TalentProfile?
-  TalentBookings             Booking[]                   @relation("TalentBookings")
-  TalentVerificationRequests TalentVerificationRequest[] @relation("TalentVerificationApplicant")
+  userId                      String                       @unique @map("user_id")
+  authId                      String                       @unique @map("auth_id")
+  email                       String                       @unique
+  username                    String?                      @unique
+  lastName                    String?                      @map("last_name")
+  firstName                   String?                      @map("first_name")
+  address                     String?
+  avatarUrl                   String?
+  background_img_url          String?
+  facebook_url                String?
+  instagram_url               String?
+  x_url                       String?
+  github_url                  String?
+  linkedin_url                String?
+  createdAt                   DateTime                     @default(now()) @map("createdAt")
+  updatedAt                   DateTime                     @updatedAt @map("updatedAt")
+  contactNum                  String?                      @unique @db.VarChar(11)
+  initials                    String?
+  is_verified                 Boolean                      @default(false)
+  is_talent                   Boolean                      @default(false)
+  ClientBookings              Booking[]                    @relation("ClientBookings")
+  ClientReviewsReceived       Review[]                     @relation("ClientReviewsReceived")
+  ClientProfile               ClientProfile?
+  ReportsSubmitted            ContentReport[]              @relation("ReportsSubmitted")
+  ReviewsGiven                Review[]                     @relation("ReviewsGiven")
+  TalentReviewsReceived       Review[]                     @relation("TalentReviewsReceived")
+  TalentProfile               TalentProfile?
+  TalentBookings              Booking[]                    @relation("TalentBookings")
+  TalentVerificationEmailOtps TalentVerificationEmailOtp[]
+  TalentVerificationRequests  TalentVerificationRequest[]  @relation("TalentVerificationApplicant")
 
   @@id([userId, authId])
   @@map("User")
+}
+
+model TalentVerificationEmailOtp {
+  otpId      String    @id @default(uuid()) @map("otp_id")
+  userId     String    @map("user_id")
+  buEmail    String    @map("bu_email")
+  codeHash   String    @map("code_hash")
+  expiresAt  DateTime  @map("expires_at")
+  consumedAt DateTime? @map("consumed_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  User       User      @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@index([userId, buEmail, createdAt])
+  @@index([expiresAt])
+  @@map("talent_verification_email_otps")
 }
 
 model TalentVerificationRequest {

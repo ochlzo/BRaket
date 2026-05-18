@@ -30,6 +30,12 @@ export async function getClientProfilePageData(
           target: "CLIENT",
         },
       },
+      TalentVerificationRequests: {
+        orderBy: { reviewedAt: "desc" },
+        select: { buEmail: true },
+        take: 1,
+        where: { status: "APPROVED" },
+      },
       ClientProfile: {
         include: {
           ClientPortfolio: {
@@ -70,6 +76,7 @@ export async function getClientProfilePageData(
         userId: currentUser.id,
         username: currentUser.username || null,
         x_url: null,
+        TalentVerificationRequests: [],
         ClientReviewsReceived: [],
       },
     });
@@ -95,6 +102,7 @@ export async function getClientProfilePageData(
       userId: user.userId,
       username: user.username ?? null,
       x_url: user.x_url ?? null,
+      TalentVerificationRequests: user.TalentVerificationRequests,
       ClientReviewsReceived: user.ClientReviewsReceived,
     },
   });
@@ -146,6 +154,12 @@ export async function getPublicClientProfilePageData(
           },
         },
       },
+      TalentVerificationRequests: {
+        orderBy: { reviewedAt: "desc" },
+        select: { buEmail: true },
+        take: 1,
+        where: { status: "APPROVED" },
+      },
     },
   });
 
@@ -174,6 +188,7 @@ export async function getPublicClientProfilePageData(
       userId: user.userId,
       username: user.username ?? null,
       x_url: user.x_url ?? null,
+      TalentVerificationRequests: user.TalentVerificationRequests,
     },
   });
 }

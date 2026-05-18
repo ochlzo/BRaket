@@ -4,7 +4,10 @@ import { useRouter } from "next/navigation";
 import { useActionState } from "react";
 import { ArrowLeft, ArrowRight, Mail } from "lucide-react";
 
-import { submitTalentVerificationAction } from "@/app/onboarding/talent/verification/_actions/submit-talent-verification-action";
+import {
+  sendTalentVerificationOtpAction,
+  submitTalentVerificationAction,
+} from "@/app/onboarding/talent/verification/_actions/submit-talent-verification-action";
 import { initialTalentVerificationState } from "@/app/onboarding/talent/verification/_actions/submit-talent-verification-state";
 import {
   Dialog,
@@ -43,6 +46,10 @@ export function TalentBuVerificationIntro({
   const router = useRouter();
   const [state, formAction, isPending] = useActionState(
     submitTalentVerificationAction,
+    initialTalentVerificationState,
+  );
+  const [otpState, otpFormAction, isSendingOtp] = useActionState(
+    sendTalentVerificationOtpAction,
     initialTalentVerificationState,
   );
   const isFormStep = step === "form";
@@ -109,12 +116,60 @@ export function TalentBuVerificationIntro({
         {canSubmit ? (
         <form action={formAction} className="mt-8 space-y-5">
           <div className="space-y-2">
-            <Label>Bicol University email</Label>
-            <div className="flex h-12 items-center gap-3 rounded-xl border border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-3 text-sm text-[color:var(--ink-body)]">
-              <Mail className="size-4 shrink-0 text-[color:var(--ink-muted)]" />
-              <span className="truncate font-semibold">{email}</span>
+            <Label htmlFor="bu-email">Bicol University email</Label>
+            <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_9rem]">
+              <div className="relative">
+                <Mail className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-[color:var(--ink-muted)]" />
+                <input
+                  className="h-12 w-full rounded-xl border border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] pl-11 pr-4 text-sm font-semibold text-[color:var(--ink-body)] outline-none transition placeholder:text-[color:var(--ink-muted)] focus:border-[color:var(--brand-blue)]"
+                  defaultValue={verification.buEmail || email}
+                  id="bu-email"
+                  name="buEmail"
+                  placeholder="name@bicol-u.edu.ph"
+                  required
+                  type="email"
+                />
+              </div>
+              <Button
+                className="h-12 rounded-xl border-[color:var(--brand-blue)] text-sm font-bold text-[color:var(--brand-blue)]"
+                disabled={isSendingOtp || isPending}
+                formAction={otpFormAction}
+                formNoValidate
+                type="submit"
+                variant="outline"
+              >
+                {isSendingOtp ? "Sending..." : "Send OTP"}
+              </Button>
             </div>
+            {otpState.message ? (
+              <p
+                className={`rounded-xl px-4 py-3 text-sm ${
+                  otpState.ok
+                    ? "bg-[color:var(--tone-green-soft)] text-[color:var(--tone-green-deep)]"
+                    : "bg-[color:var(--tone-red-soft)] text-[color:var(--tone-red-deep)]"
+                }`}
+                role={otpState.ok ? "status" : "alert"}
+              >
+                {otpState.message}
+              </p>
+            ) : null}
           </div>
+
+          {otpState.ok ? (
+            <div className="space-y-2">
+              <Label htmlFor="otp-code">OTP code</Label>
+              <input
+                className="h-12 w-full rounded-xl border border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 text-sm font-semibold tracking-[0.24em] text-[color:var(--ink-body)] outline-none transition placeholder:tracking-normal placeholder:text-[color:var(--ink-muted)] focus:border-[color:var(--brand-blue)]"
+                id="otp-code"
+                inputMode="numeric"
+                maxLength={6}
+                name="otpCode"
+                pattern="[0-9]{6}"
+                placeholder="Enter 6-digit code"
+                required
+              />
+            </div>
+          ) : null}
 
           <div className="space-y-2">
             <Label htmlFor="student-id">Upload student ID</Label>
@@ -223,9 +278,7 @@ export function TalentBuVerificationIntro({
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[color:var(--brand-orange)]/10 text-[color:var(--brand-orange)]">
                 <Mail className="size-5" />
               </div>
-              <DialogTitle className="text-lg font-bold text-foreground">
-                Just a quick note
-              </DialogTitle>
+              <DialogTitle className="text-lg font-bold text-foreground">Just a quick note</DialogTitle>
               <DialogDescription className="text-sm leading-6 text-[color:var(--ink-muted)]">
                 You are welcome to continue for now. Your services will simply
                 stay private until your BU student verification is complete.
