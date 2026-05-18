@@ -172,35 +172,38 @@ export function ClientOrganizationDetailsEditor({
                 error={state.fieldErrors?.organizationName}
                 label="Organization name"
                 name="organizationName"
-                onChange={(event) =>
+                onChange={(event) => {
+                  const value = event.currentTarget.value;
                   setFormValues((current) => ({
                     ...current,
-                    organizationName: event.currentTarget.value,
-                  }))
-                }
+                    organizationName: value,
+                  }));
+                }}
                 value={formValues.organizationName}
               />
               <Field
                 label="Business address"
                 name="businessAddress"
-                onChange={(event) =>
+                onChange={(event) => {
+                  const value = event.currentTarget.value;
                   setFormValues((current) => ({
                     ...current,
-                    businessAddress: event.currentTarget.value,
-                  }))
-                }
+                    businessAddress: value,
+                  }));
+                }}
                 value={formValues.businessAddress}
               />
               <Field
                 label="Website"
                 name="website"
                 placeholder="https://example.com"
-                onChange={(event) =>
+                onChange={(event) => {
+                  const value = event.currentTarget.value;
                   setFormValues((current) => ({
                     ...current,
-                    website: event.currentTarget.value,
-                  }))
-                }
+                    website: value,
+                  }));
+                }}
                 value={formValues.website}
               />
             </div>
