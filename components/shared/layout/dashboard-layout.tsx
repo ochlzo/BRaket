@@ -7,12 +7,13 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { countServicesForTalent } from "@/server/bookings/data";
 import { getCurrentAppUser } from "@/server/users/current-user";
 
 type DashboardLayoutProps = {
   children: ReactNode;
   role: UserRole;
-  title: string;
+  title: ReactNode;
   subtitle?: string;
   action?: ReactNode;
   showHeaderTrigger?: boolean;
@@ -34,6 +35,10 @@ export async function DashboardLayout({
   ]);
   const defaultSidebarOpen =
     cookieStore.get("sidebar_state")?.value !== "false";
+  const servicesCount =
+    role === "talent" && currentUser
+      ? await countServicesForTalent(currentUser)
+      : undefined;
 
   return (
     <SidebarProvider defaultOpen={defaultSidebarOpen}>
@@ -42,6 +47,7 @@ export async function DashboardLayout({
         initials={currentUser?.initials ?? ""}
         isTalent={currentUser?.isTalent ?? false}
         role={role}
+        servicesCount={servicesCount}
       />
 
       <SidebarInset

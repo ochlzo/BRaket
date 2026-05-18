@@ -54,6 +54,14 @@ const talentNavItems: SidebarNavItem[] = [
   },
 ];
 
+function buildTalentNavItems(servicesCount?: number): SidebarNavItem[] {
+  return talentNavItems.map((item) =>
+    item.href === "/dashboard/talent/services"
+      ? { ...item, badge: servicesCount }
+      : item,
+  );
+}
+
 function getSidebarSubtitle(role: UserRole) {
   return role === "client" ? "Client Dashboard" : "Talent Dashboard";
 }
@@ -63,6 +71,7 @@ type AppSidebarProps = {
   initials: string;
   isTalent: boolean;
   role: UserRole;
+  servicesCount?: number;
 };
 
 export function AppSidebar({
@@ -70,8 +79,10 @@ export function AppSidebar({
   initials,
   isTalent,
   role,
+  servicesCount,
 }: AppSidebarProps) {
-  const items = role === "client" ? clientNavItems : talentNavItems;
+  const items =
+    role === "client" ? clientNavItems : buildTalentNavItems(servicesCount);
 
   return (
     <Sidebar

@@ -205,8 +205,8 @@ export function getTalentServicePriceRangeError(
     return "";
   }
 
-  return Number(minPrice) >= Number(maxPrice)
-    ? "Min price must be less than max price."
+  return Number(minPrice) > Number(maxPrice)
+    ? "Min price cannot be greater than max price."
     : "";
 }
 
@@ -257,9 +257,9 @@ export function validateTalentServiceStepInput(
     input.maxPrice &&
     Number.isFinite(minPrice) &&
     Number.isFinite(maxPrice) &&
-    minPrice >= maxPrice
+    minPrice > maxPrice
   ) {
-    fieldErrors.priceRange = "Min price must be less than max price.";
+    fieldErrors.priceRange = "Min price cannot be greater than max price.";
   }
 
   if (!TALENT_SERVICE_PRICE_UNITS.includes(input.priceUnit as never)) {

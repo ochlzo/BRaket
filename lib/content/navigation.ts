@@ -14,5 +14,6 @@ export const appNavigation: NavItem[] = [
   { href: "/", label: "Home" },
   { href: "/browse", label: "Talents" },
   { href: "/services", label: "Services" },
+  { href: "/subscriptions", label: "Subs" },
   { href: "/how-it-works", label: "How it Works" },
 ];

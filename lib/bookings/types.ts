@@ -66,3 +66,12 @@ export type BookableServiceCard = {
   };
   title: string;
 };
+
+export type TalentServiceListItem = {
+  categories: string[];
+  createdAt: string;
+  description: string;
+  id: string;
+  priceLabel: string;
+  title: string;
+};
