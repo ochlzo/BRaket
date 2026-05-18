@@ -13,6 +13,7 @@ export async function getCurrentAppSessionAction(): Promise<AppSession | null> {
   return {
     avatarUrl: currentUser.avatarUrl,
     displayName: currentUser.displayName,
+    isTalent: currentUser.isTalent,
     type: currentUser.role,
     username: currentUser.username,
   };
