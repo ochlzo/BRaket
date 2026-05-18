@@ -1,32 +1,36 @@
-import Link from "next/link";
-
-import { DashboardLayout } from "@/components/shared/layout/dashboard-layout";
+import { BookingStatsGrid } from "@/app/dashboard/client/bookings/_components/booking-stats-grid";
+import { BookingList } from "@/components/shared/bookings/booking-list";
+import { TalentDashboardLayout } from "@/components/shared/layout/talent-dashboard-layout";
+import {
+  countBookingsByStatus,
+  getBookingsForUser,
+} from "@/server/bookings/data";
 import { requireCurrentAppUser } from "@/server/users/current-user";
 
 export default async function TalentBookingsPage() {
-  await requireCurrentAppUser("talent");
+  const currentUser = await requireCurrentAppUser("talent");
+  const bookings = await getBookingsForUser(currentUser, "talent");
+  const counts = countBookingsByStatus(bookings);
 
   return (
-    <DashboardLayout
-      role="talent"
+    <TalentDashboardLayout
       subtitle="Manage your live commission requests here as they arrive."
       title="My Bookings"
     >
-      <div className="rounded-2xl border border-dashed border-[color:var(--line-strong)] bg-white px-8 py-16 text-center">
-        <p className="text-lg font-semibold text-foreground">
-          No bookings found
-        </p>
-        <p className="mt-2 text-sm text-[color:var(--ink-muted)]">
-          This new account starts with a clean slate. Real commission requests
-          will appear here after clients begin booking your services.
-        </p>
-        <Link
-          href="/dashboard/talent/services/new"
-          className="mt-5 inline-flex items-center rounded-xl bg-[color:var(--brand-orange)] px-5 py-3 text-sm font-semibold !text-white transition hover:bg-[color:var(--brand-orange-strong)]"
-        >
-          Create a Service
-        </Link>
+      <div className="flex flex-col gap-4">
+        <BookingStatsGrid
+          activeBookings={counts.active}
+          bookingsCount={counts.total}
+          completedBookings={counts.completed}
+        />
+        <BookingList
+          bookings={bookings}
+          emptyActionHref="/dashboard/talent/services/new"
+          emptyActionLabel="Create a Service"
+          emptyDescription="Real commission requests will appear here after clients begin booking your services."
+          viewer="talent"
+        />
       </div>
-    </DashboardLayout>
+    </TalentDashboardLayout>
   );
 }

@@ -12,6 +12,7 @@ import {
   normalizeUserRole,
   resolveCanonicalUsername,
 } from "@/lib/auth/session";
+import { canAccessDashboardRole } from "@/lib/auth/dashboard-access";
 import { resolveNamePartsFromMetadata } from "@/lib/auth/name-parts";
 import { prisma } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
@@ -237,7 +238,14 @@ export async function requireCurrentAppUser(expectedRole?: UserRole) {
     redirect(getLoginRedirectPath(headerStore.get("x-braket-path")));
   }
 
-  if (expectedRole && user.role !== expectedRole) {
+  if (
+    expectedRole &&
+    !canAccessDashboardRole({
+      expectedRole,
+      isTalent: user.isTalent,
+      role: user.role,
+    })
+  ) {
     redirect(getAuthRedirectPath(user.role, "login"));
   }
 

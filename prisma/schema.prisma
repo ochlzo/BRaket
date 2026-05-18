@@ -7,31 +7,74 @@ datasource db {
 }
 
 model User {
-  userId             String         @unique @map("user_id")
-  authId             String         @unique @map("auth_id")
-  email              String         @unique
-  username           String?        @unique
-  lastName           String?        @map("last_name")
-  firstName          String?        @map("first_name")
-  address            String?
-  avatarUrl          String?
-  background_img_url String?
-  facebook_url       String?
-  instagram_url      String?
-  x_url              String?
-  github_url         String?
-  linkedin_url       String?
-  createdAt          DateTime       @default(now()) @map("createdAt")
-  updatedAt          DateTime       @updatedAt @map("updatedAt")
-  contactNum         String?        @unique @db.VarChar(11)
-  initials           String?
-  is_verified        Boolean        @default(false)
-  is_talent          Boolean        @default(false)
-  ClientProfile      ClientProfile?
-  TalentProfile      TalentProfile?
+  userId                      String                       @unique @map("user_id")
+  authId                      String                       @unique @map("auth_id")
+  email                       String                       @unique
+  username                    String?                      @unique
+  lastName                    String?                      @map("last_name")
+  firstName                   String?                      @map("first_name")
+  address                     String?
+  avatarUrl                   String?
+  background_img_url          String?
+  facebook_url                String?
+  instagram_url               String?
+  x_url                       String?
+  github_url                  String?
+  linkedin_url                String?
+  createdAt                   DateTime                     @default(now()) @map("createdAt")
+  updatedAt                   DateTime                     @updatedAt @map("updatedAt")
+  contactNum                  String?                      @unique @db.VarChar(11)
+  initials                    String?
+  is_verified                 Boolean                      @default(false)
+  is_talent                   Boolean                      @default(false)
+  ClientProfile               ClientProfile?
+  TalentProfile               TalentProfile?
+  ClientBookings              Booking[]                    @relation("ClientBookings")
+  TalentBookings              Booking[]                    @relation("TalentBookings")
+  ReportsSubmitted            ContentReport[]              @relation("ReportsSubmitted")
+  ClientReviewsReceived       Review[]                     @relation("ClientReviewsReceived")
+  ReviewsGiven                Review[]                     @relation("ReviewsGiven")
+  TalentReviewsReceived       Review[]                     @relation("TalentReviewsReceived")
+  TalentVerificationEmailOtps TalentVerificationEmailOtp[]
+  TalentVerificationRequests  TalentVerificationRequest[]  @relation("TalentVerificationApplicant")
 
   @@id([userId, authId])
   @@map("User")
+}
+
+model TalentVerificationEmailOtp {
+  otpId      String    @id @default(uuid()) @map("otp_id")
+  userId     String    @map("user_id")
+  buEmail    String    @map("bu_email")
+  codeHash   String    @map("code_hash")
+  expiresAt  DateTime  @map("expires_at")
+  consumedAt DateTime? @map("consumed_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  User       User      @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@index([userId, buEmail, createdAt])
+  @@index([expiresAt])
+  @@map("talent_verification_email_otps")
+}
+
+model TalentVerificationRequest {
+  requestId       String                   @id @default(uuid()) @map("request_id")
+  userId          String                   @map("user_id")
+  buEmail         String                   @map("bu_email")
+  buIdImageBucket String                   @map("bu_id_image_bucket")
+  buIdImagePath   String                   @map("bu_id_image_path")
+  status          TalentVerificationStatus @default(PENDING)
+  rejectionReason String?                  @map("rejection_reason")
+  reviewedByEmail String?                  @map("reviewed_by_email")
+  reviewedAt      DateTime?                @map("reviewed_at")
+  createdAt       DateTime                 @default(now()) @map("created_at")
+  updatedAt       DateTime                 @updatedAt @map("updated_at")
+  User            User                     @relation("TalentVerificationApplicant", fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@index([status, createdAt])
+  @@index([userId, status])
+  @@map("talent_verification_requests")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -44,7 +87,7 @@ model ClientProfile {
   about                       String?
   client_avg_rating           Float?
   client_review_count         Int?
-  client_reputation_score     Float?
+  client_reputation_score     Float?            @default(100)
   completed_commissions_count Int?
   createdAt                   DateTime          @default(now())
   updatedAt                   DateTime
@@ -75,24 +118,25 @@ model ClientPortfolioMedia {
 }
 
 model TalentProfile {
-  talent_profile_id           String            @unique
-  user_id                     String            @unique
+  talent_profile_id           String                   @unique
+  user_id                     String                   @unique
+  availabilityStatus          TalentAvailabilityStatus @default(AVAILABLE) @map("availability_status")
   headline                    String
   college                     String
   course                      String
   year_level                  Int
   website                     String?
   talent_avg_rating           Float?
-  talent_review_count         Int               @default(0)
-  completed_commissions_count Int               @default(0)
-  talent_reputation_score     Float?
-  createdAt                   DateTime          @default(now())
+  talent_review_count         Int                      @default(0)
+  completed_commissions_count Int                      @default(0)
+  talent_reputation_score     Float?                   @default(100)
+  createdAt                   DateTime                 @default(now())
   updatedAt                   DateTime
+  bu_email                    String?                  @unique
   bio                         String
-  profile_completion          Int               @default(0)
   Services                    Service[]
   TalentPortfolio             TalentPortfolio[]
-  User                        User              @relation(fields: [user_id], references: [userId], onDelete: Cascade)
+  User                        User                     @relation(fields: [user_id], references: [userId], onDelete: Cascade)
   TalentSkills                TalentSkill[]
 
   @@id([talent_profile_id, user_id])
@@ -146,17 +190,87 @@ model Service {
   serviceId         String            @id @default(uuid()) @map("service_id")
   talentProfileId   String            @map("talent_profile_id")
   title             String
-  description       String
   minPrice          Decimal           @map("min_price") @db.Decimal(10, 2)
   maxPrice          Decimal           @map("max_price") @db.Decimal(10, 2)
   priceUnit         PriceUnit         @map("price_unit")
   createdAt         DateTime          @default(now()) @map("created_at")
   updatedAt         DateTime          @updatedAt @map("updated_at")
+  description       String
   ServiceCategories ServiceCategory[]
   ServiceMedia      ServiceMedia[]
   TalentProfile     TalentProfile     @relation(fields: [talentProfileId], references: [talent_profile_id], onDelete: Cascade)
+  Bookings          Booking[]
 
   @@map("Services")
+}
+
+model ContentReport {
+  reportId        String           @id @default(uuid()) @map("report_id")
+  reporterUserId  String           @map("reporter_user_id")
+  targetType      ReportTargetType @map("target_type")
+  targetId        String           @map("target_id")
+  targetLabel     String           @map("target_label")
+  targetPath      String?          @map("target_path")
+  reason          ReportReason
+  details         String?
+  status          ReportStatus     @default(PENDING)
+  adminNotes      String?          @map("admin_notes")
+  reviewedByEmail String?          @map("reviewed_by_email")
+  reviewedAt      DateTime?        @map("reviewed_at")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+  Reporter        User             @relation("ReportsSubmitted", fields: [reporterUserId], references: [userId], onDelete: Cascade)
+
+  @@unique([reporterUserId, targetType, targetId])
+  @@index([status, createdAt])
+  @@index([targetType, targetId])
+  @@map("content_reports")
+}
+
+model Booking {
+  bookingId      String        @id @default(uuid()) @map("booking_id")
+  serviceId      String        @map("service_id")
+  clientUserId   String        @map("client_user_id")
+  talentUserId   String        @map("talent_user_id")
+  projectDetails String        @map("project_details")
+  budget         Decimal?      @db.Decimal(10, 2)
+  notes          String?
+  status         BookingStatus @default(PENDING)
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+  declineReason  String?       @map("decline_reason")
+  responseToken  String        @unique @default(uuid()) @map("response_token")
+  Client         User          @relation("ClientBookings", fields: [clientUserId], references: [userId], onDelete: Cascade)
+  Service        Service       @relation(fields: [serviceId], references: [serviceId], onDelete: Cascade)
+  Talent         User          @relation("TalentBookings", fields: [talentUserId], references: [userId], onDelete: Cascade)
+  Reviews        Review[]
+
+  @@index([clientUserId, status, createdAt])
+  @@index([talentUserId, status, createdAt])
+  @@index([serviceId, createdAt])
+  @@map("bookings")
+}
+
+model Review {
+  reviewId       String       @id @default(uuid()) @map("review_id")
+  bookingId      String       @map("booking_id")
+  reviewerUserId String       @map("reviewer_user_id")
+  clientUserId   String       @map("client_user_id")
+  talentUserId   String       @map("talent_user_id")
+  target         ReviewTarget
+  rating         Int
+  comment        String
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  Booking        Booking      @relation(fields: [bookingId], references: [bookingId], onDelete: Cascade)
+  Client         User         @relation("ClientReviewsReceived", fields: [clientUserId], references: [userId], onDelete: Cascade)
+  Reviewer       User         @relation("ReviewsGiven", fields: [reviewerUserId], references: [userId], onDelete: Cascade)
+  Talent         User         @relation("TalentReviewsReceived", fields: [talentUserId], references: [userId], onDelete: Cascade)
+
+  @@unique([bookingId, reviewerUserId, target])
+  @@index([clientUserId, target, createdAt])
+  @@index([talentUserId, target, createdAt])
+  @@map("reviews")
 }
 
 model Category {
@@ -192,6 +306,22 @@ model ServiceMedia {
   @@map("ServiceMedia")
 }
 
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model boost_subscriptions {
+  boost_subs_id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  talent_profile_id            String?   @db.Uuid
+  service_listing_id           String?   @db.Uuid
+  boost_plan_id                String?   @db.Uuid
+  paymongo_checkout_session_id String?
+  paymongo_payment_intent_id   String?
+  paymongo_payment_id          String?
+  payment_status               String    @default("unpaid")
+  status                       String    @default("pending_payment")
+  created_at                   DateTime  @default(now()) @db.Timestamptz(6)
+  paid_at                      DateTime? @db.Timestamptz(6)
+  expires_at                   DateTime? @db.Timestamptz(6)
+}
+
 enum PriceUnit {
   FIXED
   HOURLY
@@ -212,4 +342,69 @@ enum ProficiencyLevel {
   EXPERT
 
   @@map("proficiency_level")
+}
+
+enum TalentAvailabilityStatus {
+  AVAILABLE
+  BUSY
+  UNAVAILABLE
+
+  @@map("talent_availability_status")
+}
+
+enum TalentVerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+
+  @@map("talent_verification_status")
+}
+
+enum BookingStatus {
+  PENDING
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  DECLINED
+
+  @@map("booking_status")
+}
+
+enum ReviewTarget {
+  CLIENT
+  TALENT
+
+  @@map("review_target")
+}
+
+enum ReportTargetType {
+  PROFILE
+  SERVICE
+  REVIEW
+  BOOKING
+  PORTFOLIO
+
+  @@map("report_target_type")
+}
+
+enum ReportReason {
+  SCAM_OR_FRAUD
+  HARASSMENT_OR_ABUSE
+  FAKE_PROFILE
+  INAPPROPRIATE_CONTENT
+  ACADEMIC_DISHONESTY
+  COPYRIGHT_ISSUE
+  SPAM
+  OTHER
+
+  @@map("report_reason")
+}
+
+enum ReportStatus {
+  PENDING
+  ACTIONED
+  DISMISSED
+
+  @@map("report_status")
 }

@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { ProfileQuickActions } from "@/app/dashboard/profile/_components/profile-quick-actions";
-import { DashboardLayout } from "@/components/shared/layout/dashboard-layout";
+import { TalentDashboardLayout } from "@/components/shared/layout/talent-dashboard-layout";
 import { requireCurrentAppUser } from "@/server/users/current-user";
 
 const talentStats = [
@@ -32,7 +32,7 @@ export default async function TalentDashboardPage() {
   const titleName = user.firstName || user.displayName || user.username;
 
   return (
-    <DashboardLayout
+    <TalentDashboardLayout
       action={
         <Link
           href="/dashboard/talent/services/new"
@@ -41,7 +41,6 @@ export default async function TalentDashboardPage() {
           New Service
         </Link>
       }
-      role="talent"
       subtitle="This account now starts clean. New service requests and commissions will appear here once you publish real work."
       title={`Welcome back, ${titleName}`}
     >
@@ -74,6 +73,6 @@ export default async function TalentDashboardPage() {
           a service, and your real commission activity will show up here.
         </p>
       </div>
-    </DashboardLayout>
+    </TalentDashboardLayout>
   );
 }

@@ -3,7 +3,7 @@
 import type { CSSProperties } from "react";
 import { X } from "lucide-react";
 
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/shared/user-avatar";
 import { Button } from "@/components/ui/button";
 
 export function buildCoverBackgroundStyle(value: string) {
@@ -91,15 +91,14 @@ export function ProfilePicturePanel({
 
       <div className="flex justify-center">
         <div className="group relative">
-          <Avatar className="mt-1 h-40 w-40 rounded-none border-[3px] border-white bg-[color:var(--surface)] shadow-[var(--shadow-panel-soft)] after:rounded-none sm:h-44 sm:w-44">
-            {previewUrl ? (
-              <AvatarImage alt={displayName} className="rounded-none" src={previewUrl} />
-            ) : (
-              <div className="flex size-full items-center justify-center rounded-none bg-[color:var(--surface)] text-4xl font-black tracking-[-0.06em] text-[color:var(--ink-muted)]">
-                {initials || "?"}
-              </div>
-            )}
-          </Avatar>
+          <UserAvatar
+            alt={displayName}
+            className="mt-1 h-40 w-40 rounded-none border-[3px] border-white bg-[color:var(--surface)] shadow-[var(--shadow-panel-soft)] after:rounded-none sm:h-44 sm:w-44"
+            fallbackClassName="rounded-none bg-[color:var(--surface)] text-4xl font-black tracking-[-0.06em] text-[color:var(--ink-muted)]"
+            imageClassName="rounded-none"
+            initials={initials}
+            src={previewUrl}
+          />
           {showRemove ? (
             <Button
               aria-label="Remove profile picture"

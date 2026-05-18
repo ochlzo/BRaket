@@ -1,39 +1,98 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { toast } from "sonner";
 
+import { saveTalentPortfolioStepAction } from "@/app/onboarding/talent/_actions/save-talent-portfolio-step-action";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { TalentMediaUploadField } from "@/app/onboarding/talent/_components/talent-media-upload-field";
+import {
+  getTalentPortfolioStepDirtyFields,
+  type TalentPortfolioStepInitialValues,
+  validateTalentPortfolioStepInput,
+} from "@/app/onboarding/talent/_lib/talent-portfolio-step";
 
 type TalentPortfolioOnboardingFormProps = {
+  initialValues: TalentPortfolioStepInitialValues;
   onBack: () => void;
   onComplete: () => void;
 };
 
 export function TalentPortfolioOnboardingForm({
+  initialValues,
   onBack,
   onComplete,
 }: TalentPortfolioOnboardingFormProps) {
+  const [title, setTitle] = useState(initialValues.title);
+  const [description, setDescription] = useState(initialValues.description);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [notice, setNotice] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function showValidationToast(message: string) {
+    const toastId = toast.error(message, {
+      action: {
+        label: "x",
+        onClick: () => toast.dismiss(toastId),
+      },
+    });
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (isSubmitting) {
+      return;
+    }
 
     if (!event.currentTarget.reportValidity()) {
       return;
     }
 
-    if (selectedFiles.length === 0) {
-      setNotice("Add at least 1 portfolio image before creating your portfolio.");
+    const validation = validateTalentPortfolioStepInput({
+      description,
+      existingMediaCount: initialValues.existingMediaUrls.length,
+      files: selectedFiles,
+      title,
+    });
+
+    if (!validation.ok) {
+      showValidationToast(validation.message);
       return;
     }
 
-    onComplete();
+    const dirtyFields = getTalentPortfolioStepDirtyFields(initialValues, {
+      description,
+      files: selectedFiles,
+      title,
+    });
+
+    if (dirtyFields.length === 0) {
+      onComplete();
+      return;
+    }
+
+    const formData = new FormData(event.currentTarget);
+    formData.set("portfolioId", initialValues.portfolioId);
+    formData.set("dirtyFields", JSON.stringify(dirtyFields));
+
+    try {
+      setIsSubmitting(true);
+      const result = await saveTalentPortfolioStepAction(formData);
+
+      if (!result.ok) {
+        showValidationToast(result.message);
+        return;
+      }
+
+      onComplete();
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -77,8 +136,10 @@ export function TalentPortfolioOnboardingForm({
                 className="h-10 rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 text-sm sm:h-11 sm:rounded-xl"
                 id="portfolio-title"
                 name="title"
+                onChange={(event) => setTitle(event.target.value)}
                 placeholder="e.g. Campus event branding kit"
                 required
+                value={title}
               />
             </div>
 
@@ -94,9 +155,11 @@ export function TalentPortfolioOnboardingForm({
                 className="min-h-28 rounded-2xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 py-3 text-sm sm:rounded-xl"
                 id="portfolio-description"
                 name="description"
+                onChange={(event) => setDescription(event.target.value)}
                 placeholder="Describe the project, your role, tools used, and result."
                 required
                 rows={4}
+                value={description}
               />
             </div>
           </div>
@@ -106,6 +169,7 @@ export function TalentPortfolioOnboardingForm({
 
         <TalentMediaUploadField
           emptyDescription="Add at least 1 image to continue."
+          existingMediaUrls={initialValues.existingMediaUrls}
           files={selectedFiles}
           inputId="portfolio-media"
           inputName="media"
@@ -127,6 +191,7 @@ export function TalentPortfolioOnboardingForm({
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
           <Button
             className="min-h-11 rounded-full sm:h-12 sm:rounded-xl"
+            disabled={isSubmitting}
             onClick={onBack}
             type="button"
             variant="outline"
@@ -135,9 +200,10 @@ export function TalentPortfolioOnboardingForm({
           </Button>
           <Button
             className="min-h-11 rounded-full bg-[color:var(--brand-orange)] px-5 text-sm font-semibold !text-white transition hover:bg-[color:var(--brand-orange-strong)] sm:h-12 sm:rounded-xl sm:px-8"
+            disabled={isSubmitting}
             type="submit"
           >
-            Create portfolio
+            {isSubmitting ? "Saving..." : "Create portfolio"}
           </Button>
         </div>
       </form>

@@ -3,11 +3,13 @@ import type {
   ClientProfilePageData,
   ClientProfilePageSource,
   ClientProfilePortfolioItem,
+  ClientProfileReviewItem,
   ClientProfileSocialLink,
 } from "./types";
+import { calculateReportBasedReputationScore } from "../reputation-score";
+import { DEFAULT_PROFILE_COVER_BACKGROUND } from "@/lib/profile-cover";
 
-export const DEFAULT_COVER_BACKGROUND =
-  "linear-gradient(120deg, var(--brand-orange) 0%, var(--brand-orange-accent) 40%, var(--brand-blue) 100%)";
+export const DEFAULT_COVER_BACKGROUND = DEFAULT_PROFILE_COVER_BACKGROUND;
 
 type PortfolioSource = NonNullable<
   ClientProfilePageSource["clientProfile"]
@@ -79,6 +81,43 @@ function buildPortfolioItems(
   }));
 }
 
+function reputationLabel(averageRating: number | null, reviewCount: number) {
+  if (reviewCount === 0 || averageRating === null) {
+    return "No reviews yet";
+  }
+
+  if (averageRating >= 4.5) {
+    return "Excellent client";
+  }
+
+  if (averageRating >= 4) {
+    return "Good client";
+  }
+
+  if (averageRating >= 3) {
+    return "Reliable client";
+  }
+
+  return "Needs more trust signals";
+}
+
+function buildReceivedReviews(
+  reviews: ClientProfilePageSource["user"]["ClientReviewsReceived"],
+): ClientProfileReviewItem[] {
+  return reviews.map((review) => ({
+    bookingServiceTitle: compactText(review.Booking.Service.title),
+    comment: compactText(review.comment),
+    createdAt: review.createdAt.toISOString(),
+    id: review.reviewId,
+    rating: review.rating,
+    reviewerName: displayName(
+      compactText(review.Reviewer.firstName),
+      compactText(review.Reviewer.lastName),
+      compactText(review.Reviewer.username),
+    ),
+  }));
+}
+
 export function mapClientProfilePageData(
   source: ClientProfilePageSource,
 ): ClientProfilePageData {
@@ -86,14 +125,22 @@ export function mapClientProfilePageData(
   const lastName = compactText(source.user.lastName);
   const username = compactText(source.user.username) || source.user.userId;
   const email = source.user.email;
+  const talentEmail = compactText(source.user.TalentVerificationRequests[0]?.buEmail);
   const organizationName =
     compactText(source.clientProfile?.organization_name) ||
     displayName(firstName, lastName, username);
-  const joinedLabel = `Joined ${source.user.createdAt.toLocaleDateString("en-US", {
+  const joinedLabel = ` ${source.user.createdAt.toLocaleDateString("en-US", {
     month: "long",
     year: "numeric",
   })}`;
   const clientProfile = source.clientProfile;
+  const receivedReviews = buildReceivedReviews(source.user.ClientReviewsReceived);
+  const reviewCount = receivedReviews.length;
+  const averageRating =
+    reviewCount > 0
+      ? receivedReviews.reduce((total, review) => total + review.rating, 0) /
+        reviewCount
+      : null;
   const socialLinks = [
     socialLinkFromRaw("Facebook", source.user.facebook_url),
     socialLinkFromRaw("Instagram", source.user.instagram_url),
@@ -104,12 +151,11 @@ export function mapClientProfilePageData(
 
   return {
     about: compactText(clientProfile?.about),
-    averageRating: clientProfile?.client_avg_rating ?? null,
+    averageRating,
     authId: source.user.authId,
     avatarUrl: compactText(source.user.avatarUrl),
     backgroundImageUrl:
-      compactText(source.user.background_img_url) ||
-      DEFAULT_COVER_BACKGROUND,
+      compactText(source.user.background_img_url) || DEFAULT_COVER_BACKGROUND,
     businessAddress: compactText(clientProfile?.business_address),
     completedCommissionsCount:
       clientProfile?.completed_commissions_count ?? null,
@@ -127,9 +173,15 @@ export function mapClientProfilePageData(
     portfolio: clientProfile
       ? buildPortfolioItems(clientProfile.ClientPortfolio)
       : [],
-    reputationScore: clientProfile?.client_reputation_score ?? null,
-    reviewCount: clientProfile?.client_review_count ?? 0,
+    receivedReviews,
+    reputationScore: calculateReportBasedReputationScore(
+      source.profileReportCount,
+    ),
+    reputationLabel: reputationLabel(averageRating, reviewCount),
+    reviewCount,
     socialLinks,
+    talentEmail,
+    userId: source.user.userId,
     username,
     website: normalizeWebsiteUrl(clientProfile?.website),
     xUrl: compactText(source.user.x_url),

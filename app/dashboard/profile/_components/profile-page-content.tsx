@@ -4,7 +4,6 @@ import type {
   TalentProfile,
   UserRole,
 } from "@/lib/types";
-import { DashboardLayout } from "@/components/shared/layout/dashboard-layout";
 import { ProfileHeroCard } from "@/app/dashboard/profile/_components/profile-hero-card";
 import { ProfileTalentDetails } from "@/app/dashboard/profile/_components/profile-talent-details";
 import { ProfileVerificationPanel } from "@/app/dashboard/profile/_components/profile-verification-panel";
@@ -31,8 +30,6 @@ type ProfilePageUser = {
 };
 
 type ProfilePageContentProps = {
-  subtitle: string;
-  title: string;
   user: ProfilePageUser;
 };
 
@@ -54,11 +51,7 @@ function buildBaseProfile(user: ProfilePageUser) {
   };
 }
 
-export function ProfilePageContent({
-  subtitle,
-  title,
-  user,
-}: ProfilePageContentProps) {
+export function ProfilePageContent({ user }: ProfilePageContentProps) {
   const isClient = user.role === "client";
   const joinDate = new Date(user.createdAt).toLocaleDateString("en-US", {
     month: "long",
@@ -90,28 +83,23 @@ export function ProfilePageContent({
   const talentProfile = isClient ? null : (profile as TalentProfile);
 
   return (
-    <DashboardLayout
-      noScroll
-      role={user.role}
-      subtitle={subtitle}
-      title={title}
-    >
-      <div className="flex h-full flex-col gap-2.5 overflow-hidden">
-        <ProfileHeroCard
-          isClient={isClient}
+    <div className="flex h-full flex-col gap-2.5 overflow-hidden">
+      <ProfileHeroCard
+        isClient={isClient}
+        isVerified={user.isVerified}
+        joinDate={joinDate}
+        profile={profile}
+        talentProfile={talentProfile}
+      />
+      {!isClient ? (
+        <ProfileVerificationPanel
+          authId={user.authId}
           isVerified={user.isVerified}
-          joinDate={joinDate}
-          profile={profile}
-          talentProfile={talentProfile}
         />
-        {!isClient ? (
-          <ProfileVerificationPanel
-            authId={user.authId}
-            isVerified={user.isVerified}
-          />
-        ) : null}
-        {talentProfile ? <ProfileTalentDetails talentProfile={talentProfile} /> : null}
-      </div>
-    </DashboardLayout>
+      ) : null}
+      {talentProfile ? (
+        <ProfileTalentDetails talentProfile={talentProfile} />
+      ) : null}
+    </div>
   );
 }

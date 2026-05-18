@@ -2,12 +2,15 @@ import { TalentOnboardingFlow } from "@/app/onboarding/talent/_components/talent
 import { TalentOnboardingHeader } from "@/app/onboarding/talent/_components/talent-onboarding-header";
 import { getCategoryOptions } from "@/app/onboarding/talent/_lib/get-category-options";
 import { getSkillOptions } from "@/app/onboarding/talent/_lib/get-skill-options";
+import { buildTalentPortfolioStepInitialValues } from "@/app/onboarding/talent/_lib/talent-portfolio-step";
 import { buildTalentProfileStepInitialValues } from "@/app/onboarding/talent/_lib/talent-profile-step";
+import { buildTalentServiceStepInitialValues } from "@/app/onboarding/talent/_lib/talent-service-step";
 import {
   getAllowedTalentOnboardingStep,
   shouldForceTalentVerification,
 } from "@/lib/talent-onboarding/registration-route";
 import { prisma } from "@/lib/prisma";
+import { getApplicantVerificationState } from "@/server/talent-verification/get-applicant-state";
 import { requireCurrentAppUser } from "@/server/users/current-user";
 import { redirect } from "next/navigation";
 
@@ -22,13 +25,49 @@ export default async function OnboardingPage({
 }: OnboardingPageProps) {
   const { step } = await searchParams;
   const currentUser = await requireCurrentAppUser();
+  const verification = await getApplicantVerificationState(
+    currentUser.id,
+    currentUser.isVerified,
+  );
   const talentProfile = await prisma.talentProfile.findUnique({
     select: {
       bio: true,
       college: true,
       course: true,
       headline: true,
-      profile_completion: true,
+      TalentPortfolio: {
+        orderBy: { createdAt: "asc" },
+        select: {
+          description: true,
+          talent_portfolio_id: true,
+          TalentPortfolioMedia: {
+            orderBy: { createdAt: "asc" },
+            select: { media_url: true },
+          },
+          title: true,
+        },
+        take: 1,
+      },
+      Services: {
+        orderBy: { createdAt: "asc" },
+        select: {
+          description: true,
+          maxPrice: true,
+          minPrice: true,
+          priceUnit: true,
+          ServiceCategories: {
+            orderBy: { createdAt: "asc" },
+            select: { categoryId: true },
+          },
+          ServiceMedia: {
+            orderBy: { createdAt: "asc" },
+            select: { mediaUrl: true },
+          },
+          serviceId: true,
+          title: true,
+        },
+        take: 1,
+      },
       TalentSkills: {
         orderBy: { createdAt: "asc" },
         select: {
@@ -41,10 +80,15 @@ export default async function OnboardingPage({
     },
     where: { user_id: currentUser.id },
   });
-  const initialStep = getAllowedTalentOnboardingStep(
-    step,
-    talentProfile?.profile_completion ?? 0,
-  );
+  const initialStep = getAllowedTalentOnboardingStep(step);
+
+  if (!currentUser.isVerified && verification.status !== "pending") {
+    redirect("/onboarding/talent/verification");
+  }
+
+  if (!currentUser.isVerified && initialStep > 1) {
+    redirect("/onboarding/talent?step=1");
+  }
 
   if (
     shouldForceTalentVerification({
@@ -70,6 +114,7 @@ export default async function OnboardingPage({
           <TalentOnboardingFlow
             availableCategories={categoryOptions}
             availableSkills={skillOptions}
+            canContinuePastProfile={currentUser.isVerified}
             currentUser={{
               firstName: currentUser.firstName,
               lastName: currentUser.lastName,
@@ -77,6 +122,12 @@ export default async function OnboardingPage({
             }}
             initialProfileValues={buildTalentProfileStepInitialValues(
               talentProfile,
+            )}
+            initialPortfolioValues={buildTalentPortfolioStepInitialValues(
+              talentProfile?.TalentPortfolio[0] ?? null,
+            )}
+            initialServiceValues={buildTalentServiceStepInitialValues(
+              talentProfile?.Services[0] ?? null,
             )}
             initialStep={initialStep}
           />

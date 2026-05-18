@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { cookies } from "next/headers";
 import type { UserRole } from "@/lib/types";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
@@ -6,14 +7,16 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { countServicesForTalent } from "@/server/bookings/data";
 import { getCurrentAppUser } from "@/server/users/current-user";
 
 type DashboardLayoutProps = {
   children: ReactNode;
   role: UserRole;
-  title: string;
+  title: ReactNode;
   subtitle?: string;
   action?: ReactNode;
+  showHeaderTrigger?: boolean;
   noScroll?: boolean;
 };
 
@@ -23,24 +26,35 @@ export async function DashboardLayout({
   title,
   subtitle,
   action,
+  showHeaderTrigger = true,
   noScroll = false,
 }: DashboardLayoutProps) {
-  const currentUser = await getCurrentAppUser();
+  const [currentUser, cookieStore] = await Promise.all([
+    getCurrentAppUser(),
+    cookies(),
+  ]);
+  const defaultSidebarOpen =
+    cookieStore.get("sidebar_state")?.value !== "false";
+  const servicesCount =
+    role === "talent" && currentUser
+      ? await countServicesForTalent(currentUser)
+      : undefined;
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={defaultSidebarOpen}>
       <AppSidebar
         avatarUrl={currentUser?.avatarUrl ?? null}
         initials={currentUser?.initials ?? ""}
         isTalent={currentUser?.isTalent ?? false}
         role={role}
+        servicesCount={servicesCount}
       />
 
       <SidebarInset
         className={`flex flex-col bg-[color:var(--surface-alt)] ${noScroll ? "h-screen overflow-hidden" : "min-h-screen"}`}
       >
         <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 border-b border-[color:var(--line)] bg-white/80 px-4 backdrop-blur-xl sm:px-6">
-          <SidebarTrigger className="-ml-1" />
+          {showHeaderTrigger ? <SidebarTrigger className="-ml-1" /> : null}
           <div className="min-w-0 flex-1">
             <h1 className="text-base font-bold tracking-[-0.02em] text-foreground">
               {title}

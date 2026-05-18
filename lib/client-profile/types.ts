@@ -17,6 +17,15 @@ export type ClientProfilePortfolioItem = {
   updatedAt: string;
 };
 
+export type ClientProfileReviewItem = {
+  bookingServiceTitle: string;
+  comment: string;
+  createdAt: string;
+  id: string;
+  rating: number;
+  reviewerName: string;
+};
+
 export type ClientProfileEditorValues = {
   about: string;
   avatarUrl: string;
@@ -52,11 +61,6 @@ export type UpdateClientProfileAboutState = {
   ok: boolean;
 };
 
-export type UpdateClientProfileImagesState = {
-  message: string;
-  ok: boolean;
-};
-
 export type ClientProfilePageData = {
   about: string;
   averageRating: number | null;
@@ -77,15 +81,20 @@ export type ClientProfilePageData = {
   linkedinUrl: string;
   organizationName: string;
   portfolio: ClientProfilePortfolioItem[];
-  reputationScore: number | null;
+  receivedReviews: ClientProfileReviewItem[];
+  reputationScore: number;
+  reputationLabel: string;
   reviewCount: number;
   socialLinks: ClientProfileSocialLink[];
+  talentEmail: string;
+  userId: string;
   username: string;
   website: string;
   xUrl: string;
 };
 
 export type ClientProfilePageSource = {
+  profileReportCount: number;
   user: {
     address: string | null;
     authId: string;
@@ -104,6 +113,25 @@ export type ClientProfilePageSource = {
     userId: string;
     username: string | null;
     x_url: string | null;
+    TalentVerificationRequests: Array<{
+      buEmail: string;
+    }>;
+    ClientReviewsReceived: Array<{
+      comment: string;
+      createdAt: Date;
+      rating: number;
+      reviewId: string;
+      Booking: {
+        Service: {
+          title: string;
+        };
+      };
+      Reviewer: {
+        firstName: string | null;
+        lastName: string | null;
+        username: string | null;
+      };
+    }>;
   };
   clientProfile: {
     about: string | null;

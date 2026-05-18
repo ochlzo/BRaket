@@ -5,7 +5,12 @@ import type { ProficiencyLevel } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
 import {
+  hasDirtyField,
+  parseDirtyFields,
+} from "@/app/onboarding/talent/_lib/dirty-fields";
+import {
   parseTalentProfileStepFormData,
+  type TalentProfileStepDirtyField,
   type TalentProfileSkillInput,
   type TalentProfileStepState,
   validateTalentProfileStepInput,
@@ -19,6 +24,15 @@ const EMPTY_STATE: TalentProfileStepState = {
   message: "",
   ok: false,
 };
+const PROFILE_DIRTY_FIELDS: TalentProfileStepDirtyField[] = [
+  "headline",
+  "website",
+  "bio",
+  "college",
+  "course",
+  "yearLevel",
+  "skills",
+];
 
 function getUniqueSkills(skills: TalentProfileSkillInput[]) {
   const skillByName = new Map<string, TalentProfileSkillInput>();
@@ -58,6 +72,16 @@ export async function saveTalentProfileStepAction(
     return validation;
   }
 
+  const dirtyFields = parseDirtyFields(formData, PROFILE_DIRTY_FIELDS);
+
+  if (dirtyFields.length === 0) {
+    return {
+      message: "No profile changes to save.",
+      ok: true,
+      successToken: crypto.randomUUID(),
+    };
+  }
+
   const dbUser = await prisma.user.findUnique({
     where: { userId: currentUser.id },
   });
@@ -75,7 +99,6 @@ export async function saveTalentProfileStepAction(
     await prisma.$transaction(async (tx) => {
       const existingProfile = await tx.talentProfile.findUnique({
         select: {
-          profile_completion: true,
           talent_profile_id: true,
         },
         where: { user_id: dbUser.userId },
@@ -83,10 +106,25 @@ export async function saveTalentProfileStepAction(
       const now = new Date();
       const talentProfileId =
         existingProfile?.talent_profile_id ?? crypto.randomUUID();
-      const profileCompletion = Math.max(
-        existingProfile?.profile_completion ?? 0,
-        1,
-      );
+      const profileUpdateData = {
+        ...(hasDirtyField(dirtyFields, "bio") ? { bio: input.bio } : {}),
+        ...(hasDirtyField(dirtyFields, "college")
+          ? { college: input.college }
+          : {}),
+        ...(hasDirtyField(dirtyFields, "course")
+          ? { course: input.course }
+          : {}),
+        ...(hasDirtyField(dirtyFields, "headline")
+          ? { headline: input.headline }
+          : {}),
+        ...(hasDirtyField(dirtyFields, "website")
+          ? { website: input.website || null }
+          : {}),
+        ...(hasDirtyField(dirtyFields, "yearLevel")
+          ? { year_level: Number(input.yearLevel) }
+          : {}),
+        updatedAt: now,
+      };
 
       const talentProfile = await tx.talentProfile.upsert({
         create: {
@@ -94,25 +132,19 @@ export async function saveTalentProfileStepAction(
           college: input.college,
           course: input.course,
           headline: input.headline,
-          profile_completion: 1,
           talent_profile_id: talentProfileId,
           updatedAt: now,
           user_id: dbUser.userId,
           website: input.website || null,
           year_level: Number(input.yearLevel),
         },
-        update: {
-          bio: input.bio,
-          college: input.college,
-          course: input.course,
-          headline: input.headline,
-          profile_completion: profileCompletion,
-          updatedAt: now,
-          website: input.website || null,
-          year_level: Number(input.yearLevel),
-        },
+        update: profileUpdateData,
         where: { user_id: dbUser.userId },
       });
+
+      if (existingProfile && !hasDirtyField(dirtyFields, "skills")) {
+        return;
+      }
 
       const skillRows = await Promise.all(
         skills.map((skill) =>

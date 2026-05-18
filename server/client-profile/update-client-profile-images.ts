@@ -9,13 +9,13 @@ import {
   USER_PROFILE_IMAGE_MAX_BYTES,
   USER_PROFILE_IMAGES_BUCKET,
 } from "@/lib/supabase/storage";
-import type { UpdateClientProfileImagesState } from "@/lib/client-profile/types";
+import type { UpdateProfileImagesState } from "@/lib/profile-images/types";
 import {
   clearCurrentAppUserCache,
   getCurrentAppUser,
 } from "@/server/users/current-user";
 
-const EMPTY_STATE: UpdateClientProfileImagesState = {
+const EMPTY_STATE: UpdateProfileImagesState = {
   message: "",
   ok: false,
 };
@@ -123,12 +123,15 @@ async function uploadImage(
 }
 
 export async function updateClientProfileImagesAction(
-  _prevState: UpdateClientProfileImagesState,
+  _prevState: UpdateProfileImagesState,
   formData: FormData,
-): Promise<UpdateClientProfileImagesState> {
+): Promise<UpdateProfileImagesState> {
   const currentUser = await getCurrentAppUser();
 
-  if (!currentUser || currentUser.role !== "client") {
+  if (
+    !currentUser ||
+    (currentUser.role !== "client" && currentUser.role !== "talent")
+  ) {
     return {
       ...EMPTY_STATE,
       message: "Your session expired. Please sign in again.",
@@ -260,6 +263,7 @@ export async function updateClientProfileImagesAction(
 
   clearCurrentAppUserCache(currentUser.authId);
   revalidatePath("/dashboard/client/profile");
+  revalidatePath("/dashboard/talent/profile");
   revalidatePath("/dashboard/profile");
 
   return {

@@ -1,117 +1,153 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { toast } from "sonner";
 
+import { finalizeTalentOnboardingAction } from "@/app/onboarding/talent/_actions/finalize-talent-onboarding-action";
+import { saveTalentServiceStepAction } from "@/app/onboarding/talent/_actions/save-talent-service-step-action";
 import { TalentServiceCategorySelector } from "@/app/onboarding/talent/_components/talent-service-category-selector";
 import { TalentServiceCurrencyField } from "@/app/onboarding/talent/_components/talent-service-currency-field";
+import { TalentServiceFormHeader } from "@/app/onboarding/talent/_components/talent-service-form-header";
 import { TalentMediaUploadField } from "@/app/onboarding/talent/_components/talent-media-upload-field";
+import { TalentServicePriceUnitField } from "@/app/onboarding/talent/_components/talent-service-price-unit-field";
 import type { CategoryOption } from "@/app/onboarding/talent/_lib/get-category-options";
+import {
+  getTalentServicePriceRangeError,
+  getTalentServiceStepDirtyFields,
+  type TalentServiceStepInitialValues,
+  validateTalentServiceStepInput,
+} from "@/app/onboarding/talent/_lib/talent-service-step";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 
-const priceUnitOptions = [
-  { label: "Fixed", value: "FIXED" },
-  { label: "Hourly", value: "HOURLY" },
-  { label: "Daily", value: "DAILY" },
-  { label: "Weekly", value: "WEEKLY" },
-  { label: "Monthly", value: "MONTHLY" },
-  { label: "Per project", value: "PER_PROJECT" },
-  { label: "Per task", value: "PER_TASK" },
-  { label: "Per session", value: "PER_SESSION" },
-];
-
-function getPriceRangeError(minPrice: string, maxPrice: string) {
-  if (!minPrice || !maxPrice) {
-    return "";
-  }
-
-  if (Number(minPrice) >= Number(maxPrice)) {
-    return "Min price must be less than max price.";
-  }
-
-  return "";
-}
-
 type TalentServiceOnboardingFormProps = {
   availableCategories: CategoryOption[];
+  initialValues: TalentServiceStepInitialValues;
   onBack: () => void;
-  onSkip: () => void;
+  onComplete: () => void;
 };
 
 export function TalentServiceOnboardingForm({
   availableCategories,
+  initialValues,
   onBack,
-  onSkip,
+  onComplete,
 }: TalentServiceOnboardingFormProps) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
-  const [priceUnit, setPriceUnit] = useState("");
+  const [title, setTitle] = useState(initialValues.title);
+  const [description, setDescription] = useState(initialValues.description);
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>(
+    initialValues.categoryIds,
+  );
+  const [minPrice, setMinPrice] = useState(initialValues.minPrice);
+  const [maxPrice, setMaxPrice] = useState(initialValues.maxPrice);
+  const [priceUnit, setPriceUnit] = useState(initialValues.priceUnit);
   const [sampleFiles, setSampleFiles] = useState<File[]>([]);
   const [notice, setNotice] = useState("");
-  const priceRangeError = getPriceRangeError(minPrice, maxPrice);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const priceRangeError = getTalentServicePriceRangeError(minPrice, maxPrice);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function showToastError(message: string) {
+    const toastId = toast.error(message, {
+      action: {
+        label: "x",
+        onClick: () => toast.dismiss(toastId),
+      },
+    });
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (isSubmitting) {
+      return;
+    }
 
     if (!event.currentTarget.reportValidity()) {
       return;
     }
 
-    if (selectedCategoryIds.length === 0) {
-      setNotice("Select at least 1 category before creating your service.");
+    const validation = validateTalentServiceStepInput({
+      categoryIds: selectedCategoryIds,
+      description,
+      existingMediaCount: initialValues.existingMediaUrls.length,
+      files: sampleFiles,
+      maxPrice,
+      minPrice,
+      priceUnit,
+      title,
+    });
+
+    if (!validation.ok) {
+      showToastError(validation.message);
       return;
     }
 
-    if (!priceUnit) {
-      setNotice("Select a price unit before creating your service.");
+    const dirtyFields = getTalentServiceStepDirtyFields(initialValues, {
+      categoryIds: selectedCategoryIds,
+      description,
+      files: sampleFiles,
+      maxPrice,
+      minPrice,
+      priceUnit,
+      title,
+    });
+
+    const formData = new FormData(event.currentTarget);
+    formData.set("serviceId", initialValues.serviceId);
+    formData.set("categoryIds", JSON.stringify(selectedCategoryIds));
+    formData.set("priceUnit", priceUnit);
+    formData.set("dirtyFields", JSON.stringify(dirtyFields));
+
+    try {
+      setIsSubmitting(true);
+      const result = await saveTalentServiceStepAction(formData);
+
+      if (!result.ok) {
+        showToastError(result.message);
+        return;
+      }
+
+      toast.success(result.message || "Talent onboarding completed.");
+      onComplete();
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function handleSkip() {
+    if (isSubmitting) {
       return;
     }
 
-    if (priceRangeError) {
-      setNotice("");
-      return;
-    }
+    try {
+      setIsSubmitting(true);
+      const result = await finalizeTalentOnboardingAction();
 
-    setNotice("Service creation is UI-only for now.");
+      if (!result.ok) {
+        showToastError(result.message);
+        return;
+      }
+
+      toast.success(result.message || "Talent onboarding completed.");
+      onComplete();
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
     <div className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-4 sm:p-8">
       <form className="space-y-5 sm:space-y-7" onSubmit={handleSubmit}>
+        <input name="categoryIds" type="hidden" />
+        <input name="serviceId" type="hidden" />
         <div>
-          <div className="mb-4">
-            <div className="flex items-start justify-between gap-3">
-              <h2 className="text-lg font-extrabold tracking-[-0.03em] text-foreground sm:text-2xl">
-                Create Your First Service
-              </h2>
-              <Button
-                className="mt-0.5 rounded-full text-xs font-semibold text-[color:var(--brand-orange)] sm:rounded-xl sm:text-sm"
-                onClick={onSkip}
-                size="xs"
-                type="button"
-                variant="ghost"
-              >
-                <span className="sm:hidden">Skip</span>
-                <span className="hidden sm:inline">Skip for now</span>
-              </Button>
-            </div>
-            <p className="mt-2 text-sm leading-6 text-[color:var(--ink-muted)]">
-              Define a service clients can book from your talent profile.
-            </p>
-          </div>
+          <TalentServiceFormHeader
+            isSubmitting={isSubmitting}
+            onSkip={handleSkip}
+          />
 
           <div className="space-y-4 sm:space-y-5">
             <div className="space-y-1.5 sm:space-y-2">
@@ -209,25 +245,10 @@ export function TalentServiceOnboardingForm({
                   Price Unit{" "}
                   <span className="text-[color:var(--tone-red-base)]">*</span>
                 </Label>
-                <Select
-                  id="service-unit"
-                  items={priceUnitOptions}
-                  name="priceUnit"
-                  onValueChange={(value) => setPriceUnit(value ?? "")}
-                  required
-                  value={priceUnit || null}
-                >
-                  <SelectTrigger className="!h-10 w-full rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 text-sm sm:!h-11 sm:rounded-xl">
-                    <SelectValue placeholder="Select pricing basis" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl border border-[color:var(--line-strong)] bg-white shadow-[var(--shadow-menu)]">
-                    {priceUnitOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <TalentServicePriceUnitField
+                  onChange={setPriceUnit}
+                  value={priceUnit}
+                />
               </div>
             </div>
           </div>
@@ -237,6 +258,7 @@ export function TalentServiceOnboardingForm({
 
         <TalentMediaUploadField
           emptyDescription="Sample images are optional for this service."
+          existingMediaUrls={initialValues.existingMediaUrls}
           files={sampleFiles}
           inputId="service-sample-media"
           inputName="serviceMedia"
@@ -257,6 +279,7 @@ export function TalentServiceOnboardingForm({
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
           <Button
             className="min-h-11 rounded-full sm:h-12 sm:rounded-xl"
+            disabled={isSubmitting}
             onClick={onBack}
             type="button"
             variant="outline"
@@ -265,9 +288,10 @@ export function TalentServiceOnboardingForm({
           </Button>
           <Button
             className="min-h-11 rounded-full bg-[color:var(--brand-orange)] px-5 text-sm font-semibold !text-white transition hover:bg-[color:var(--brand-orange-strong)] sm:h-12 sm:rounded-xl sm:px-8"
+            disabled={isSubmitting}
             type="submit"
           >
-            Create service
+            {isSubmitting ? "Saving..." : "Create service"}
           </Button>
         </div>
       </form>

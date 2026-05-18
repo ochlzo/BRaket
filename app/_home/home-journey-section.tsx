@@ -17,23 +17,23 @@ export function HomeJourneySection() {
               fresh idea,
               <span className="text-[color:var(--tone-orange-base)]">
                 {" "}
-                we provide expert guidance{" "}
+                BRaket helps you find verified student talent{" "}
               </span>
-              in discovery, matching, and delivery.
+              for discovery, matching, and project delivery.
             </h2>
             <a className={semantic.button.brandBlue} href="/browse">
-              View Our Cases
+              Browse Talent
             </a>
           </div>
           <div className="inline-block rounded-[2rem] bg-white px-8 py-8 shadow-[var(--shadow-surface-warm)]">
             <p className="typo-meta mb-3 leading-6 text-[color:var(--ink-muted)]">
               We support you through every step of
               <br />
-              your relocation journey
+              your project journey
             </p>
             <div className="typo-stat text-foreground">1378+</div>
             <p className="typo-meta mt-2 text-[color:var(--ink-muted)]">
-              Clients relocated successfully
+              Student-led projects completed
             </p>
           </div>
         </div>

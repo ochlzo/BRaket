@@ -32,10 +32,11 @@ function IdCardIcon() {
 type FileInputProps = {
   id: string;
   accept?: string;
+  name?: string;
   required?: boolean;
 };
 
-export function FileInput({ id, accept, required }: FileInputProps) {
+export function FileInput({ id, accept, name, required }: FileInputProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -64,6 +65,7 @@ export function FileInput({ id, accept, required }: FileInputProps) {
         ref={inputRef}
         type="file"
         accept={accept}
+        name={name}
         required={required}
         className="sr-only"
         onChange={(e) => {

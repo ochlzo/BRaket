@@ -1,4 +1,4 @@
-import { DashboardLayout } from "@/components/shared/layout/dashboard-layout";
+import { ClientDashboardLayout } from "@/components/shared/layout/client-dashboard-layout";
 import { ProfileQuickActions } from "@/app/dashboard/profile/_components/profile-quick-actions";
 import { requireCurrentAppUser } from "@/server/users/current-user";
 
@@ -25,8 +25,7 @@ export default async function ClientDashboardPage() {
   const titleName = user.firstName || user.displayName || user.username;
 
   return (
-    <DashboardLayout
-      role="client"
+    <ClientDashboardLayout
       subtitle="Your client dashboard will show bookings, requests, and updates as they come in."
       title={`Welcome, ${titleName}`}
     >
@@ -60,6 +59,6 @@ export default async function ClientDashboardPage() {
           working with talent.
         </p>
       </div>
-    </DashboardLayout>
+    </ClientDashboardLayout>
   );
 }

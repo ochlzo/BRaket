@@ -16,7 +16,6 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarRail,
 } from "@/components/ui/sidebar";
 import { getDashboardProfilePath } from "@/lib/auth/session";
 import type { UserRole } from "@/lib/types";
@@ -26,7 +25,7 @@ const clientNavItems: SidebarNavItem[] = [
   {
     href: getDashboardProfilePath("client"),
     icon: UserRound,
-    label: "Client Profile",
+    label: "User Profile",
   },
   {
     href: "/dashboard/client/bookings",
@@ -55,6 +54,14 @@ const talentNavItems: SidebarNavItem[] = [
   },
 ];
 
+function buildTalentNavItems(servicesCount?: number): SidebarNavItem[] {
+  return talentNavItems.map((item) =>
+    item.href === "/dashboard/talent/services"
+      ? { ...item, badge: servicesCount }
+      : item,
+  );
+}
+
 function getSidebarSubtitle(role: UserRole) {
   return role === "client" ? "Client Dashboard" : "Talent Dashboard";
 }
@@ -64,6 +71,7 @@ type AppSidebarProps = {
   initials: string;
   isTalent: boolean;
   role: UserRole;
+  servicesCount?: number;
 };
 
 export function AppSidebar({
@@ -71,21 +79,30 @@ export function AppSidebar({
   initials,
   isTalent,
   role,
+  servicesCount,
 }: AppSidebarProps) {
-  const items = role === "client" ? clientNavItems : talentNavItems;
+  const items =
+    role === "client" ? clientNavItems : buildTalentNavItems(servicesCount);
 
   return (
     <Sidebar
       collapsible="icon"
       className="border-r border-[color:var(--line-strong)] bg-white"
     >
-      <SidebarHeader className="border-b border-[color:var(--line)] px-6 py-4">
-        <BrandMark href="/" subtitle={getSidebarSubtitle(role)} />
+      <SidebarHeader className="h-16 justify-center border-b border-[color:var(--line)] px-4 py-0 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-2">
+        <div className="flex w-full items-center gap-2 group-data-[collapsible=icon]:w-auto group-data-[collapsible=icon]:flex-col">
+          <BrandMark
+            className="min-w-0"
+            compactOnSidebarCollapse
+            href="/"
+            subtitle={getSidebarSubtitle(role)}
+          />
+        </div>
       </SidebarHeader>
-      <SidebarContent className="px-3 py-4">
+      <SidebarContent className="px-3 py-4 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-0">
         <NavMain items={items} />
       </SidebarContent>
-      <SidebarFooter className="border-t border-[color:var(--line)] px-4 py-4">
+      <SidebarFooter className="border-t border-[color:var(--line)] px-4 py-4 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-0">
         <NavUser
           avatarUrl={avatarUrl}
           initials={initials}
@@ -93,7 +110,6 @@ export function AppSidebar({
           role={role}
         />
       </SidebarFooter>
-      <SidebarRail />
     </Sidebar>
   );
 }

@@ -1,9 +1,17 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { ImageIcon } from "lucide-react";
 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import type { ClientProfilePortfolioItem } from "@/lib/client-profile/types";
 
 type ClientPortfolioCollageProps = {
@@ -14,13 +22,11 @@ type ClientPortfolioCollageProps = {
 function MediaTile({
   alt,
   className,
-  hiddenCount,
   onPreview,
   src,
 }: {
   alt: string;
   className: string;
-  hiddenCount?: number;
   onPreview: (media: { alt: string; src: string }) => void;
   src: string;
 }) {
@@ -37,12 +43,6 @@ function MediaTile({
         sizes="(max-width: 768px) 100vw, 50vw"
         src={src}
       />
-
-      {hiddenCount && hiddenCount > 0 ? (
-        <span className="absolute inset-0 flex items-center justify-center bg-black/55 text-2xl font-black tracking-[-0.04em] text-white">
-          +{hiddenCount}
-        </span>
-      ) : null}
     </button>
   );
 }
@@ -71,12 +71,74 @@ function EmptyMediaState() {
   );
 }
 
+function GalleryOverlayTile({
+  count,
+  onOpen,
+}: {
+  count: number;
+  onOpen: () => void;
+}) {
+  return (
+    <button
+      aria-label={`View ${count} more portfolio images`}
+      className="group relative flex h-full min-h-0 w-full items-center justify-center overflow-hidden rounded-[1.1rem] bg-black/75 text-2xl font-black tracking-[-0.04em] text-white transition duration-300 hover:bg-black/80"
+      onClick={onOpen}
+      type="button"
+    >
+      +{count}
+    </button>
+  );
+}
+
+function PortfolioGalleryDialog({
+  item,
+  onOpenChange,
+  open,
+}: {
+  item: ClientProfilePortfolioItem;
+  onOpenChange: (open: boolean) => void;
+  open: boolean;
+}) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[min(88vh,860px)] max-w-[min(1100px,calc(100%-1.5rem))] overflow-hidden border-[color:var(--line-strong)] bg-[color:var(--surface)] p-0 shadow-[var(--shadow-lg)]">
+        <DialogHeader className="border-b border-[color:var(--line-strong)] px-4 py-4">
+          <DialogTitle className="flex items-center gap-2 text-lg font-bold tracking-[-0.03em]">
+            <ImageIcon className="size-4 text-[color:var(--brand-orange)]" />
+            Portfolio images
+          </DialogTitle>
+          <DialogDescription className="text-sm text-[color:var(--ink-muted)]">
+            {item.title}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="max-h-[calc(min(88vh,860px)-88px)] space-y-4 overflow-y-auto px-4 pb-4">
+          {item.media.map((entry, index) => (
+            <div
+              className="relative aspect-[16/10] w-full overflow-hidden rounded-[1.1rem] bg-black"
+              key={entry.id}
+            >
+              <Image
+                alt={`${item.title} image ${index + 1}`}
+                className="object-contain"
+                fill
+                sizes="(max-width: 768px) 100vw, 90vw"
+                src={entry.url}
+              />
+            </div>
+          ))}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export function ClientPortfolioCollage({
   item,
   onPreview,
 }: ClientPortfolioCollageProps) {
+  const [galleryOpen, setGalleryOpen] = useState(false);
   const media = item.media.slice(0, 5);
-  const hiddenCount = Math.max(0, item.media.length - media.length);
 
   if (media.length === 0) {
     return <EmptyMediaState />;
@@ -159,27 +221,32 @@ export function ClientPortfolioCollage({
   }
 
   return (
-    <CollageFrame>
-      <div className="grid h-full grid-cols-2 grid-rows-2 gap-2">
-        <MediaTile
-          alt={item.title}
-          className="row-span-2 h-full min-h-0"
-          onPreview={onPreview}
-          src={media[0].url}
-        />
-        {media.slice(1, 5).map((entry, index) => (
+    <>
+      <CollageFrame>
+        <div className="grid h-full grid-cols-2 grid-rows-2 gap-2">
           <MediaTile
-            key={entry.id}
+            alt={item.title}
+            className="row-span-2 h-full min-h-0"
+            onPreview={onPreview}
+            src={media[0].url}
+          />
+          <MediaTile
             alt={item.title}
             className="h-full min-h-0"
-            hiddenCount={
-              index === 3 && hiddenCount > 0 ? hiddenCount : undefined
-            }
             onPreview={onPreview}
-            src={entry.url}
+            src={media[1].url}
           />
-        ))}
-      </div>
-    </CollageFrame>
+          <GalleryOverlayTile
+            count={item.media.length - 2}
+            onOpen={() => setGalleryOpen(true)}
+          />
+        </div>
+      </CollageFrame>
+      <PortfolioGalleryDialog
+        item={item}
+        onOpenChange={setGalleryOpen}
+        open={galleryOpen}
+      />
+    </>
   );
 }

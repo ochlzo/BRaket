@@ -8,30 +8,24 @@ import {
   type ChangeEvent,
 } from "react";
 import { useRouter } from "next/navigation";
-import { X } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import {
-  DialogClose,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import type { UpdateClientProfileImagesState } from "@/lib/client-profile/types";
+import type { UpdateProfileImagesState } from "@/lib/profile-images/types";
 import {
   USER_PROFILE_IMAGE_ACCEPTED_TYPES,
   USER_PROFILE_IMAGE_MAX_BYTES,
 } from "@/lib/supabase/storage";
-import { DEFAULT_COVER_BACKGROUND } from "@/lib/client-profile/mappers";
+import { DEFAULT_PROFILE_COVER_BACKGROUND } from "@/lib/profile-cover";
 import { updateClientProfileImagesAction } from "@/server/client-profile/update-client-profile-images";
 
 import {
   buildCoverBackgroundStyle,
   ProfileBackgroundPanel,
   ProfilePicturePanel,
-} from "./client-profile-image-panels";
+} from "./profile-image-panels";
+import { ProfileImageFormFooter } from "./profile-image-form-footer";
+import { ProfileImageFormHeader } from "./profile-image-form-header";
 
-type ClientProfileImageEditorProps = {
+type ProfileImageFormProps = {
   initials: string;
   avatarUrl: string;
   backgroundImageUrl: string;
@@ -39,7 +33,7 @@ type ClientProfileImageEditorProps = {
   onClose: () => void;
 };
 
-const INITIAL_STATE: UpdateClientProfileImagesState = {
+const INITIAL_STATE: UpdateProfileImagesState = {
   message: "",
   ok: false,
 };
@@ -62,7 +56,7 @@ export function ProfileImageForm({
   backgroundImageUrl,
   displayName,
   onClose,
-}: ClientProfileImageEditorProps) {
+}: ProfileImageFormProps) {
   const router = useRouter();
   const avatarInputRef = useRef<HTMLInputElement | null>(null);
   const backgroundInputRef = useRef<HTMLInputElement | null>(null);
@@ -94,7 +88,7 @@ export function ProfileImageForm({
       ? buildCoverBackgroundStyle(backgroundSelectionPreviewUrl)
       : !removeBackgroundImage && backgroundHasCustomImage
         ? buildCoverBackgroundStyle(backgroundImageUrl)
-        : buildCoverBackgroundStyle(DEFAULT_COVER_BACKGROUND);
+        : buildCoverBackgroundStyle(DEFAULT_PROFILE_COVER_BACKGROUND);
   const showAvatarRemove =
     !removeAvatarImage && (avatarHasCustomImage || Boolean(avatarSelection));
   const showBackgroundRemove =
@@ -179,33 +173,9 @@ export function ProfileImageForm({
       action={formAction}
       className="flex max-h-[calc(100vh-1.5rem)] flex-col overflow-y-auto"
     >
-      <DialogHeader className="border-b border-[color:var(--line-strong)] px-5 py-4">
-        <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0">
-            <DialogTitle className="text-xl font-bold tracking-[-0.04em]">
-              Update profile images
-            </DialogTitle>
-            <DialogDescription className="mt-1 max-w-2xl text-sm text-[color:var(--ink-muted)]">
-              Upload a new profile picture and background photo. JPG, PNG, and
-              WebP images up to {formatFileSize(USER_PROFILE_IMAGE_MAX_BYTES)}
-              each are supported.
-            </DialogDescription>
-          </div>
-
-          <DialogClose
-            render={
-              <Button
-                aria-label="Close modal"
-                className="shrink-0"
-                size="icon-sm"
-                variant="ghost"
-              />
-            }
-          >
-            <X className="size-4" />
-          </DialogClose>
-        </div>
-      </DialogHeader>
+      <ProfileImageFormHeader
+        maxFileSizeLabel={formatFileSize(USER_PROFILE_IMAGE_MAX_BYTES)}
+      />
 
       <div className="space-y-4 px-5 py-5">
         <div className="grid gap-4 md:grid-cols-2">
@@ -291,34 +261,20 @@ export function ProfileImageForm({
         ) : null}
       </div>
 
-      <div className="border-t border-[color:var(--line-strong)] bg-[color:var(--surface)] px-5 py-4">
-        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          <Button
-            className="rounded-xl"
-            onClick={() => {
-              resetSelection();
-              onClose();
-            }}
-            type="button"
-            variant="outline"
-          >
-            Cancel
-          </Button>
-          <Button
-            className="rounded-xl"
-            disabled={
-              isPending ||
-              (!avatarSelection &&
-                !backgroundSelection &&
-                !removeAvatarImage &&
-                !removeBackgroundImage)
-            }
-            type="submit"
-          >
-            {isPending ? "Uploading..." : "Save images"}
-          </Button>
-        </div>
-      </div>
+      <ProfileImageFormFooter
+        isPending={isPending}
+        isSaveDisabled={
+          isPending ||
+          (!avatarSelection &&
+            !backgroundSelection &&
+            !removeAvatarImage &&
+            !removeBackgroundImage)
+        }
+        onCancel={() => {
+          resetSelection();
+          onClose();
+        }}
+      />
     </form>
   );
 }

@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import type { ClientProfile, TalentProfile } from "@/lib/types";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/shared/user-avatar";
 
 import {
   CalendarIcon,
@@ -44,19 +44,14 @@ export function ProfileHeroCard({
       <div className="relative px-5 pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-4">
-            <Avatar className="-mt-8 h-16 w-16 shrink-0 rounded-none border-[3px] border-white bg-white shadow-md after:rounded-none">
-              {profile.avatarUrl ? (
-                <AvatarImage
-                  alt={fullName}
-                  className="rounded-none"
-                  src={profile.avatarUrl}
-                />
-              ) : (
-                <AvatarFallback className="rounded-none text-sm font-black text-[color:var(--ink-muted)]">
-                  {profile.initials || "?"}
-                </AvatarFallback>
-              )}
-            </Avatar>
+            <UserAvatar
+              alt={fullName}
+              className="-mt-8 h-16 w-16 shrink-0 rounded-none border-[3px] border-white bg-white shadow-md after:rounded-none"
+              fallbackClassName="rounded-none text-sm font-black text-[color:var(--ink-muted)]"
+              imageClassName="rounded-none"
+              initials={profile.initials}
+              src={profile.avatarUrl}
+            />
             <div className="mt-1.5 flex flex-col justify-center">
               <div className="flex items-center gap-1.5">
                 <h2 className="text-lg font-extrabold leading-none tracking-[-0.03em] text-foreground">

@@ -9,17 +9,18 @@ const {
   getAuthRedirectPath,
   getLoginRedirectPath,
   normalizeCallbackUrl,
+  resolveAppSession,
   resolveCanonicalUsername,
 } = sessionModule;
 
-test("redirects all signup flows to the client dashboard", () => {
-  assert.equal(getAuthRedirectPath("talent", "signup"), "/dashboard/client");
-  assert.equal(getAuthRedirectPath("client", "signup"), "/dashboard/client");
+test("redirects all signup flows to services", () => {
+  assert.equal(getAuthRedirectPath("talent", "signup"), "/services");
+  assert.equal(getAuthRedirectPath("client", "signup"), "/services");
 });
 
-test("keeps login redirects role-aware", () => {
-  assert.equal(getAuthRedirectPath("talent", "login"), "/dashboard/talent");
-  assert.equal(getAuthRedirectPath("client", "login"), "/dashboard/client");
+test("redirects login without a callback to services", () => {
+  assert.equal(getAuthRedirectPath("talent", "login"), "/services");
+  assert.equal(getAuthRedirectPath("client", "login"), "/services");
 });
 
 test("uses safe callback URLs for login redirects", () => {
@@ -41,7 +42,10 @@ test("ignores unsafe callback URLs", () => {
   assert.equal(normalizeCallbackUrl("https://evil.example/path"), null);
   assert.equal(normalizeCallbackUrl("//evil.example/path"), null);
   assert.equal(normalizeCallbackUrl("/login"), null);
-  assert.equal(getAuthRedirectPath("client", "login", "https://evil.example"), "/dashboard/client");
+  assert.equal(
+    getAuthRedirectPath("client", "login", "https://evil.example"),
+    "/services",
+  );
 });
 
 test("builds login redirects with callback parameters", () => {
@@ -72,6 +76,19 @@ test("builds the notionists avatar url from a seed", () => {
     buildDicebearNotionistsAvatarUrl("Vivian"),
     "https://api.dicebear.com/9.x/notionists/svg?seed=Vivian",
   );
+});
+
+test("keeps auth metadata avatar url in the client app session", () => {
+  const session = resolveAppSession({
+    email: "vivian@example.com",
+    mode: "login",
+    userMetadata: {
+      avatar_url: "https://example.com/avatar.jpg",
+      username: "vivian",
+    },
+  });
+
+  assert.equal(session.avatarUrl, "https://example.com/avatar.jpg");
 });
 
 test("builds initials from display name or email", () => {

@@ -1,18 +1,24 @@
 "use client";
 
+import { MenuIcon, XIcon } from "lucide-react";
 import Link from "next/link";
-import { useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 import { BrandMark } from "@/components/shared/branding/brand-mark";
+import { UserAvatar } from "@/components/shared/user-avatar";
 import {
   getClientAppSessionSnapshot,
   subscribeToAppSession,
 } from "@/lib/auth/client-session";
-import { getDashboardProfilePath } from "@/lib/auth/session";
-import { clearAppSession } from "@/lib/auth/session";
+import {
+  clearAppSession,
+  getDashboardProfilePath,
+  saveAppSession,
+} from "@/lib/auth/session";
 import type { NavItem } from "@/lib/content/navigation";
 import { semantic } from "@/lib/theme/semantic";
 import { createClient } from "@/lib/supabase/client";
+import { getCurrentAppSessionAction } from "@/server/users/get-current-app-session-action";
 
 type SiteHeaderProps = {
   activeHref: string;
@@ -39,6 +45,7 @@ export function SiteHeader({
   homeHref = "/",
   items,
 }: SiteHeaderProps) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const mounted = useSyncExternalStore(
     () => () => {},
     () => true,
@@ -54,11 +61,43 @@ export function SiteHeader({
     ? getInitials(sessionLabel, session.username)
     : "";
 
+  useEffect(() => {
+    if (!session) {
+      return;
+    }
+
+    const currentSession = session;
+    let isActive = true;
+
+    async function refreshSessionAvatar() {
+      const nextSession = await getCurrentAppSessionAction();
+
+      if (!isActive || !nextSession) {
+        return;
+      }
+
+      if (
+        nextSession.avatarUrl !== currentSession.avatarUrl ||
+        nextSession.displayName !== currentSession.displayName ||
+        nextSession.username !== currentSession.username ||
+        nextSession.type !== currentSession.type
+      ) {
+        saveAppSession(nextSession);
+      }
+    }
+
+    void refreshSessionAvatar();
+
+    return () => {
+      isActive = false;
+    };
+  }, [session]);
+
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-[color:var(--line)] bg-white/82 backdrop-blur-xl">
-      <div className="mx-auto relative flex max-w-7xl items-center justify-between px-5 py-4 sm:px-6 lg:px-8">
+      <div className="relative mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-6 lg:px-8">
         <BrandMark href={homeHref} />
-        <nav className="typo-meta hidden absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-8 text-[color:var(--ink-muted)] md:flex">
+        <nav className="typo-meta absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-8 text-[color:var(--ink-muted)] md:flex">
           {items.map((item) => (
             <a
               key={item.href}
@@ -80,7 +119,12 @@ export function SiteHeader({
                 type="button"
                 className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm font-bold text-foreground transition-colors hover:border-[color:var(--brand-orange)] focus:outline-none"
               >
-                {sessionInitials}
+                <UserAvatar
+                  alt={sessionLabel}
+                  className="h-full w-full"
+                  initials={sessionInitials}
+                  src={session.avatarUrl}
+                />
               </button>
 
               <div className="absolute right-0 top-full z-50 hidden w-48 pt-2 group-hover:block">
@@ -151,8 +195,82 @@ export function SiteHeader({
           ) : (
             <div className="h-10 w-[8.25rem] opacity-0" />
           )}
+          <button
+            type="button"
+            aria-expanded={isMobileMenuOpen}
+            aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[color:var(--line-strong)] bg-white text-foreground transition hover:bg-[color:var(--surface-alt)] md:hidden"
+            onClick={() => setIsMobileMenuOpen((current) => !current)}
+          >
+            {isMobileMenuOpen ? (
+              <XIcon aria-hidden="true" className="h-5 w-5" />
+            ) : (
+              <MenuIcon aria-hidden="true" className="h-5 w-5" />
+            )}
+          </button>
         </div>
       </div>
+      {isMobileMenuOpen ? (
+        <div className="border-t border-[color:var(--line)] bg-white px-5 pb-5 pt-3 shadow-[var(--shadow-menu)] md:hidden">
+          <nav className="mx-auto grid max-w-7xl gap-1">
+            {items.map((item) => (
+              <a
+                key={item.href}
+                className={
+                  item.href === activeHref
+                    ? "rounded-xl bg-[color:var(--surface-alt)] px-3 py-2.5 text-sm font-semibold text-foreground"
+                    : "rounded-xl px-3 py-2.5 text-sm font-medium text-[color:var(--ink-body)] transition hover:bg-[color:var(--surface-alt)] hover:text-foreground"
+                }
+                href={item.href}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+          <div className="mx-auto mt-4 grid max-w-7xl gap-3 border-t border-[color:var(--line)] pt-4">
+            {mounted && session ? (
+              <>
+                <Link
+                  href={getDashboardProfilePath(session.type)}
+                  className={semantic.button.outlineNeutral}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  My Profile
+                </Link>
+                <Link
+                  href={
+                    session.type === "talent"
+                      ? "/dashboard/talent"
+                      : "/dashboard/client"
+                  }
+                  className={semantic.button.brandOrange}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Dashboard
+                </Link>
+              </>
+            ) : mounted ? (
+              <>
+                <Link
+                  href="/login"
+                  className={semantic.button.outlineNeutral}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/signup"
+                  className={semantic.button.brandOrange}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Sign Up
+                </Link>
+              </>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
     </header>
   );
 }

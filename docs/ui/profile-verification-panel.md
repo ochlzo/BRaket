@@ -32,13 +32,12 @@ This file preserves the BU student verification UI so it can be reintroduced lat
 
 ## Behavior
 
-- Verification action checks the signed-in Supabase user and confirms a `@bicol-u.edu.ph` email.
-- Upload action stores BU ID images in the configured Supabase bucket.
-- Metadata written by the upload flow includes:
-  - `buIdImageBucket`
-  - `buIdImagePath`
-  - `buIdImageUploadedAt`
-  - `buIdImageUrl`
+- Verification sends users to `/talent/verify`, where a Server Action checks
+  the signed-in Supabase user, requires a confirmed `@bicol-u.edu.ph` email,
+  uploads the BU ID image to the private configured Supabase bucket, and creates
+  a `TalentVerificationRequest`.
+- The profile panel must not mark verification directly. Only `/admin` approval
+  may set `User.is_verified = true`.
 
 ## Reuse Notes
 

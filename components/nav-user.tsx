@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useTransition, useSyncExternalStore } from "react";
 import {
   ChevronsUpDown,
@@ -10,7 +10,7 @@ import {
   UserRound,
 } from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/shared/user-avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,6 +31,11 @@ import {
   subscribeToAppSession,
 } from "@/lib/auth/client-session";
 import { clearAppSession } from "@/lib/auth/session";
+import { getNavUserProfileMenu } from "@/lib/dashboard/nav-user-menu";
+import {
+  getSettingsHref,
+  getSettingsSourceFromPathname,
+} from "@/lib/dashboard/settings-source";
 import { createClient } from "@/lib/supabase/client";
 import { resolveTalentRegistrationPathAction } from "@/server/talent-onboarding/resolve-talent-registration-path";
 import type { UserRole } from "@/lib/types";
@@ -50,6 +55,7 @@ export function NavUser({
 }: NavUserProps) {
   const { isMobile } = useSidebar();
   const router = useRouter();
+  const pathname = usePathname();
   const [isRoutingTalent, startTalentRouting] = useTransition();
   const session = useSyncExternalStore(
     subscribeToAppSession,
@@ -59,14 +65,29 @@ export function NavUser({
   const displayName =
     session?.displayName ?? (role === "talent" ? "Talent User" : "Client User");
   const username = session?.username ?? role;
-  const TalentMenuIcon = isTalent ? UserRound : UserPlus;
-  const talentMenuLabel = isTalent ? "Talent Profile" : "Register Talent";
+  const profileMenu = getNavUserProfileMenu({ isTalent, role });
+  const ProfileMenuIcon = profileMenu.icon === "user" ? UserRound : UserPlus;
 
-  function handleTalentMenuClick() {
+  function handleProfileMenuClick() {
+    if (profileMenu.href) {
+      router.push(profileMenu.href);
+      return;
+    }
+
     startTalentRouting(async () => {
       const path = await resolveTalentRegistrationPathAction();
-      router.push(path);
+      router.push(
+        path === "/onboarding/talent/verification"
+          ? "/talent/verify?source=dashboard"
+          : path,
+      );
     });
+  }
+
+  function handleSettingsClick() {
+    const source = getSettingsSourceFromPathname(pathname, role);
+
+    router.push(getSettingsHref(source));
   }
 
   const handleSignOut = async () => {
@@ -88,24 +109,23 @@ export function NavUser({
             render={
               <SidebarMenuButton
                 size="lg"
-                className="rounded-xl aria-expanded:bg-[color:var(--surface-alt)]"
+                className="rounded-xl transition-all hover:bg-[color:var(--surface-alt)] hover:shadow-[var(--shadow-menu)] aria-expanded:bg-[color:var(--surface-alt)] aria-expanded:shadow-[var(--shadow-menu)] group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:rounded-full"
               />
             }
           >
-            <Avatar className="h-9 w-9">
-              {avatarUrl ? (
-                <AvatarImage alt={displayName} src={avatarUrl} />
-              ) : (
-                <AvatarFallback>{initials || "?"}</AvatarFallback>
-              )}
-            </Avatar>
-            <div className="grid flex-1 text-left text-sm leading-tight">
+            <UserAvatar
+              alt={displayName}
+              className="h-9 w-9 group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8"
+              initials={initials}
+              src={avatarUrl}
+            />
+            <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
               <span className="truncate font-medium">{displayName}</span>
               <span className="truncate text-xs text-[color:var(--ink-muted)]">
                 @{username}
               </span>
             </div>
-            <ChevronsUpDown className="ml-auto size-4" />
+            <ChevronsUpDown className="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
@@ -116,13 +136,12 @@ export function NavUser({
             <DropdownMenuGroup>
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-3 px-2 py-2 text-left text-sm">
-                  <Avatar className="h-9 w-9">
-                    {avatarUrl ? (
-                      <AvatarImage alt={displayName} src={avatarUrl} />
-                    ) : (
-                      <AvatarFallback>{initials || "?"}</AvatarFallback>
-                    )}
-                  </Avatar>
+                  <UserAvatar
+                    alt={displayName}
+                    className="h-9 w-9"
+                    initials={initials}
+                    src={avatarUrl}
+                  />
                   <div className="grid flex-1 leading-tight">
                     <span className="truncate font-medium">{displayName}</span>
                     <span className="truncate text-xs text-[color:var(--ink-muted)]">
@@ -134,16 +153,16 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => router.push("/settings")}>
+              <DropdownMenuItem onClick={handleSettingsClick}>
                 <Settings />
                 Settings
               </DropdownMenuItem>
               <DropdownMenuItem
                 disabled={isRoutingTalent}
-                onClick={handleTalentMenuClick}
+                onClick={handleProfileMenuClick}
               >
-                <TalentMenuIcon />
-                {talentMenuLabel}
+                <ProfileMenuIcon />
+                {profileMenu.label}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

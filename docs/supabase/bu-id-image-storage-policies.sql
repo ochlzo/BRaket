@@ -1,6 +1,14 @@
--- Run this in the Supabase SQL editor after creating the "BU ID Image" bucket.
--- Users upload to a folder named after their Supabase auth user id.
--- If the bucket stays public, anyone with an uploaded file URL can view that file.
+-- Run this in the Supabase SQL editor before using talent verification.
+-- The app expects a private bucket named "BU ID Image" by default.
+-- If you want a different bucket name, set NEXT_PUBLIC_SUPABASE_BU_ID_BUCKET
+-- to that exact value in .env.
+
+insert into storage.buckets (id, name, public)
+values ('BU ID Image', 'BU ID Image', false)
+on conflict (id) do update
+set
+  name = excluded.name,
+  public = excluded.public;
 
 do $$
 begin
