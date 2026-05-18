@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/sidebar";
 
 export type SidebarNavItem = {
+  badge?: number;
   href: string;
   icon: LucideIcon;
   label: string;
@@ -42,9 +43,14 @@ export function NavMain({ items }: { items: SidebarNavItem[] }) {
               )}
             >
               <Icon className="size-[18px]" strokeWidth={2.1} />
-              <span className="group-data-[collapsible=icon]:hidden">
+              <span className="min-w-0 flex-1 truncate group-data-[collapsible=icon]:hidden">
                 {item.label}
               </span>
+              {typeof item.badge === "number" ? (
+                <span className="ml-auto rounded-full bg-[color:var(--surface-alt)] px-2 py-0.5 text-xs font-bold leading-none text-[color:var(--ink-muted)] group-data-[collapsible=icon]:hidden">
+                  {item.badge}
+                </span>
+              ) : null}
             </SidebarMenuButton>
           </SidebarMenuItem>
         );

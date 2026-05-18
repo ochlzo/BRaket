@@ -134,13 +134,16 @@ test("rejects invalid service price ranges", () => {
     description: "Poster package with source files.",
     files: [],
     maxPrice: "500",
-    minPrice: "500",
+    minPrice: "600",
     priceUnit: "PER_PROJECT",
     title: "Event poster design",
   });
 
   assert.equal(result.ok, false);
-  assert.equal(result.fieldErrors?.priceRange, "Min price must be less than max price.");
+  assert.equal(
+    result.fieldErrors?.priceRange,
+    "Min price cannot be greater than max price.",
+  );
 });
 
 test("rejects unsupported service image types", () => {

@@ -163,16 +163,16 @@ export function BookableServicesBrowser({
                   className="flex flex-col rounded-2xl border border-[color:var(--line-strong)] bg-white p-5 shadow-[var(--shadow-surface-soft)] transition hover:-translate-y-1 hover:shadow-lg"
                   key={service.id}
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="grid min-w-0 flex-1 grid-cols-2 gap-1.5">
-                      {serviceCategories(service).map((category, index) => (
+                  <div className="flex min-h-[4.25rem] items-start justify-between gap-3">
+                    <div className="grid min-w-0 flex-1 grid-cols-[repeat(2,minmax(0,8.75rem))] content-start gap-1.5">
+                      {serviceCategories(service).map((category) => (
                         <span
-                          className={`min-w-0 rounded-full bg-[color:var(--tone-indigo-soft)] px-3 py-1 text-center text-xs font-bold text-[color:var(--tone-indigo-deep)] ${
-                            index === 2 ? "col-span-2 w-fit max-w-full" : ""
-                          }`}
+                          className="flex min-h-7 max-w-full items-center justify-center rounded-full bg-[color:var(--tone-indigo-soft)] px-2.5 py-1 text-center text-[11px] font-bold leading-tight text-[color:var(--tone-indigo-deep)]"
                           key={category}
                         >
-                          <span className="block truncate">{category}</span>
+                          <span className="line-clamp-2 break-words">
+                            {category}
+                          </span>
                         </span>
                       ))}
                     </div>
@@ -184,10 +184,10 @@ export function BookableServicesBrowser({
                       targetType="SERVICE"
                     />
                   </div>
-                  <h2 className="mt-4 line-clamp-2 text-lg font-extrabold tracking-normal text-foreground">
+                  <h2 className="mt-3 min-h-14 line-clamp-2 text-lg font-extrabold tracking-normal text-foreground">
                     {service.title}
                   </h2>
-                  <p className="mt-2 line-clamp-3 text-sm leading-6 text-[color:var(--ink-muted)]">
+                  <p className="mt-2 min-h-[4.5rem] line-clamp-3 text-sm leading-6 text-[color:var(--ink-muted)]">
                     {service.description}
                   </p>
 

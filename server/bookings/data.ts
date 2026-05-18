@@ -8,6 +8,7 @@ import type {
   BookingParty,
   BookingServiceSummary,
   BookableServiceCard,
+  TalentServiceListItem,
 } from "@/lib/bookings/types";
 import type { CurrentAppUser } from "@/server/users/current-user";
 
@@ -121,6 +122,36 @@ export async function getBookableServices(): Promise<BookableServiceCard[]> {
     },
     title: service.title,
   }));
+}
+
+export async function getServicesForTalent(
+  currentUser: CurrentAppUser,
+): Promise<TalentServiceListItem[]> {
+  const services = await prisma.service.findMany({
+    include: {
+      ServiceCategories: {
+        include: { Category: true },
+        orderBy: { createdAt: "asc" },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    where: { TalentProfile: { user_id: currentUser.id } },
+  });
+
+  return services.map((service) => ({
+    categories: service.ServiceCategories.map((entry) => entry.Category.name),
+    createdAt: service.createdAt.toISOString(),
+    description: service.description,
+    id: service.serviceId,
+    priceLabel: priceLabel(service.minPrice, service.maxPrice),
+    title: service.title,
+  }));
+}
+
+export async function countServicesForTalent(currentUser: CurrentAppUser) {
+  return prisma.service.count({
+    where: { TalentProfile: { user_id: currentUser.id } },
+  });
 }
 
 export async function getBookingsForUser(

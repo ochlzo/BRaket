@@ -1,10 +1,10 @@
-import { BookableServicesBrowser } from "@/app/browse/_components/bookable-services-browser";
+import { VerifiedTalentsBrowser } from "@/app/browse/_components/verified-talents-browser";
 import { PageShell } from "@/components/shared/layout/page-shell";
 import { appNavigation } from "@/lib/content/navigation";
-import { getBookableServices } from "@/server/bookings/data";
+import { getVerifiedTalentCards } from "@/server/talent-profile/browse-talents";
 
 export default async function BrowsePage() {
-  const services = await getBookableServices();
+  const talents = await getVerifiedTalentCards();
 
   return (
     <PageShell
@@ -14,7 +14,7 @@ export default async function BrowsePage() {
       items={appNavigation}
       signInHref="/#cta"
     >
-      <BookableServicesBrowser services={services} />
+      <VerifiedTalentsBrowser talents={talents} />
     </PageShell>
   );
 }

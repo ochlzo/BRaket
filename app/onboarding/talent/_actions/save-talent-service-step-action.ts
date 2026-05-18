@@ -105,14 +105,7 @@ export async function saveTalentServiceStepAction(
           talentProfileId: talentProfile.talent_profile_id,
         },
       })
-    : await prisma.service.findFirst({
-        orderBy: { createdAt: "asc" },
-        select: {
-          serviceId: true,
-          ServiceMedia: { select: { serviceDetailId: true } },
-        },
-        where: { talentProfileId: talentProfile.talent_profile_id },
-      });
+    : null;
 
   if (input.serviceId && !existingService) {
     return {
