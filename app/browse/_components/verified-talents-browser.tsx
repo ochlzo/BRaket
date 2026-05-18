@@ -106,6 +106,22 @@ export function VerifiedTalentsBrowser({
                             {talent.activeBoost.badgeLabel}
                           </span>
                         ) : null}
+                        <span
+                          className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold ${
+                            talent.isAvailable
+                              ? "bg-[color:var(--tone-green-soft)] text-[color:var(--tone-green-deep)]"
+                              : "bg-[color:var(--tone-red-soft)] text-[color:var(--tone-red-base)]"
+                          }`}
+                        >
+                          <span
+                            className={`size-1.5 rounded-full ${
+                              talent.isAvailable
+                                ? "bg-[color:var(--tone-green-base)]"
+                                : "bg-[color:var(--tone-red-base)]"
+                            }`}
+                          />
+                          {talent.availabilityLabel}
+                        </span>
                       </div>
                       <p className="mt-1 line-clamp-2 text-sm leading-6 text-[color:var(--ink-muted)]">
                         {talent.headline || "Verified BU student talent"}

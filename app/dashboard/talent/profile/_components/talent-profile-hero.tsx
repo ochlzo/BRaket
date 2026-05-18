@@ -187,6 +187,22 @@ export function TalentProfileHero({ profile, user }: TalentProfileHeroProps) {
             </div>
 
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-[color:var(--ink-muted)]">
+              <span
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ${
+                  profile.isAvailable
+                    ? "bg-[color:var(--tone-green-soft)] text-[color:var(--tone-green-deep)]"
+                    : "bg-[color:var(--tone-red-soft)] text-[color:var(--tone-red-base)]"
+                }`}
+              >
+                <span
+                  className={`h-2 w-2 rounded-full ${
+                    profile.isAvailable
+                      ? "bg-[color:var(--tone-green-base)]"
+                      : "bg-[color:var(--tone-red-base)]"
+                  }`}
+                />
+                {profile.availabilityLabel}
+              </span>
               <span className="flex items-center gap-1.5 whitespace-nowrap">
                 <MapPinIcon className="h-4 w-4" />
                 <span>{location}</span>

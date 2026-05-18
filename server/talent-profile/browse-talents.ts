@@ -1,11 +1,17 @@
 import "server-only";
 
 import { prisma } from "@/lib/prisma";
+import {
+  getTalentAvailability,
+  type TalentAvailabilityStatus,
+} from "@/lib/talent-profile/availability";
 import type { TalentProfileBoost } from "@/lib/talent-profile/types";
 import { getActiveBoostsByTalentProfileIds } from "@/server/boosts/boost";
 
 export type VerifiedTalentCard = {
   activeBoost: TalentProfileBoost | null;
+  availabilityLabel: string;
+  availabilityStatus: TalentAvailabilityStatus;
   avatarUrl: string;
   bio: string;
   college: string;
@@ -17,6 +23,7 @@ export type VerifiedTalentCard = {
   rating: number | null;
   reviewCount: number;
   servicesCount: number;
+  isAvailable: boolean;
   skills: string[];
   userId: string;
   username: string;
@@ -93,6 +100,8 @@ export async function getVerifiedTalentCards(): Promise<VerifiedTalentCard[]> {
   return talents.map((talent) => {
     const name = displayName(talent);
     const profile = talent.TalentProfile;
+    const servicesCount = profile?.Services.length ?? 0;
+    const availability = getTalentAvailability(servicesCount);
     const reviewCount = talent.TalentReviewsReceived.length;
     const rating =
       reviewCount > 0
@@ -106,6 +115,8 @@ export async function getVerifiedTalentCards(): Promise<VerifiedTalentCard[]> {
       activeBoost: profile?.talent_profile_id
         ? boostByTalentProfileId.get(profile.talent_profile_id) ?? null
         : null,
+      availabilityLabel: availability.label,
+      availabilityStatus: availability.status,
       avatarUrl: talent.avatarUrl ?? "",
       bio: profile?.bio ?? "",
       college: profile?.college ?? "",
@@ -116,7 +127,8 @@ export async function getVerifiedTalentCards(): Promise<VerifiedTalentCard[]> {
       profileHref: `/talent/${talent.username}`,
       rating,
       reviewCount,
-      servicesCount: profile?.Services.length ?? 0,
+      servicesCount,
+      isAvailable: availability.isAvailable,
       skills: profile?.TalentSkills.map((skill) => skill.Skill.name) ?? [],
       userId: talent.userId,
       username: talent.username ?? "",
