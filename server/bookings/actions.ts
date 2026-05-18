@@ -120,6 +120,13 @@ export async function createBookingRequestAction(
     };
   }
 
+  if (!service.TalentProfile.User.is_verified) {
+    return {
+      ...EMPTY_STATE,
+      message: "This service is no longer available for booking.",
+    };
+  }
+
   const booking = await prisma.booking.create({
     data: {
       budget,

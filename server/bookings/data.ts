@@ -102,6 +102,11 @@ export async function getBookableServices(): Promise<BookableServiceCard[]> {
       },
     },
     orderBy: { createdAt: "desc" },
+    where: {
+      TalentProfile: {
+        User: { is_verified: true },
+      },
+    },
   });
 
   return services.map((service) => ({

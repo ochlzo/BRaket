@@ -167,7 +167,11 @@ export function TalentProfileHero({ profile, user }: TalentProfileHeroProps) {
                 <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-[color:var(--tone-green-base)] px-3 py-1 text-xs font-bold text-white shadow-md">
                   Verified
                 </div>
-              ) : null}
+              ) : (
+                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-[color:var(--tone-amber-base)] px-3 py-1 text-xs font-bold text-white shadow-md">
+                  Unverified
+                </div>
+              )}
             </div>
 
             <div className="sm:hidden">{renderProfileMenu()}</div>

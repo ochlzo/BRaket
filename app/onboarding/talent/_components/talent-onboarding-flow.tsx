@@ -13,7 +13,6 @@ import type { TalentServiceStepInitialValues } from "@/app/onboarding/talent/_li
 type TalentOnboardingFlowProps = {
   availableCategories: CategoryOption[];
   availableSkills: string[];
-  canContinuePastProfile: boolean;
   currentUser: {
     firstName: string;
     lastName: string;
@@ -28,7 +27,6 @@ type TalentOnboardingFlowProps = {
 export function TalentOnboardingFlow({
   availableCategories,
   availableSkills,
-  canContinuePastProfile,
   currentUser,
   initialPortfolioValues,
   initialProfileValues,
@@ -64,13 +62,7 @@ export function TalentOnboardingFlow({
       currentUser={currentUser}
       initialValues={initialProfileValues}
       onCancel={() => router.push("/talent/verify")}
-      onComplete={() =>
-        router.push(
-          canContinuePastProfile
-            ? "/onboarding/talent?step=2"
-            : "/onboarding/talent/verification?step=form",
-        )
-      }
+      onComplete={() => router.push("/onboarding/talent?step=2")}
     />
   );
 }

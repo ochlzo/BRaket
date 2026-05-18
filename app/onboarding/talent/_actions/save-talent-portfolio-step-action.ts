@@ -71,13 +71,6 @@ export async function saveTalentPortfolioStepAction(
     };
   }
 
-  if (!currentUser.isVerified) {
-    return {
-      ...EMPTY_STATE,
-      message: "Wait for admin verification before adding portfolio work.",
-    };
-  }
-
   const input = parseTalentPortfolioStepFormData(formData);
   const talentProfile = await prisma.talentProfile.findUnique({
     where: { user_id: currentUser.id },
