@@ -27,6 +27,8 @@ test("maps client profile records into a page model", () => {
       userId: "user-1",
       username: "jbbc2023",
       x_url: "@braketclient",
+      TalentVerificationRequests: [{ buEmail: "student@bicol-u.edu.ph" }],
+      ClientReviewsReceived: [],
     },
     clientProfile: {
       about: "We build campus-friendly projects.",
@@ -60,6 +62,8 @@ test("maps client profile records into a page model", () => {
   assert.equal(result.organizationName, "BRaket Creative Studio");
   assert.equal(result.backgroundImageUrl, "linear-gradient(120deg, #ff6b35 0%, #4fc3f7 100%)");
   assert.equal(result.businessAddress, "Bicol University");
+  assert.equal(result.email, "client@example.com");
+  assert.equal(result.talentEmail, "student@bicol-u.edu.ph");
   assert.equal(result.joinedLabel, "Joined May 2026");
   assert.equal(result.website, "https://braket.example");
   assert.equal(result.socialLinks[0].href, "https://www.facebook.com/braket.client");

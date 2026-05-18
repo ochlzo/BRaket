@@ -2,7 +2,7 @@ import type { UserRole } from "@/lib/types";
 
 export const APP_SESSION_KEY = "braket_session";
 export const APP_SESSION_CHANGE_EVENT = "braket_session_change";
-const DEFAULT_POST_AUTH_PATH = "/browse";
+const DEFAULT_POST_AUTH_PATH = "/services";
 
 export type AuthMode = "login" | "signup";
 

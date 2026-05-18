@@ -17,7 +17,7 @@ Use this rule set for login, sign-up, OTP, session refresh, and post-auth user p
 - Do not add an API route for plain sign-up, login, or OTP verification.
 - Use Supabase auth directly from the client for the interactive flow.
 - Treat new signups as `client` by default and do not expose a local account-type picker in the auth form.
-- After normal sign-up or login completes without a `callbackUrl`, redirect directly to `/browse`; keep talent onboarding outside the auth completion path.
+- After normal sign-up or login completes without a `callbackUrl`, redirect directly to `/services`; keep talent onboarding outside the auth completion path.
 - For Google or other OAuth providers, start the flow with `supabase.auth.signInWithOAuth(...)` from the client and finish the code exchange in a dedicated route handler such as `app/auth/callback/route.ts`.
 - Keep OAuth redirect URLs on the Supabase allow list and route any post-provider session shaping through a small auth-specific completion screen instead of scattering callback logic across random pages.
 - If Google-authenticated users must create an email/password sign-in, do the provider check on the server inside the OAuth callback flow and route missing-password users through a dedicated create-password screen before `/auth/complete`.
@@ -45,7 +45,7 @@ Use this rule set for login, sign-up, OTP, session refresh, and post-auth user p
 - If `avatarUrl` is blank on signup, keep it empty server-side and persist a separate `initials` field from the auth display name or email so avatar fallbacks can render from stored initials instead of a synthetic URL.
 - Account-scoped dashboard and settings pages must resolve the authenticated user from Supabase + your real app user record; do not fall back to mock "current user" data for signed-in experiences.
 - When onboarding enriches the user profile, persist the canonical profile fields server-side and keep auth metadata in sync only as a transport/helper layer.
-- Talent BU verification must be handled through a dedicated Server Function that validates the signed-in Supabase user, requires a confirmed `@bicol-u.edu.ph` auth email, uploads the BU ID image to the configured private Supabase Storage bucket (`NEXT_PUBLIC_SUPABASE_BU_ID_BUCKET`), and creates a `TalentVerificationRequest`.
+- Talent BU verification must be handled through dedicated Server Functions that validate the signed-in Supabase user, require a confirmed account email, send and verify a short-lived OTP for the submitted `@bicol-u.edu.ph` address, upload the BU ID image to the configured private Supabase Storage bucket (`NEXT_PUBLIC_SUPABASE_BU_ID_BUCKET`), and create a `TalentVerificationRequest`.
 - Do not mark `User.is_verified` from the applicant flow. Only the protected admin review flow may approve a `TalentVerificationRequest` and set `User.is_verified = true`.
 - Admin verification access must require an authenticated Supabase user whose email appears in `BRAKET_ADMIN_EMAILS`.
 - Admin routes must use the dedicated admin session guard. `/admin` redirects non-admin sessions to `/admin/login`, and `/admin/login` redirects valid admin sessions back to `/admin`.

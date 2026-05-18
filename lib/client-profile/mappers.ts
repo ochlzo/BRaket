@@ -124,6 +124,7 @@ export function mapClientProfilePageData(
   const lastName = compactText(source.user.lastName);
   const username = compactText(source.user.username) || source.user.userId;
   const email = source.user.email;
+  const talentEmail = compactText(source.user.TalentVerificationRequests[0]?.buEmail);
   const organizationName =
     compactText(source.clientProfile?.organization_name) ||
     displayName(firstName, lastName, username);
@@ -176,6 +177,7 @@ export function mapClientProfilePageData(
     reputationLabel: reputationLabel(averageRating, reviewCount),
     reviewCount,
     socialLinks,
+    talentEmail,
     userId: source.user.userId,
     username,
     website: normalizeWebsiteUrl(clientProfile?.website),

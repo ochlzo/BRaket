@@ -6,10 +6,17 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import type { SubmitTalentVerificationState } from "@/app/onboarding/talent/verification/_actions/submit-talent-verification-state";
 import { submitTalentVerificationRequest } from "@/server/talent-verification/submit-request";
+import { sendTalentVerificationEmailOtp } from "@/server/talent-verification/email-otp";
 import {
   clearCurrentAppUserCache,
   getCurrentAppUser,
 } from "@/server/users/current-user";
+
+function readText(formData: FormData, key: string) {
+  const value = formData.get(key);
+
+  return typeof value === "string" ? value.trim() : "";
+}
 
 export async function submitTalentVerificationAction(
   _previousState: SubmitTalentVerificationState,
@@ -40,6 +47,8 @@ export async function submitTalentVerificationAction(
 
   const fileValue = formData.get("studentId");
   const file = fileValue instanceof File ? fileValue : null;
+  const buEmail = readText(formData, "buEmail");
+  const otpCode = readText(formData, "otpCode");
   const confirmedAt =
     (user as { confirmed_at?: string | null; email_confirmed_at?: string | null })
       .email_confirmed_at ??
@@ -48,9 +57,10 @@ export async function submitTalentVerificationAction(
     null;
   const result = await submitTalentVerificationRequest({
     authId: user.id,
+    buEmail,
     confirmedAt,
     file,
-    userEmail: user.email,
+    otpCode,
     userId: currentUser.id,
   });
 
@@ -61,4 +71,23 @@ export async function submitTalentVerificationAction(
   revalidatePath("/dashboard/talent/profile");
 
   return result;
+}
+
+export async function sendTalentVerificationOtpAction(
+  _previousState: SubmitTalentVerificationState,
+  formData: FormData,
+): Promise<SubmitTalentVerificationState> {
+  const currentUser = await getCurrentAppUser();
+
+  if (!currentUser) {
+    return {
+      message: "Your session expired. Please sign in again.",
+      ok: false,
+    };
+  }
+
+  return sendTalentVerificationEmailOtp({
+    buEmail: readText(formData, "buEmail"),
+    userId: currentUser.id,
+  });
 }

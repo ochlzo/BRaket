@@ -5,6 +5,7 @@ import { TalentVerificationStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { BU_ID_IMAGE_BUCKET } from "@/lib/supabase/storage";
+import { verifyTalentVerificationEmailOtp } from "@/server/talent-verification/email-otp";
 import {
   buildBuIdStoragePath,
   isBuEmail,
@@ -14,10 +15,11 @@ import {
 
 export type SubmitTalentVerificationInput = {
   authId: string;
+  buEmail: string;
   confirmedAt: string | null;
   file: File | null;
+  otpCode: string;
   userId: string;
-  userEmail: string;
 };
 
 export type TalentVerificationMutationResult =
@@ -26,23 +28,24 @@ export type TalentVerificationMutationResult =
 
 export async function submitTalentVerificationRequest({
   authId,
+  buEmail: rawBuEmail,
   confirmedAt,
   file,
-  userEmail,
+  otpCode,
   userId,
 }: SubmitTalentVerificationInput): Promise<TalentVerificationMutationResult> {
-  const buEmail = normalizeBuEmail(userEmail);
+  const buEmail = normalizeBuEmail(rawBuEmail);
 
   if (!isBuEmail(buEmail)) {
     return {
-      message: "Use your confirmed @bicol-u.edu.ph email before applying.",
+      message: "Use your @bicol-u.edu.ph email before applying.",
       ok: false,
     };
   }
 
   if (!confirmedAt) {
     return {
-      message: "Confirm your BU email from your inbox before applying.",
+      message: "Confirm your account email from your inbox before applying.",
       ok: false,
     };
   }
@@ -51,6 +54,16 @@ export async function submitTalentVerificationRequest({
 
   if (fileError || !file) {
     return { message: fileError, ok: false };
+  }
+
+  const otpVerification = await verifyTalentVerificationEmailOtp({
+    buEmail,
+    code: otpCode,
+    userId,
+  });
+
+  if (!otpVerification.ok) {
+    return otpVerification;
   }
 
   const adminClient = createAdminClient();

@@ -39,6 +39,16 @@ function DetailRow({
   );
 }
 
+function EmailLink({ email }: { email: string }) {
+  return email ? (
+    <a className="break-words hover:underline" href={`mailto:${email}`}>
+      {email}
+    </a>
+  ) : (
+    "-"
+  );
+}
+
 export function ClientProfileDetails({ profile }: ClientProfileDetailsProps) {
   return (
     <Card className="gap-0 rounded-none border-0 bg-transparent py-0 shadow-none ring-0 sm:gap-4 sm:rounded-xl sm:border sm:border-[color:var(--line-strong)] sm:bg-[color:var(--surface)] sm:py-4 sm:shadow-[var(--shadow-panel-soft)] sm:ring-1 sm:ring-foreground/10">
@@ -91,17 +101,18 @@ export function ClientProfileDetails({ profile }: ClientProfileDetailsProps) {
           />
           <DetailRow
             icon={<Mail className="size-4" />}
-            label="Email"
-            value={
-              <a className="hover:underline" href={`mailto:${profile.email}`}>
-                {profile.email}
-              </a>
-            }
+            label="User email"
+            value={<EmailLink email={profile.email} />}
           />
           <DetailRow
             icon={<Phone className="size-4" />}
             label="Contact number"
             value={profile.contactNum}
+          />
+          <DetailRow
+            icon={<Mail className="size-4" />}
+            label="Talent email"
+            value={<EmailLink email={profile.talentEmail} />}
           />
           <DetailRow
             icon={<Users className="size-4" />}
