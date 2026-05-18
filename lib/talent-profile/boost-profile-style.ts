@@ -11,17 +11,17 @@ const baseBoostProfileStyle: BoostProfileStyle = {
 
 const boostProfileStyles: Record<string, BoostProfileStyle> = {
   "premium-boost": {
-    avatar: "border-4 border-[color:var(--tone-green-base)]",
+    avatar: "overflow-hidden border-0 ring-4 ring-[color:var(--tone-green-base)] after:border-0",
     badge:
       "bg-[color:var(--tone-green-soft)] text-[color:var(--tone-green-deep)]",
   },
   "pro-boost": {
-    avatar: "border-4 border-[color:var(--tone-indigo-base)]",
+    avatar: "overflow-hidden border-0 ring-4 ring-[color:var(--tone-indigo-base)] after:border-0",
     badge:
       "bg-[color:var(--tone-indigo-soft)] text-[color:var(--tone-indigo-deep)]",
   },
   "starter-boost": {
-    avatar: "border-4 border-[color:var(--tone-orange-base)]",
+    avatar: "overflow-hidden border-0 ring-4 ring-[color:var(--tone-orange-base)] after:border-0",
     badge:
       "bg-[color:var(--tone-orange-soft)] text-[color:var(--tone-orange-deep)]",
   },
