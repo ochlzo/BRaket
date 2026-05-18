@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Search, ShieldCheck, Star } from "lucide-react";
+import { Search, ShieldCheck, Sparkles, Star } from "lucide-react";
 import { useState } from "react";
 
 import { UserAvatar } from "@/components/shared/user-avatar";
@@ -97,6 +97,15 @@ export function VerifiedTalentsBrowser({
                           {talent.displayName}
                         </h2>
                         <ShieldCheck className="size-4 shrink-0 text-[color:var(--tone-green-deep)]" />
+                        {talent.activeBoost ? (
+                          <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[color:var(--tone-orange-soft)] px-2.5 py-1 text-xs font-bold text-[color:var(--tone-orange-deep)]">
+                            <Sparkles
+                              aria-hidden="true"
+                              className="size-3.5"
+                            />
+                            {talent.activeBoost.badgeLabel}
+                          </span>
+                        ) : null}
                       </div>
                       <p className="mt-1 line-clamp-2 text-sm leading-6 text-[color:var(--ink-muted)]">
                         {talent.headline || "Verified BU student talent"}

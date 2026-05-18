@@ -1,4 +1,4 @@
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, Sparkles } from "lucide-react";
 
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { ReportButton } from "@/components/shared/moderation/report-button";
@@ -95,6 +95,12 @@ export function PublicTalentProfileHero({
                 <p className="mt-1 break-words text-sm font-medium text-[color:var(--ink-muted)] sm:text-lg">
                   {profile.headline || "Talent profile"}
                 </p>
+                {profile.activeBoost ? (
+                  <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[color:var(--tone-orange-soft)] px-3 py-1.5 text-xs font-bold text-[color:var(--tone-orange-deep)]">
+                    <Sparkles aria-hidden="true" className="h-3.5 w-3.5" />
+                    {profile.activeBoost.badgeLabel}
+                  </div>
+                ) : null}
               </div>
               <ReportButton
                 label="Report profile"

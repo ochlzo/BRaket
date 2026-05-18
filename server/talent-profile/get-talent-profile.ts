@@ -3,6 +3,7 @@ import "server-only";
 import { prisma } from "@/lib/prisma";
 import { mapTalentProfilePageData } from "@/lib/talent-profile/mappers";
 import type { TalentProfilePageData } from "@/lib/talent-profile/types";
+import { getActiveBoostForTalentProfile } from "@/server/boosts/boost";
 import type { CurrentAppUser } from "@/server/users/current-user";
 
 export async function getTalentProfilePageData(
@@ -73,6 +74,7 @@ export async function getTalentProfilePageData(
 
   if (!user) {
     return mapTalentProfilePageData({
+      activeBoost: null,
       talentProfile: null,
       user: {
         authId: currentUser.authId,
@@ -96,7 +98,14 @@ export async function getTalentProfilePageData(
     });
   }
 
+  const activeBoost = user.TalentProfile
+    ? await getActiveBoostForTalentProfile(
+        user.TalentProfile.talent_profile_id,
+      )
+    : null;
+
   return mapTalentProfilePageData({
+    activeBoost,
     talentProfile: user.TalentProfile,
     user: {
       authId: user.authId,
@@ -196,7 +205,12 @@ export async function getPublicTalentProfilePageData(
     return null;
   }
 
+  const activeBoost = await getActiveBoostForTalentProfile(
+    user.TalentProfile.talent_profile_id,
+  );
+
   return mapTalentProfilePageData({
+    activeBoost,
     talentProfile: user.TalentProfile,
     user: {
       authId: user.authId,
