@@ -7,6 +7,8 @@ import {
   MapPinIcon,
   StarIcon,
 } from "@/components/shared/icons/marketing-icons";
+import { getBoostProfileStyle } from "@/lib/talent-profile/boost-profile-style";
+import type { TalentAvailabilityStatus } from "@/lib/talent-profile/availability";
 import type { TalentProfilePageData } from "@/lib/talent-profile/types";
 
 type PublicTalentProfileHeroProps = {
@@ -52,6 +54,27 @@ function ordinalYear(value: number | null) {
   return `${value}${suffix} year`;
 }
 
+function availabilityBadgeStyles(status: TalentAvailabilityStatus) {
+  if (status === "BUSY") {
+    return {
+      dot: "bg-[color:var(--tone-orange-base)]",
+      pill: "bg-[color:var(--tone-orange-soft)] text-[color:var(--tone-orange-deep)]",
+    };
+  }
+
+  if (status === "UNAVAILABLE") {
+    return {
+      dot: "bg-[color:var(--tone-red-base)]",
+      pill: "bg-[color:var(--tone-red-soft)] text-[color:var(--tone-red-base)]",
+    };
+  }
+
+  return {
+    dot: "bg-[color:var(--tone-green-base)]",
+    pill: "bg-[color:var(--tone-green-soft)] text-[color:var(--tone-green-deep)]",
+  };
+}
+
 export function PublicTalentProfileHero({
   profile,
 }: PublicTalentProfileHeroProps) {
@@ -60,7 +83,9 @@ export function PublicTalentProfileHero({
   )}`;
   const contactLabel = [profile.email, profile.contactNum]
     .filter(Boolean)
-    .join(" • ");
+    .join(" / ");
+  const availabilityStyles = availabilityBadgeStyles(profile.availabilityStatus);
+  const boostStyle = getBoostProfileStyle(profile.activeBoost?.slug);
 
   return (
     <section className="overflow-hidden bg-[color:var(--surface)] sm:rounded-[1.4rem] sm:border sm:border-[color:var(--line-strong)] sm:shadow-[var(--shadow-panel-elevated)]">
@@ -76,7 +101,7 @@ export function PublicTalentProfileHero({
           <div className="relative shrink-0 self-start">
             <UserAvatar
               alt={profile.displayName}
-              className="h-24 w-24 rounded-3xl border-4 border-white bg-[color:var(--surface-alt)] shadow-lg after:rounded-3xl sm:h-40 sm:w-40"
+              className={`h-24 w-24 rounded-3xl bg-[color:var(--surface-alt)] shadow-lg after:rounded-3xl sm:h-40 sm:w-40 ${boostStyle.avatar}`}
               fallbackClassName="rounded-3xl text-2xl font-black text-[color:var(--ink-muted)] sm:text-4xl"
               imageClassName="rounded-3xl"
               initials={`${profile.firstName[0] ?? ""}${profile.lastName[0] ?? ""}`}
@@ -104,7 +129,9 @@ export function PublicTalentProfileHero({
                   </p>
                 ) : null}
                 {profile.activeBoost ? (
-                  <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[color:var(--tone-orange-soft)] px-3 py-1.5 text-xs font-bold text-[color:var(--tone-orange-deep)]">
+                  <div
+                    className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ${boostStyle.badge}`}
+                  >
                     <Sparkles aria-hidden="true" className="h-3.5 w-3.5" />
                     {profile.activeBoost.badgeLabel}
                   </div>
@@ -120,6 +147,14 @@ export function PublicTalentProfileHero({
             </div>
 
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-[color:var(--ink-muted)]">
+              <span
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ${availabilityStyles.pill}`}
+              >
+                <span
+                  className={`h-2 w-2 rounded-full ${availabilityStyles.dot}`}
+                />
+                {profile.availabilityLabel}
+              </span>
               <span className="flex items-center gap-1.5 whitespace-nowrap">
                 <MapPinIcon className="h-4 w-4" />
                 <span>{profile.college || "College pending"}</span>

@@ -1,4 +1,5 @@
 import type { BookingServiceSummary } from "./types";
+import { getTalentAvailability } from "@/lib/talent-profile/availability";
 
 const pesoFormatter = new Intl.NumberFormat("en-PH", {
   currency: "PHP",
@@ -38,6 +39,7 @@ type ServiceSummarySource = {
     serviceDetailId: string;
   }>;
   TalentProfile: {
+    availabilityStatus?: string | null;
     headline: string;
     User: {
       avatarUrl?: string | null;
@@ -103,6 +105,9 @@ export function buildBookingServiceSummary(
   service: ServiceSummarySource,
 ): BookingServiceSummary {
   const username = service.TalentProfile.User.username ?? "";
+  const availability = getTalentAvailability(
+    service.TalentProfile.availabilityStatus,
+  );
   const reviews = service.Bookings.filter(
     (booking) => booking.status === "COMPLETED",
   ).flatMap((booking) =>
@@ -146,6 +151,8 @@ export function buildBookingServiceSummary(
         service.TalentProfile.User.lastName,
         service.TalentProfile.User.username,
       ),
+      availabilityLabel: availability.label,
+      availabilityStatus: availability.status,
       headline: service.TalentProfile.headline,
       initials: service.TalentProfile.User.initials ?? "BU",
       isVerified: service.TalentProfile.User.is_verified,

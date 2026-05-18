@@ -1,5 +1,7 @@
 import type { ProficiencyLevel } from "@prisma/client";
 
+import type { TalentAvailabilityStatus } from "@/lib/talent-profile/availability";
+
 export type TalentProfileSocialLink = {
   href: string;
   label: string;
@@ -55,6 +57,8 @@ export type TalentProfileBoost = {
 
 export type TalentProfilePageData = {
   activeBoost: TalentProfileBoost | null;
+  availabilityLabel: string;
+  availabilityStatus: TalentAvailabilityStatus;
   authId: string;
   avatarUrl: string;
   backgroundImageUrl: string;
@@ -70,6 +74,7 @@ export type TalentProfilePageData = {
   headline: string;
   instagramUrl: string;
   isVerified: boolean;
+  isAvailable: boolean;
   joinedLabel: string;
   lastName: string;
   linkedinUrl: string;
@@ -131,6 +136,7 @@ export type TalentProfilePageSource = {
     }>;
   };
   talentProfile: {
+    availabilityStatus: TalentAvailabilityStatus;
     bio: string;
     college: string;
     completed_commissions_count: number;

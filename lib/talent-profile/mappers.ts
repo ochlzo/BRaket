@@ -7,6 +7,7 @@ import type {
   TalentProfileSocialLink,
 } from "./types";
 import { calculateReportBasedReputationScore } from "../reputation-score";
+import { getTalentAvailability } from "@/lib/talent-profile/availability";
 import { DEFAULT_PROFILE_COVER_BACKGROUND } from "@/lib/profile-cover";
 
 export const DEFAULT_TALENT_COVER_BACKGROUND =
@@ -166,9 +167,15 @@ export function mapTalentProfilePageData(
     socialLinkFromRaw("GitHub", source.user.github_url),
     socialLinkFromRaw("LinkedIn", source.user.linkedin_url),
   ].filter(Boolean) as TalentProfileSocialLink[];
+  const services = talentProfile ? buildServices(talentProfile.Services) : [];
+  const availability = getTalentAvailability(
+    talentProfile?.availabilityStatus,
+  );
 
   return {
     activeBoost: source.activeBoost ?? null,
+    availabilityLabel: availability.label,
+    availabilityStatus: availability.status,
     authId: source.user.authId,
     avatarUrl: compactText(source.user.avatarUrl),
     backgroundImageUrl:
@@ -185,6 +192,7 @@ export function mapTalentProfilePageData(
     githubUrl: compactText(source.user.github_url),
     headline: compactText(talentProfile?.headline),
     instagramUrl: compactText(source.user.instagram_url),
+    isAvailable: availability.isAvailable,
     isVerified: source.user.is_verified,
     joinedLabel: `Joined ${source.user.createdAt.toLocaleDateString("en-US", {
       month: "long",
@@ -200,7 +208,7 @@ export function mapTalentProfilePageData(
       source.profileReportCount,
     ),
     reputationLabel: reputationLabel(talentAvgRating, talentReviewCount),
-    services: talentProfile ? buildServices(talentProfile.Services) : [],
+    services,
     talentAvgRating,
     talentReviewCount,
     totalProjectsCompleted: completedBookingsCount,

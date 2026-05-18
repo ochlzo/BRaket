@@ -16,8 +16,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { getBoostProfileStyle } from "@/lib/talent-profile/boost-profile-style";
 import type { TalentProfilePageData } from "@/lib/talent-profile/types";
 import type { CurrentAppUser } from "@/server/users/current-user";
+
+import { TalentAvailabilityControl } from "./talent-availability-control";
 
 type TalentProfileHeroProps = {
   profile: TalentProfilePageData;
@@ -96,6 +99,8 @@ export function TalentProfileHero({ profile, user }: TalentProfileHeroProps) {
   const headline = profile.headline || "Talent profile";
   const location = profileLocation(profile);
   const academicLabel = `${ordinalYear(profile.yearLevel)} ${courseAcronym(profile.course)}`;
+  const boostStyle = getBoostProfileStyle(profile.activeBoost?.slug);
+
   function renderProfileMenu() {
     return (
       <DropdownMenu>
@@ -125,7 +130,9 @@ export function TalentProfileHero({ profile, user }: TalentProfileHeroProps) {
   }
 
   return (
-    <section className="overflow-hidden rounded-none border-0 bg-[color:var(--surface)] shadow-none sm:rounded-[1.4rem] sm:border sm:border-[color:var(--line-strong)] sm:shadow-[var(--shadow-panel-elevated)]">
+    <section
+      className="overflow-hidden rounded-none border-0 bg-[color:var(--surface)] shadow-none sm:rounded-[1.4rem] sm:border sm:border-[color:var(--line-strong)] sm:shadow-[var(--shadow-panel-elevated)]"
+    >
       <div
         className="relative min-h-40 overflow-hidden sm:min-h-52"
         style={coverBackgroundStyle(profile.backgroundImageUrl)}
@@ -146,7 +153,7 @@ export function TalentProfileHero({ profile, user }: TalentProfileHeroProps) {
                   trigger={
                     <UserAvatar
                       alt={user.displayName}
-                      className="h-24 w-24 rounded-3xl border-4 border-white bg-[color:var(--surface-alt)] shadow-lg after:rounded-3xl sm:h-40 sm:w-40"
+                      className={`h-24 w-24 rounded-3xl bg-[color:var(--surface-alt)] shadow-lg after:rounded-3xl sm:h-40 sm:w-40 ${boostStyle.avatar}`}
                       fallbackClassName="rounded-3xl text-2xl font-black text-[color:var(--ink-muted)] sm:text-4xl"
                       imageClassName="rounded-3xl"
                       initials={user.initials}
@@ -176,7 +183,9 @@ export function TalentProfileHero({ profile, user }: TalentProfileHeroProps) {
                   {headline}
                 </p>
                 {profile.activeBoost ? (
-                  <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[color:var(--tone-orange-soft)] px-3 py-1.5 text-xs font-bold text-[color:var(--tone-orange-deep)]">
+                  <div
+                    className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ${boostStyle.badge}`}
+                  >
                     <Sparkles aria-hidden="true" className="h-3.5 w-3.5" />
                     {profile.activeBoost.badgeLabel}
                   </div>
@@ -185,6 +194,10 @@ export function TalentProfileHero({ profile, user }: TalentProfileHeroProps) {
 
               <div className="hidden sm:block">{renderProfileMenu()}</div>
             </div>
+
+            <TalentAvailabilityControl
+              initialStatus={profile.availabilityStatus}
+            />
 
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-[color:var(--ink-muted)]">
               <span className="flex items-center gap-1.5 whitespace-nowrap">
