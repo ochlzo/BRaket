@@ -100,10 +100,6 @@ export function TalentProfileHero({ profile, user }: TalentProfileHeroProps) {
   const location = profileLocation(profile);
   const academicLabel = `${ordinalYear(profile.yearLevel)} ${courseAcronym(profile.course)}`;
   const boostStyle = getBoostProfileStyle(profile.activeBoost?.slug);
-  const profileFrameClass = profile.activeBoost
-    ? boostStyle.frame
-    : "sm:border sm:border-[color:var(--line-strong)]";
-  const avatarBorderClass = profile.activeBoost ? "" : "border-4 border-white";
 
   function renderProfileMenu() {
     return (
@@ -135,7 +131,7 @@ export function TalentProfileHero({ profile, user }: TalentProfileHeroProps) {
 
   return (
     <section
-      className={`overflow-hidden rounded-none bg-[color:var(--surface)] shadow-none sm:rounded-[1.4rem] sm:shadow-[var(--shadow-panel-elevated)] ${profileFrameClass}`}
+      className="overflow-hidden rounded-none border-0 bg-[color:var(--surface)] shadow-none sm:rounded-[1.4rem] sm:border sm:border-[color:var(--line-strong)] sm:shadow-[var(--shadow-panel-elevated)]"
     >
       <div
         className="relative min-h-40 overflow-hidden sm:min-h-52"
@@ -157,7 +153,7 @@ export function TalentProfileHero({ profile, user }: TalentProfileHeroProps) {
                   trigger={
                     <UserAvatar
                       alt={user.displayName}
-                      className={`h-24 w-24 rounded-3xl bg-[color:var(--surface-alt)] shadow-lg after:rounded-3xl sm:h-40 sm:w-40 ${avatarBorderClass}`}
+                      className={`h-24 w-24 rounded-3xl bg-[color:var(--surface-alt)] shadow-lg after:rounded-3xl sm:h-40 sm:w-40 ${boostStyle.avatar}`}
                       fallbackClassName="rounded-3xl text-2xl font-black text-[color:var(--ink-muted)] sm:text-4xl"
                       imageClassName="rounded-3xl"
                       initials={user.initials}
