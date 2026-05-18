@@ -83,10 +83,14 @@ export function PublicTalentProfileHero({
   )}`;
   const availabilityStyles = availabilityBadgeStyles(profile.availabilityStatus);
   const boostStyle = getBoostProfileStyle(profile.activeBoost?.slug);
+  const profileFrameClass = profile.activeBoost
+    ? boostStyle.frame
+    : "sm:border sm:border-[color:var(--line-strong)]";
+  const avatarBorderClass = profile.activeBoost ? "" : "border-4 border-white";
 
   return (
     <section
-      className={`overflow-hidden bg-[color:var(--surface)] sm:rounded-[1.4rem] sm:border sm:border-[color:var(--line-strong)] sm:shadow-[var(--shadow-panel-elevated)] ${boostStyle.frame}`}
+      className={`overflow-hidden bg-[color:var(--surface)] sm:rounded-[1.4rem] sm:shadow-[var(--shadow-panel-elevated)] ${profileFrameClass}`}
     >
       <div
         className="relative min-h-40 overflow-hidden sm:min-h-52"
@@ -100,7 +104,7 @@ export function PublicTalentProfileHero({
           <div className="relative shrink-0 self-start">
             <UserAvatar
               alt={profile.displayName}
-              className={`h-24 w-24 rounded-3xl border-4 border-white bg-[color:var(--surface-alt)] shadow-lg after:rounded-3xl sm:h-40 sm:w-40 ${boostStyle.avatar}`}
+              className={`h-24 w-24 rounded-3xl bg-[color:var(--surface-alt)] shadow-lg after:rounded-3xl sm:h-40 sm:w-40 ${avatarBorderClass}`}
               fallbackClassName="rounded-3xl text-2xl font-black text-[color:var(--ink-muted)] sm:text-4xl"
               imageClassName="rounded-3xl"
               initials={`${profile.firstName[0] ?? ""}${profile.lastName[0] ?? ""}`}

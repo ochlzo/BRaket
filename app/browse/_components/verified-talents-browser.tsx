@@ -106,17 +106,20 @@ export function VerifiedTalentsBrowser({
                 const boostStyle = getBoostProfileStyle(
                   talent.activeBoost?.slug,
                 );
+                const cardFrameClass = talent.activeBoost
+                  ? boostStyle.frame
+                  : "border border-[color:var(--line-strong)]";
 
                 return (
                   <Link
-                    className={`block rounded-2xl border border-[color:var(--line-strong)] bg-white p-5 shadow-[var(--shadow-surface-soft)] transition hover:-translate-y-1 hover:shadow-[var(--shadow-panel-soft)] sm:p-6 ${boostStyle.frame}`}
+                    className={`block rounded-2xl bg-white p-5 shadow-[var(--shadow-surface-soft)] transition hover:-translate-y-1 hover:shadow-[var(--shadow-panel-soft)] sm:p-6 ${cardFrameClass}`}
                     href={talent.profileHref}
                     key={talent.userId}
                   >
                     <div className="flex items-start gap-4">
                       <UserAvatar
                         alt={talent.displayName}
-                        className={`h-16 w-16 rounded-2xl border-2 border-transparent ${boostStyle.avatar}`}
+                        className="h-16 w-16 rounded-2xl"
                         fallbackClassName="rounded-2xl bg-[color:var(--tone-orange-soft)] text-lg font-black text-[color:var(--tone-orange-deep)]"
                         imageClassName="rounded-2xl object-cover"
                         initials={talent.initials}
