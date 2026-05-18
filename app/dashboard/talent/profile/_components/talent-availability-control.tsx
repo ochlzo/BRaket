@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import {
-  getTalentAvailability,
   isTalentAvailabilityStatus,
   talentAvailabilityOptions,
   type TalentAvailabilityStatus,
@@ -19,21 +18,21 @@ type TalentAvailabilityControlProps = {
 function availabilityBadgeStyles(status: TalentAvailabilityStatus) {
   if (status === "BUSY") {
     return {
-      dot: "bg-[color:var(--tone-orange-base)]",
-      pill: "bg-[color:var(--tone-orange-soft)] text-[color:var(--tone-orange-deep)]",
+      select:
+        "border-[color:var(--tone-orange-soft)] bg-[color:var(--tone-orange-soft)] text-[color:var(--tone-orange-deep)]",
     };
   }
 
   if (status === "UNAVAILABLE") {
     return {
-      dot: "bg-[color:var(--tone-red-base)]",
-      pill: "bg-[color:var(--tone-red-soft)] text-[color:var(--tone-red-base)]",
+      select:
+        "border-[color:var(--tone-red-soft)] bg-[color:var(--tone-red-soft)] text-[color:var(--tone-red-base)]",
     };
   }
 
   return {
-    dot: "bg-[color:var(--tone-green-base)]",
-    pill: "bg-[color:var(--tone-green-soft)] text-[color:var(--tone-green-deep)]",
+    select:
+      "border-[color:var(--tone-green-soft)] bg-[color:var(--tone-green-soft)] text-[color:var(--tone-green-deep)]",
   };
 }
 
@@ -45,24 +44,30 @@ export function TalentAvailabilityControl({
   const [savedStatus, setSavedStatus] = useState(initialStatus);
   const [message, setMessage] = useState("");
   const [isPending, startTransition] = useTransition();
-  const availability = getTalentAvailability(savedStatus);
-  const styles = availabilityBadgeStyles(savedStatus);
+  const styles = availabilityBadgeStyles(draftStatus);
 
-  function handleSubmit(formData: FormData) {
-    const nextStatus = String(formData.get("availabilityStatus") ?? "");
-
+  function saveStatus(nextStatus: string) {
     if (!isTalentAvailabilityStatus(nextStatus)) {
       setMessage("Choose a valid status.");
       return;
     }
 
+    setDraftStatus(nextStatus);
+
+    if (nextStatus === savedStatus) {
+      setMessage("");
+      return;
+    }
+
     startTransition(() => {
+      const formData = new FormData();
+
+      formData.set("availabilityStatus", nextStatus);
       setMessage("");
       void updateTalentAvailabilityAction(formData)
         .then((result) => {
           setSavedStatus(result.availabilityStatus);
           setDraftStatus(result.availabilityStatus);
-          setMessage("Status saved.");
           router.refresh();
         })
         .catch(() => {
@@ -74,28 +79,20 @@ export function TalentAvailabilityControl({
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span
-        className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ${styles.pill}`}
-      >
-        <span className={`h-2 w-2 rounded-full ${styles.dot}`} />
-        {availability.label}
-      </span>
-      <form action={handleSubmit} className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <label
-          className="text-xs font-bold uppercase tracking-normal text-[color:var(--ink-muted)]"
+          className="sr-only"
           htmlFor="talent-availability-status"
         >
           Availability
         </label>
         <select
-          className="h-10 rounded-full border border-[color:var(--line-strong)] bg-white px-3 text-sm font-semibold text-foreground outline-none transition focus:border-[color:var(--brand-blue)]"
+          aria-label="Availability status"
+          className={`h-9 rounded-full border px-3 text-sm font-bold outline-none transition focus:border-[color:var(--brand-blue)] disabled:opacity-70 ${styles.select}`}
+          disabled={isPending}
           id="talent-availability-status"
           name="availabilityStatus"
-          onChange={(event) => {
-            if (isTalentAvailabilityStatus(event.target.value)) {
-              setDraftStatus(event.target.value);
-            }
-          }}
+          onChange={(event) => saveStatus(event.target.value)}
           value={draftStatus}
         >
           {talentAvailabilityOptions.map((option) => (
@@ -104,16 +101,13 @@ export function TalentAvailabilityControl({
             </option>
           ))}
         </select>
-        <button
-          className="h-10 rounded-full bg-[color:var(--brand-orange)] px-4 text-sm font-bold text-white transition hover:bg-[color:var(--brand-orange-strong)] disabled:cursor-not-allowed disabled:opacity-60"
-          disabled={isPending || draftStatus === savedStatus}
-          type="submit"
-        >
-          {isPending ? "Saving..." : "Save status"}
-        </button>
-      </form>
-      {message ? (
+      </div>
+      {isPending ? (
         <span className="text-xs font-semibold text-[color:var(--ink-muted)]">
+          Saving...
+        </span>
+      ) : message ? (
+        <span className="text-xs font-semibold text-[color:var(--tone-red-base)]">
           {message}
         </span>
       ) : null}
