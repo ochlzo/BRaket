@@ -30,15 +30,15 @@ function DesktopImageTile({
 }) {
   return (
     <button
-      className="group relative h-40 flex-1 overflow-hidden rounded-xl bg-[color:var(--surface-alt)]"
+      className="group flex max-h-32 max-w-48 items-center justify-center overflow-hidden rounded-xl border border-[color:var(--line-strong)] bg-[color:var(--surface-alt)]"
       onClick={onOpen}
       type="button"
     >
       <Image
         alt={title}
-        className="object-cover transition duration-300 group-hover:scale-[1.03]"
-        fill
-        sizes="33vw"
+        className="max-h-32 max-w-48 object-contain transition duration-300 group-hover:scale-[1.03]"
+        height={128}
+        width={192}
         src={media.url}
       />
     </button>
@@ -52,27 +52,15 @@ function DesktopServiceMediaRows({
 }: TalentServiceMediaShowcaseProps & {
   onSelect: (media: TalentProfileMediaItem) => void;
 }) {
-  const rows = [
-    media.slice(0, 3),
-    ...Array.from({ length: Math.ceil(Math.max(media.length - 3, 0) / 2) }, (
-      _,
-      index,
-    ) => media.slice(3 + index * 2, 5 + index * 2)),
-  ].filter((row) => row.length > 0);
-
   return (
-    <div className="mt-5 hidden flex-col gap-2 lg:flex">
-      {rows.map((row, rowIndex) => (
-        <div className="flex gap-2" key={`service-media-row-${rowIndex}`}>
-          {row.map((entry) => (
-            <DesktopImageTile
-              key={entry.id}
-              media={entry}
-              onOpen={() => onSelect(entry)}
-              title={title}
-            />
-          ))}
-        </div>
+    <div className="mt-5 hidden flex-wrap gap-3 lg:flex">
+      {media.map((entry) => (
+        <DesktopImageTile
+          key={entry.id}
+          media={entry}
+          onOpen={() => onSelect(entry)}
+          title={title}
+        />
       ))}
     </div>
   );

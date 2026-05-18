@@ -15,7 +15,7 @@ function ReviewSummary({
         <p className="text-xs font-bold uppercase tracking-[0.14em] text-[color:var(--ink-muted)]">
           {label}
         </p>
-        <p className="text-sm font-extrabold text-[color:var(--brand-orange)]">
+        <p className="shrink-0 text-sm font-extrabold text-[color:var(--brand-orange)]">
           {"★".repeat(review.rating)}
           <span className="text-[color:var(--line-strong)]">
             {"★".repeat(5 - review.rating)}
@@ -42,9 +42,13 @@ export function BookingReviews({
     viewer === "client"
       ? booking.talent.displayName
       : booking.client.displayName;
+  const hasReview = booking.reviewFromClient || booking.reviewFromTalent;
 
   return (
-    <div className="mt-4 space-y-3">
+    <aside className="space-y-4">
+      <div>
+        <p className="text-sm font-extrabold text-foreground">Reviews</p>
+      </div>
       {booking.reviewFromClient ? (
         <ReviewSummary
           label={`Client review for ${booking.talent.displayName}`}
@@ -60,6 +64,11 @@ export function BookingReviews({
       {booking.status === "COMPLETED" && !viewerReview ? (
         <BookingReviewForm bookingId={booking.id} targetLabel={targetLabel} />
       ) : null}
-    </div>
+      {booking.status !== "COMPLETED" && !hasReview ? (
+        <div className="rounded-xl border border-dashed border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 py-5 text-sm text-[color:var(--ink-muted)]">
+          Reviews will appear after the booking is completed.
+        </div>
+      ) : null}
+    </aside>
   );
 }

@@ -138,29 +138,41 @@ export function BookingList({
     <div className="grid gap-4">
       {bookings.map((booking) => (
         <article
-          className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-5 shadow-[var(--shadow-surface-soft)]"
+          className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-5 shadow-[var(--shadow-surface-soft)] sm:p-6"
           key={booking.id}
         >
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_420px]">
             <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <span
-                  className={`rounded-full px-3 py-1 text-xs font-bold ${statusStyles[booking.status]}`}
-                >
-                  {statusLabels[booking.status]}
-                </span>
-                <span className="text-xs font-medium text-[color:var(--ink-muted)]">
-                  {new Date(booking.createdAt).toLocaleDateString()}
-                </span>
-                <ReportButton
-                  label="Report"
-                  targetId={booking.id}
-                  targetLabel={`${booking.service.title} booking`}
-                  targetPath={`/dashboard/${viewer}/bookings`}
-                  targetType="BOOKING"
-                />
+              <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-bold ${statusStyles[booking.status]}`}
+                  >
+                    {statusLabels[booking.status]}
+                  </span>
+                  <span className="text-xs font-medium text-[color:var(--ink-muted)]">
+                    {new Date(booking.createdAt).toLocaleDateString()}
+                  </span>
+                  <ReportButton
+                    label="Report"
+                    targetId={booking.id}
+                    targetLabel={`${booking.service.title} booking`}
+                    targetPath={`/dashboard/${viewer}/bookings`}
+                    targetType="BOOKING"
+                  />
+                  <BookingActions booking={booking} viewer={viewer} />
+                </div>
+
+                <div className="shrink-0 sm:text-right">
+                  <p className="text-xs font-bold uppercase tracking-[0.14em] text-[color:var(--ink-muted)]">
+                    Budget
+                  </p>
+                  <p className="text-base font-extrabold text-[color:var(--brand-orange)]">
+                    {formatBookingBudgetLabel(booking.budget)}
+                  </p>
+                </div>
               </div>
-              <h2 className="mt-3 text-lg font-extrabold tracking-normal text-foreground">
+              <h2 className="text-xl font-extrabold tracking-normal text-foreground">
                 {booking.service.title}
               </h2>
               <p className="mt-1 text-sm text-[color:var(--ink-muted)]">
@@ -181,22 +193,8 @@ export function BookingList({
                   Decline reason: {booking.declineReason}
                 </p>
               ) : null}
-              <BookingReviews booking={booking} viewer={viewer} />
             </div>
-
-            <div className="shrink-0 space-y-3 lg:w-48 lg:text-right">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-[0.14em] text-[color:var(--ink-muted)]">
-                  Budget
-                </p>
-                <p className="text-base font-extrabold text-[color:var(--brand-orange)]">
-                  {formatBookingBudgetLabel(booking.budget)}
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2 lg:justify-end">
-                <BookingActions booking={booking} viewer={viewer} />
-              </div>
-            </div>
+            <BookingReviews booking={booking} viewer={viewer} />
           </div>
         </article>
       ))}

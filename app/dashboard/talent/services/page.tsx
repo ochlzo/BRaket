@@ -47,12 +47,6 @@ function MyServiceCard({ service }: { service: TalentServiceListItem }) {
               {new Date(service.createdAt).toLocaleDateString("en-PH")}
             </p>
           </div>
-          <Link
-            className="inline-flex items-center rounded-full bg-[color:var(--brand-blue)] px-4 py-2 text-sm font-bold text-white transition hover:bg-[color:var(--brand-blue-strong)]"
-            href={`/book/${service.id}`}
-          >
-            View
-          </Link>
         </div>
       </div>
 
