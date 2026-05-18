@@ -1,8 +1,16 @@
 import { NextResponse } from "next/server";
 
-import { getSubscriptionPlan } from "@/lib/content/subscription-plans";
+import { getBoostPlan } from "@/lib/content/boost-plans";
+import {
+  attachCheckoutSessionToBoost,
+  createPendingBoost,
+  getTalentProfileIdForUser,
+} from "@/server/boosts/boost";
+import { createPaymongoCheckoutSession } from "@/server/paymongo/client";
+import { getCurrentAppUser } from "@/server/users/current-user";
 
-const PAYMONGO_CHECKOUT_URL = "https://api.paymongo.com/v1/checkout_sessions";
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 function getBaseUrl(request: Request) {
   const forwardedProto = request.headers.get("x-forwarded-proto") ?? "http";
@@ -19,92 +27,82 @@ function getBaseUrl(request: Request) {
   );
 }
 
-function getPaymongoAuthHeader() {
-  const secretKey = process.env.PAYMONGO_SECRET_KEY?.trim();
-
-  if (!secretKey) {
-    return null;
-  }
-
-  return `Basic ${Buffer.from(`${secretKey}:`).toString("base64")}`;
-}
-
 export async function POST(request: Request) {
   const formData = await request.formData();
   const planSlug = String(formData.get("plan") ?? "");
-  const plan = getSubscriptionPlan(planSlug);
+  const plan = getBoostPlan(planSlug);
 
   if (!plan) {
     return NextResponse.json(
-      { message: "Choose a valid subscription plan." },
+      { message: "Choose a valid boost plan." },
       { status: 400 },
     );
   }
 
-  const authorization = getPaymongoAuthHeader();
+  const currentUser = await getCurrentAppUser();
 
-  if (!authorization) {
+  if (!currentUser) {
+    return NextResponse.redirect(new URL("/login", request.url), 303);
+  }
+
+  if (!currentUser.isTalent) {
+    return NextResponse.redirect(
+      new URL("/onboarding/talent", request.url),
+      303,
+    );
+  }
+
+  const talentProfileId = await getTalentProfileIdForUser(currentUser.id);
+
+  if (!talentProfileId) {
+    return NextResponse.redirect(
+      new URL("/onboarding/talent", request.url),
+      303,
+    );
+  }
+
+  const boostId = await createPendingBoost({
+    plan,
+    talentProfileId,
+  });
+
+  if (!boostId) {
     return NextResponse.json(
-      { message: "PayMongo secret key is not configured." },
+      { message: "Could not create a boost record." },
       { status: 500 },
     );
   }
 
   const baseUrl = getBaseUrl(request);
   const referenceNumber = `braket-${plan.slug}-${Date.now()}`;
-  const paymentDescription = `BRaket boost payment for ${plan.name}`;
-  const successUrl = `${baseUrl}/subscriptions/success?plan=${plan.slug}&ref=${referenceNumber}`;
-  const cancelUrl = `${baseUrl}/subscriptions/cancel?plan=${plan.slug}&ref=${referenceNumber}`;
+  const successUrl = `${baseUrl}/boost/success?boost=${boostId}&plan=${plan.slug}&ref=${referenceNumber}`;
+  const cancelUrl = `${baseUrl}/boost/cancel?boost=${boostId}&plan=${plan.slug}&ref=${referenceNumber}`;
 
-  const response = await fetch(PAYMONGO_CHECKOUT_URL, {
-    body: JSON.stringify({
-      data: {
-        attributes: {
-          cancel_url: cancelUrl,
-          description: paymentDescription,
-          line_items: [
-            {
-              amount: plan.amount,
-              currency: "PHP",
-              description: paymentDescription,
-              name: plan.name,
-              quantity: 1,
-            },
-          ],
-          payment_method_types: ["card", "gcash", "paymaya"],
-          reference_number: referenceNumber,
-          send_email_receipt: false,
-          show_description: true,
-          show_line_items: true,
-          success_url: successUrl,
-        },
-      },
-    }),
-    headers: {
-      Authorization: authorization,
-      "Content-Type": "application/json",
-    },
-    method: "POST",
-  });
+  try {
+    const { checkoutSessionId, checkoutUrl } =
+      await createPaymongoCheckoutSession({
+        cancelUrl,
+        plan,
+        referenceNumber,
+        successUrl,
+      });
 
-  const payload = (await response.json().catch(() => null)) as {
-    data?: { attributes?: { checkout_url?: string } };
-    errors?: Array<{ detail?: string }>;
-  } | null;
+    await attachCheckoutSessionToBoost({
+      checkoutSessionId,
+      boostId,
+    });
 
-  const checkoutUrl = payload?.data?.attributes?.checkout_url;
+    return NextResponse.redirect(checkoutUrl, 303);
+  } catch (error) {
+    console.error("PayMongo checkout creation failed.", error);
+    const message =
+      error instanceof Error
+        ? error.message
+        : "PayMongo could not create a checkout session.";
 
-  if (!response.ok || !checkoutUrl) {
-    console.error("PayMongo checkout creation failed.", payload);
     return NextResponse.json(
-      {
-        message:
-          payload?.errors?.[0]?.detail ??
-          "PayMongo could not create a checkout session.",
-      },
+      { message },
       { status: 502 },
     );
   }
-
-  return NextResponse.redirect(checkoutUrl, 303);
 }

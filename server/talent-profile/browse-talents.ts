@@ -1,8 +1,11 @@
 import "server-only";
 
 import { prisma } from "@/lib/prisma";
+import type { TalentProfileBoost } from "@/lib/talent-profile/types";
+import { getActiveBoostsByTalentProfileIds } from "@/server/boosts/boost";
 
 export type VerifiedTalentCard = {
+  activeBoost: TalentProfileBoost | null;
   avatarUrl: string;
   bio: string;
   college: string;
@@ -60,6 +63,7 @@ export async function getVerifiedTalentCards(): Promise<VerifiedTalentCard[]> {
           college: true,
           course: true,
           headline: true,
+          talent_profile_id: true,
           year_level: true,
           Services: { select: { serviceId: true } },
           TalentSkills: {
@@ -77,6 +81,14 @@ export async function getVerifiedTalentCards(): Promise<VerifiedTalentCard[]> {
       TalentProfile: { isNot: null },
     },
   });
+  const boostByTalentProfileId =
+    await getActiveBoostsByTalentProfileIds(
+      talents.flatMap((talent) =>
+        talent.TalentProfile?.talent_profile_id
+          ? [talent.TalentProfile.talent_profile_id]
+          : [],
+      ),
+    );
 
   return talents.map((talent) => {
     const name = displayName(talent);
@@ -91,6 +103,9 @@ export async function getVerifiedTalentCards(): Promise<VerifiedTalentCard[]> {
         : null;
 
     return {
+      activeBoost: profile?.talent_profile_id
+        ? boostByTalentProfileId.get(profile.talent_profile_id) ?? null
+        : null,
       avatarUrl: talent.avatarUrl ?? "",
       bio: profile?.bio ?? "",
       college: profile?.college ?? "",
@@ -107,5 +122,15 @@ export async function getVerifiedTalentCards(): Promise<VerifiedTalentCard[]> {
       username: talent.username ?? "",
       yearLevel: profile?.year_level ?? null,
     };
+  }).sort((left, right) => {
+    const boostRank =
+      (right.activeBoost?.visibilityRank ?? 0) -
+      (left.activeBoost?.visibilityRank ?? 0);
+
+    if (boostRank !== 0) {
+      return boostRank;
+    }
+
+    return right.reviewCount - left.reviewCount;
   });
 }

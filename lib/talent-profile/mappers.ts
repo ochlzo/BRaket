@@ -167,6 +167,7 @@ export function mapTalentProfilePageData(
   ].filter(Boolean) as TalentProfileSocialLink[];
 
   return {
+    activeBoost: source.activeBoost ?? null,
     authId: source.user.authId,
     avatarUrl: compactText(source.user.avatarUrl),
     backgroundImageUrl:

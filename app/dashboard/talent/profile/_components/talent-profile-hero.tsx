@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { GraduationCap, MoreHorizontal } from "lucide-react";
+import { GraduationCap, MoreHorizontal, Sparkles } from "lucide-react";
 
 import { ProfileImageEditor } from "@/components/shared/profile-images/profile-image-editor";
 import { UserAvatar } from "@/components/shared/user-avatar";
@@ -175,6 +175,12 @@ export function TalentProfileHero({ profile, user }: TalentProfileHeroProps) {
                 <p className="mt-1 break-words text-sm font-medium text-[color:var(--ink-muted)] sm:text-lg">
                   {headline}
                 </p>
+                {profile.activeBoost ? (
+                  <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[color:var(--tone-orange-soft)] px-3 py-1.5 text-xs font-bold text-[color:var(--tone-orange-deep)]">
+                    <Sparkles aria-hidden="true" className="h-3.5 w-3.5" />
+                    {profile.activeBoost.badgeLabel}
+                  </div>
+                ) : null}
               </div>
 
               <div className="hidden sm:block">{renderProfileMenu()}</div>

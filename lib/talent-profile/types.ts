@@ -44,7 +44,17 @@ export type TalentProfileReviewItem = {
   reviewerName: string;
 };
 
+export type TalentProfileBoost = {
+  badgeLabel: string;
+  expiresAt: string;
+  features: string[];
+  name: string;
+  slug: string;
+  visibilityRank: number;
+};
+
 export type TalentProfilePageData = {
+  activeBoost: TalentProfileBoost | null;
   authId: string;
   avatarUrl: string;
   backgroundImageUrl: string;
@@ -79,6 +89,7 @@ export type TalentProfilePageData = {
 };
 
 export type TalentProfilePageSource = {
+  activeBoost?: TalentProfileBoost | null;
   user: {
     authId: string;
     avatarUrl: string | null;
