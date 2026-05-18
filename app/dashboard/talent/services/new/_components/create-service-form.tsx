@@ -21,8 +21,13 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { saveTalentServiceStepAction } from "@/app/onboarding/talent/_actions/save-talent-service-step-action";
+import { TalentMediaUploadField } from "@/app/onboarding/talent/_components/talent-media-upload-field";
 import type { CategoryOption } from "@/app/onboarding/talent/_lib/get-category-options";
-import { TALENT_SERVICE_MAX_CATEGORIES } from "@/app/onboarding/talent/_lib/talent-service-step";
+import {
+  TALENT_SERVICE_MAX_CATEGORIES,
+  validateTalentServiceStepInput,
+  type TalentServiceStepDirtyField,
+} from "@/app/onboarding/talent/_lib/talent-service-step";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,14 +38,7 @@ type CreateServiceFormProps = {
   availableCategories: CategoryOption[];
 };
 
-const SERVICE_DIRTY_FIELDS = [
-  "title",
-  "description",
-  "categoryIds",
-  "minPrice",
-  "maxPrice",
-  "priceUnit",
-];
+const SERVICE_DIRTY_FIELDS: TalentServiceStepDirtyField[] = ["title", "description", "categoryIds", "minPrice", "maxPrice", "priceUnit"];
 
 const categoryIconByName: Record<string, LucideIcon> = {
   "accounting & bookkeeping": Calculator,
@@ -69,6 +67,8 @@ export function CreateServiceForm({
   const [description, setDescription] = useState("");
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [price, setPrice] = useState("");
+  const [sampleFiles, setSampleFiles] = useState<File[]>([]);
+  const [notice, setNotice] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const hasValidCategoryCount =
@@ -104,6 +104,21 @@ export function CreateServiceForm({
       return;
     }
 
+    const validation = validateTalentServiceStepInput({
+      categoryIds: selectedCategoryIds,
+      description,
+      files: sampleFiles,
+      maxPrice: price,
+      minPrice: price,
+      priceUnit: "FIXED",
+      title,
+    });
+
+    if (!validation.ok) {
+      toast.error(validation.message || "Check your service details.");
+      return;
+    }
+
     const formData = new FormData();
     formData.set("serviceId", "");
     formData.set("title", title);
@@ -112,7 +127,14 @@ export function CreateServiceForm({
     formData.set("minPrice", price);
     formData.set("maxPrice", price);
     formData.set("priceUnit", "FIXED");
-    formData.set("dirtyFields", JSON.stringify(SERVICE_DIRTY_FIELDS));
+    sampleFiles.forEach((file) => formData.append("serviceMedia", file));
+    formData.set(
+      "dirtyFields",
+      JSON.stringify([
+        ...SERVICE_DIRTY_FIELDS,
+        ...(sampleFiles.length > 0 ? (["media"] as const) : []),
+      ]),
+    );
 
     try {
       setIsSubmitting(true);
@@ -245,6 +267,28 @@ export function CreateServiceForm({
               Set a fixed price for this service. Make it competitive!
             </p>
           </div>
+
+          <Separator />
+
+          <TalentMediaUploadField
+            emptyDescription="Sample images are optional for this service."
+            existingMediaUrls={[]}
+            files={sampleFiles}
+            inputId="new-service-sample-media"
+            inputName="serviceMedia"
+            onFilesChange={setSampleFiles}
+            onNoticeChange={setNotice}
+            title="Work Samples"
+          />
+
+          {notice ? (
+            <p
+              className="rounded-xl border border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 py-3 text-sm text-[color:var(--ink-soft)]"
+              role="status"
+            >
+              {notice}
+            </p>
+          ) : null}
 
           <Separator />
 
