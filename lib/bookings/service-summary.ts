@@ -1,5 +1,8 @@
 import type { BookingServiceSummary } from "./types";
-import { getTalentAvailability } from "@/lib/talent-profile/availability";
+import {
+  getTalentAvailability,
+  type TalentAvailabilityStatus,
+} from "@/lib/talent-profile/availability";
 
 const pesoFormatter = new Intl.NumberFormat("en-PH", {
   currency: "PHP",
@@ -39,7 +42,7 @@ type ServiceSummarySource = {
     serviceDetailId: string;
   }>;
   TalentProfile: {
-    availabilityStatus?: string | null;
+    availabilityStatus?: TalentAvailabilityStatus | null;
     headline: string;
     User: {
       avatarUrl?: string | null;
