@@ -132,6 +132,7 @@ export type TalentProfilePageSource = {
     }>;
   };
   talentProfile: {
+    availabilityStatus: TalentAvailabilityStatus;
     bio: string;
     college: string;
     completed_commissions_count: number;

@@ -120,6 +120,13 @@ export async function createBookingRequestAction(
     };
   }
 
+  if (service.TalentProfile.availabilityStatus === "UNAVAILABLE") {
+    return {
+      ...EMPTY_STATE,
+      message: "This talent is currently unavailable for new booking requests.",
+    };
+  }
+
   const booking = await prisma.booking.create({
     data: {
       budget,

@@ -3,6 +3,7 @@ import "server-only";
 import type { BookingStatus } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
+import { getTalentAvailability } from "@/lib/talent-profile/availability";
 import type {
   BookingListItem,
   BookingParty,
@@ -76,6 +77,10 @@ export async function getBookingServiceSummary(
     return null;
   }
 
+  const availability = getTalentAvailability(
+    service.TalentProfile.availabilityStatus,
+  );
+
   return {
     categories: service.ServiceCategories.map((entry) => entry.Category.name),
     description: service.description,
@@ -83,8 +88,11 @@ export async function getBookingServiceSummary(
     priceLabel: priceLabel(service.minPrice, service.maxPrice),
     talent: {
       ...mapParty(service.TalentProfile.User),
+      availabilityLabel: availability.label,
+      availabilityStatus: availability.status,
       headline: service.TalentProfile.headline,
       isVerified: service.TalentProfile.User.is_verified,
+      isBookable: availability.status !== "UNAVAILABLE",
       profileHref: talentProfileHref(service.TalentProfile.User.username ?? ""),
       servicesHref: `${talentProfileHref(
         service.TalentProfile.User.username ?? "",

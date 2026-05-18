@@ -6,12 +6,25 @@ import { Separator } from "@/components/ui/separator";
 import { PageShell } from "@/components/shared/layout/page-shell";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { appNavigation } from "@/lib/content/navigation";
+import type { TalentAvailabilityStatus } from "@/lib/talent-profile/availability";
 import { getBookingServiceSummary } from "@/server/bookings/data";
 
 type Props = { params: Promise<{ serviceId: string }> };
 
 function serviceCategories(categories: string[]) {
   return categories.length > 0 ? categories.slice(0, 3) : ["Service"];
+}
+
+function availabilityBadgeStyles(status: TalentAvailabilityStatus) {
+  if (status === "BUSY") {
+    return "bg-[color:var(--tone-orange-soft)] text-[color:var(--tone-orange-deep)]";
+  }
+
+  if (status === "UNAVAILABLE") {
+    return "bg-[color:var(--tone-red-soft)] text-[color:var(--tone-red-deep)]";
+  }
+
+  return "bg-[color:var(--tone-green-soft)] text-[color:var(--tone-green-deep)]";
 }
 
 export default async function BookingRequestPage({ params }: Props) {
@@ -59,10 +72,17 @@ export default async function BookingRequestPage({ params }: Props) {
 
                   <Separator className="my-6" />
 
-                  <BookingRequestForm
-                    cancelHref="/browse"
-                    serviceId={service.id}
-                  />
+                  {service.talent.isBookable ? (
+                    <BookingRequestForm
+                      cancelHref="/browse"
+                      serviceId={service.id}
+                    />
+                  ) : (
+                    <div className="rounded-2xl bg-[color:var(--tone-red-soft)] px-5 py-4 text-sm font-medium text-[color:var(--tone-red-deep)]">
+                      This talent is currently unavailable for new booking
+                      requests.
+                    </div>
+                  )}
                 </div>
 
                 <aside className="space-y-5">
@@ -133,6 +153,13 @@ export default async function BookingRequestPage({ params }: Props) {
                         <p className="text-xs text-[color:var(--ink-muted)]">
                           {service.talent.headline}
                         </p>
+                        <span
+                          className={`mt-2 inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${availabilityBadgeStyles(
+                            service.talent.availabilityStatus,
+                          )}`}
+                        >
+                          {service.talent.availabilityLabel}
+                        </span>
                       </div>
                     </div>
                   </Link>

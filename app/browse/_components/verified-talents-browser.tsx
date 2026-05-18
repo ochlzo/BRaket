@@ -5,11 +5,33 @@ import { Search, ShieldCheck, Sparkles, Star } from "lucide-react";
 import { useState } from "react";
 
 import { UserAvatar } from "@/components/shared/user-avatar";
+import type { TalentAvailabilityStatus } from "@/lib/talent-profile/availability";
 import type { VerifiedTalentCard } from "@/server/talent-profile/browse-talents";
 
 type VerifiedTalentsBrowserProps = {
   talents: VerifiedTalentCard[];
 };
+
+function availabilityBadgeStyles(status: TalentAvailabilityStatus) {
+  if (status === "BUSY") {
+    return {
+      dot: "bg-[color:var(--tone-orange-base)]",
+      pill: "bg-[color:var(--tone-orange-soft)] text-[color:var(--tone-orange-deep)]",
+    };
+  }
+
+  if (status === "UNAVAILABLE") {
+    return {
+      dot: "bg-[color:var(--tone-red-base)]",
+      pill: "bg-[color:var(--tone-red-soft)] text-[color:var(--tone-red-base)]",
+    };
+  }
+
+  return {
+    dot: "bg-[color:var(--tone-green-base)]",
+    pill: "bg-[color:var(--tone-green-soft)] text-[color:var(--tone-green-deep)]",
+  };
+}
 
 export function VerifiedTalentsBrowser({
   talents,
@@ -76,102 +98,100 @@ export function VerifiedTalentsBrowser({
 
           {filteredTalents.length > 0 ? (
             <div className="grid gap-6 lg:grid-cols-2">
-              {filteredTalents.map((talent) => (
-                <Link
-                  className="block rounded-2xl border border-[color:var(--line-strong)] bg-white p-5 shadow-[var(--shadow-surface-soft)] transition hover:-translate-y-1 hover:shadow-[var(--shadow-panel-soft)] sm:p-6"
-                  href={talent.profileHref}
-                  key={talent.userId}
-                >
-                  <div className="flex items-start gap-4">
-                    <UserAvatar
-                      alt={talent.displayName}
-                      className="h-16 w-16 rounded-2xl"
-                      fallbackClassName="rounded-2xl bg-[color:var(--tone-orange-soft)] text-lg font-black text-[color:var(--tone-orange-deep)]"
-                      imageClassName="rounded-2xl object-cover"
-                      initials={talent.initials}
-                      src={talent.avatarUrl}
-                    />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <h2 className="truncate text-lg font-extrabold tracking-normal text-foreground">
-                          {talent.displayName}
-                        </h2>
-                        <ShieldCheck className="size-4 shrink-0 text-[color:var(--tone-green-deep)]" />
-                        {talent.activeBoost ? (
-                          <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[color:var(--tone-orange-soft)] px-2.5 py-1 text-xs font-bold text-[color:var(--tone-orange-deep)]">
-                            <Sparkles
-                              aria-hidden="true"
-                              className="size-3.5"
-                            />
-                            {talent.activeBoost.badgeLabel}
-                          </span>
-                        ) : null}
-                        <span
-                          className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold ${
-                            talent.isAvailable
-                              ? "bg-[color:var(--tone-green-soft)] text-[color:var(--tone-green-deep)]"
-                              : "bg-[color:var(--tone-red-soft)] text-[color:var(--tone-red-base)]"
-                          }`}
-                        >
+              {filteredTalents.map((talent) => {
+                const availabilityStyles = availabilityBadgeStyles(
+                  talent.availabilityStatus,
+                );
+
+                return (
+                  <Link
+                    className="block rounded-2xl border border-[color:var(--line-strong)] bg-white p-5 shadow-[var(--shadow-surface-soft)] transition hover:-translate-y-1 hover:shadow-[var(--shadow-panel-soft)] sm:p-6"
+                    href={talent.profileHref}
+                    key={talent.userId}
+                  >
+                    <div className="flex items-start gap-4">
+                      <UserAvatar
+                        alt={talent.displayName}
+                        className="h-16 w-16 rounded-2xl"
+                        fallbackClassName="rounded-2xl bg-[color:var(--tone-orange-soft)] text-lg font-black text-[color:var(--tone-orange-deep)]"
+                        imageClassName="rounded-2xl object-cover"
+                        initials={talent.initials}
+                        src={talent.avatarUrl}
+                      />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h2 className="truncate text-lg font-extrabold tracking-normal text-foreground">
+                            {talent.displayName}
+                          </h2>
+                          <ShieldCheck className="size-4 shrink-0 text-[color:var(--tone-green-deep)]" />
+                          {talent.activeBoost ? (
+                            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[color:var(--tone-orange-soft)] px-2.5 py-1 text-xs font-bold text-[color:var(--tone-orange-deep)]">
+                              <Sparkles
+                                aria-hidden="true"
+                                className="size-3.5"
+                              />
+                              {talent.activeBoost.badgeLabel}
+                            </span>
+                          ) : null}
                           <span
-                            className={`size-1.5 rounded-full ${
-                              talent.isAvailable
-                                ? "bg-[color:var(--tone-green-base)]"
-                                : "bg-[color:var(--tone-red-base)]"
-                            }`}
-                          />
-                          {talent.availabilityLabel}
-                        </span>
+                            className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold ${availabilityStyles.pill}`}
+                          >
+                            <span
+                              className={`size-1.5 rounded-full ${availabilityStyles.dot}`}
+                            />
+                            {talent.availabilityLabel}
+                          </span>
+                        </div>
+                        <p className="mt-1 line-clamp-2 text-sm leading-6 text-[color:var(--ink-muted)]">
+                          {talent.headline || "Verified BU student talent"}
+                        </p>
                       </div>
-                      <p className="mt-1 line-clamp-2 text-sm leading-6 text-[color:var(--ink-muted)]">
-                        {talent.headline || "Verified BU student talent"}
-                      </p>
                     </div>
-                  </div>
 
-                  <p className="mt-4 line-clamp-3 text-sm leading-6 text-[color:var(--ink-body)]">
-                    {talent.bio || "This talent has not added a bio yet."}
-                  </p>
+                    <p className="mt-4 line-clamp-3 text-sm leading-6 text-[color:var(--ink-body)]">
+                      {talent.bio || "This talent has not added a bio yet."}
+                    </p>
 
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {talent.skills.length > 0 ? (
-                      talent.skills.map((skill) => (
-                        <span
-                          className="rounded-full bg-[color:var(--tone-indigo-soft)] px-3 py-1 text-xs font-bold text-[color:var(--tone-indigo-deep)]"
-                          key={skill}
-                        >
-                          {skill}
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {talent.skills.length > 0 ? (
+                        talent.skills.map((skill) => (
+                          <span
+                            className="rounded-full bg-[color:var(--tone-indigo-soft)] px-3 py-1 text-xs font-bold text-[color:var(--tone-indigo-deep)]"
+                            key={skill}
+                          >
+                            {skill}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="rounded-full bg-[color:var(--surface-alt)] px-3 py-1 text-xs font-bold text-[color:var(--ink-muted)]">
+                          Skills pending
                         </span>
-                      ))
-                    ) : (
-                      <span className="rounded-full bg-[color:var(--surface-alt)] px-3 py-1 text-xs font-bold text-[color:var(--ink-muted)]">
-                        Skills pending
-                      </span>
-                    )}
-                  </div>
+                      )}
+                    </div>
 
-                  <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-[color:var(--line-strong)] pt-4 text-xs text-[color:var(--ink-muted)] sm:flex-nowrap sm:text-sm">
-                    <span className="min-w-0 max-w-full rounded-full bg-[color:var(--surface-alt)] px-2.5 py-1.5 font-semibold sm:px-3">
-                      <span className="block truncate">{talent.course}</span>
-                    </span>
-                    <span className="shrink-0 whitespace-nowrap rounded-full bg-[color:var(--surface-alt)] px-2.5 py-1.5 font-semibold sm:px-3">
-                      {talent.servicesCount} services
-                    </span>
-                    <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[color:var(--surface-alt)] px-2.5 py-1.5 font-semibold sm:gap-1.5 sm:px-3">
-                      <Star className="size-3.5 text-[color:var(--brand-orange)] sm:size-4" />
-                      <span>
-                        {talent.rating === null
-                          ? "0.0"
-                          : talent.rating.toFixed(1)}
+                    <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-[color:var(--line-strong)] pt-4 text-xs text-[color:var(--ink-muted)] sm:flex-nowrap sm:text-sm">
+                      <span className="min-w-0 max-w-full rounded-full bg-[color:var(--surface-alt)] px-2.5 py-1.5 font-semibold sm:px-3">
+                        <span className="block truncate">{talent.course}</span>
                       </span>
-                      <span>
-                        ({talent.reviewCount}{" "}
-                        {talent.reviewCount === 1 ? "review" : "reviews"})
+                      <span className="shrink-0 whitespace-nowrap rounded-full bg-[color:var(--surface-alt)] px-2.5 py-1.5 font-semibold sm:px-3">
+                        {talent.servicesCount} services
                       </span>
-                    </span>
-                  </div>
-                </Link>
-              ))}
+                      <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[color:var(--surface-alt)] px-2.5 py-1.5 font-semibold sm:gap-1.5 sm:px-3">
+                        <Star className="size-3.5 text-[color:var(--brand-orange)] sm:size-4" />
+                        <span>
+                          {talent.rating === null
+                            ? "0.0"
+                            : talent.rating.toFixed(1)}
+                        </span>
+                        <span>
+                          ({talent.reviewCount}{" "}
+                          {talent.reviewCount === 1 ? "review" : "reviews"})
+                        </span>
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           ) : (
             <div className="rounded-2xl border border-dashed border-[color:var(--line-strong)] bg-white px-8 py-16 text-center">

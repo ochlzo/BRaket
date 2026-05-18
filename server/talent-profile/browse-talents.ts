@@ -66,6 +66,7 @@ export async function getVerifiedTalentCards(): Promise<VerifiedTalentCard[]> {
       },
       TalentProfile: {
         select: {
+          availabilityStatus: true,
           bio: true,
           college: true,
           course: true,
@@ -101,7 +102,7 @@ export async function getVerifiedTalentCards(): Promise<VerifiedTalentCard[]> {
     const name = displayName(talent);
     const profile = talent.TalentProfile;
     const servicesCount = profile?.Services.length ?? 0;
-    const availability = getTalentAvailability(servicesCount);
+    const availability = getTalentAvailability(profile?.availabilityStatus);
     const reviewCount = talent.TalentReviewsReceived.length;
     const rating =
       reviewCount > 0

@@ -167,7 +167,9 @@ export function mapTalentProfilePageData(
     socialLinkFromRaw("LinkedIn", source.user.linkedin_url),
   ].filter(Boolean) as TalentProfileSocialLink[];
   const services = talentProfile ? buildServices(talentProfile.Services) : [];
-  const availability = getTalentAvailability(services.length);
+  const availability = getTalentAvailability(
+    talentProfile?.availabilityStatus,
+  );
 
   return {
     activeBoost: source.activeBoost ?? null,

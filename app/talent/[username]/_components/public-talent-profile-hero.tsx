@@ -7,6 +7,7 @@ import {
   MapPinIcon,
   StarIcon,
 } from "@/components/shared/icons/marketing-icons";
+import type { TalentAvailabilityStatus } from "@/lib/talent-profile/availability";
 import type { TalentProfilePageData } from "@/lib/talent-profile/types";
 
 type PublicTalentProfileHeroProps = {
@@ -52,12 +53,34 @@ function ordinalYear(value: number | null) {
   return `${value}${suffix} year`;
 }
 
+function availabilityBadgeStyles(status: TalentAvailabilityStatus) {
+  if (status === "BUSY") {
+    return {
+      dot: "bg-[color:var(--tone-orange-base)]",
+      pill: "bg-[color:var(--tone-orange-soft)] text-[color:var(--tone-orange-deep)]",
+    };
+  }
+
+  if (status === "UNAVAILABLE") {
+    return {
+      dot: "bg-[color:var(--tone-red-base)]",
+      pill: "bg-[color:var(--tone-red-soft)] text-[color:var(--tone-red-base)]",
+    };
+  }
+
+  return {
+    dot: "bg-[color:var(--tone-green-base)]",
+    pill: "bg-[color:var(--tone-green-soft)] text-[color:var(--tone-green-deep)]",
+  };
+}
+
 export function PublicTalentProfileHero({
   profile,
 }: PublicTalentProfileHeroProps) {
   const academicLabel = `${ordinalYear(profile.yearLevel)} ${courseAcronym(
     profile.course,
   )}`;
+  const availabilityStyles = availabilityBadgeStyles(profile.availabilityStatus);
 
   return (
     <section className="overflow-hidden bg-[color:var(--surface)] sm:rounded-[1.4rem] sm:border sm:border-[color:var(--line-strong)] sm:shadow-[var(--shadow-panel-elevated)]">
@@ -113,18 +136,10 @@ export function PublicTalentProfileHero({
 
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-[color:var(--ink-muted)]">
               <span
-                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ${
-                  profile.isAvailable
-                    ? "bg-[color:var(--tone-green-soft)] text-[color:var(--tone-green-deep)]"
-                    : "bg-[color:var(--tone-red-soft)] text-[color:var(--tone-red-base)]"
-                }`}
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ${availabilityStyles.pill}`}
               >
                 <span
-                  className={`h-2 w-2 rounded-full ${
-                    profile.isAvailable
-                      ? "bg-[color:var(--tone-green-base)]"
-                      : "bg-[color:var(--tone-red-base)]"
-                  }`}
+                  className={`h-2 w-2 rounded-full ${availabilityStyles.dot}`}
                 />
                 {profile.availabilityLabel}
               </span>

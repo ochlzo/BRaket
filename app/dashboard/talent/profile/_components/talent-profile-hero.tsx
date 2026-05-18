@@ -16,8 +16,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  talentAvailabilityOptions,
+  type TalentAvailabilityStatus,
+} from "@/lib/talent-profile/availability";
 import type { TalentProfilePageData } from "@/lib/talent-profile/types";
 import type { CurrentAppUser } from "@/server/users/current-user";
+
+import { updateTalentAvailabilityAction } from "../_actions/update-talent-availability-action";
 
 type TalentProfileHeroProps = {
   profile: TalentProfilePageData;
@@ -91,11 +97,34 @@ function projectsCompletedLabel(count: number) {
   return `${count} ${count === 1 ? "project" : "projects"} completed`;
 }
 
+function availabilityBadgeStyles(status: TalentAvailabilityStatus) {
+  if (status === "BUSY") {
+    return {
+      dot: "bg-[color:var(--tone-orange-base)]",
+      pill: "bg-[color:var(--tone-orange-soft)] text-[color:var(--tone-orange-deep)]",
+    };
+  }
+
+  if (status === "UNAVAILABLE") {
+    return {
+      dot: "bg-[color:var(--tone-red-base)]",
+      pill: "bg-[color:var(--tone-red-soft)] text-[color:var(--tone-red-base)]",
+    };
+  }
+
+  return {
+    dot: "bg-[color:var(--tone-green-base)]",
+    pill: "bg-[color:var(--tone-green-soft)] text-[color:var(--tone-green-deep)]",
+  };
+}
+
 export function TalentProfileHero({ profile, user }: TalentProfileHeroProps) {
   const router = useRouter();
   const headline = profile.headline || "Talent profile";
   const location = profileLocation(profile);
   const academicLabel = `${ordinalYear(profile.yearLevel)} ${courseAcronym(profile.course)}`;
+  const availabilityStyles = availabilityBadgeStyles(profile.availabilityStatus);
+
   function renderProfileMenu() {
     return (
       <DropdownMenu>
@@ -186,20 +215,42 @@ export function TalentProfileHero({ profile, user }: TalentProfileHeroProps) {
               <div className="hidden sm:block">{renderProfileMenu()}</div>
             </div>
 
+            <form
+              action={updateTalentAvailabilityAction}
+              className="flex flex-wrap items-center gap-2"
+            >
+              <label
+                className="text-xs font-bold uppercase tracking-normal text-[color:var(--ink-muted)]"
+                htmlFor="talent-availability-status"
+              >
+                Availability
+              </label>
+              <select
+                className="h-10 rounded-full border border-[color:var(--line-strong)] bg-white px-3 text-sm font-semibold text-foreground outline-none transition focus:border-[color:var(--brand-blue)]"
+                defaultValue={profile.availabilityStatus}
+                id="talent-availability-status"
+                name="availabilityStatus"
+              >
+                {talentAvailabilityOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              <button
+                className="h-10 rounded-full bg-[color:var(--brand-orange)] px-4 text-sm font-bold text-white transition hover:bg-[color:var(--brand-orange-strong)]"
+                type="submit"
+              >
+                Save status
+              </button>
+            </form>
+
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-[color:var(--ink-muted)]">
               <span
-                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ${
-                  profile.isAvailable
-                    ? "bg-[color:var(--tone-green-soft)] text-[color:var(--tone-green-deep)]"
-                    : "bg-[color:var(--tone-red-soft)] text-[color:var(--tone-red-base)]"
-                }`}
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ${availabilityStyles.pill}`}
               >
                 <span
-                  className={`h-2 w-2 rounded-full ${
-                    profile.isAvailable
-                      ? "bg-[color:var(--tone-green-base)]"
-                      : "bg-[color:var(--tone-red-base)]"
-                  }`}
+                  className={`h-2 w-2 rounded-full ${availabilityStyles.dot}`}
                 />
                 {profile.availabilityLabel}
               </span>

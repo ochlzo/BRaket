@@ -118,24 +118,25 @@ model ClientPortfolioMedia {
 }
 
 model TalentProfile {
-  talent_profile_id           String            @unique
-  user_id                     String            @unique
+  talent_profile_id           String                   @unique
+  user_id                     String                   @unique
+  availabilityStatus          TalentAvailabilityStatus @default(AVAILABLE) @map("availability_status")
   headline                    String
   college                     String
   course                      String
   year_level                  Int
   website                     String?
   talent_avg_rating           Float?
-  talent_review_count         Int               @default(0)
-  completed_commissions_count Int               @default(0)
+  talent_review_count         Int                      @default(0)
+  completed_commissions_count Int                      @default(0)
   talent_reputation_score     Float?
-  createdAt                   DateTime          @default(now())
+  createdAt                   DateTime                 @default(now())
   updatedAt                   DateTime
-  bu_email                    String?            @unique
+  bu_email                    String?                  @unique
   bio                         String
   Services                    Service[]
   TalentPortfolio             TalentPortfolio[]
-  User                        User              @relation(fields: [user_id], references: [userId], onDelete: Cascade)
+  User                        User                     @relation(fields: [user_id], references: [userId], onDelete: Cascade)
   TalentSkills                TalentSkill[]
 
   @@id([talent_profile_id, user_id])
@@ -325,6 +326,14 @@ enum ProficiencyLevel {
   EXPERT
 
   @@map("proficiency_level")
+}
+
+enum TalentAvailabilityStatus {
+  AVAILABLE
+  BUSY
+  UNAVAILABLE
+
+  @@map("talent_availability_status")
 }
 
 enum TalentVerificationStatus {

@@ -1,4 +1,5 @@
 import type { BookingStatus, ReviewTarget } from "@prisma/client";
+import type { TalentAvailabilityStatus } from "@/lib/talent-profile/availability";
 
 export type BookingActionState = {
   message: string;
@@ -45,8 +46,11 @@ export type BookingServiceSummary = {
   id: string;
   priceLabel: string;
   talent: BookingParty & {
+    availabilityLabel: string;
+    availabilityStatus: TalentAvailabilityStatus;
     headline: string;
     isVerified: boolean;
+    isBookable: boolean;
     profileHref: string;
     servicesHref: string;
   };
