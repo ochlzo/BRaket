@@ -14,10 +14,17 @@ export async function updateTalentAvailabilityAction(formData: FormData) {
     throw new Error("Choose a valid availability status.");
   }
 
-  await prisma.talentProfile.updateMany({
-    data: { availabilityStatus: status },
-    where: { user_id: user.id },
-  });
+  const updatedRows = await prisma.$executeRaw`
+    update "TalentProfile"
+    set
+      "availability_status" = cast(${status} as talent_availability_status),
+      "updatedAt" = now()
+    where "user_id" = ${user.id}
+  `;
+
+  if (updatedRows === 0) {
+    throw new Error("We could not find your talent profile.");
+  }
 
   revalidatePath("/browse");
   revalidatePath("/dashboard/talent/profile");
