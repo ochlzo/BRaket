@@ -7,6 +7,7 @@ import {
   MapPinIcon,
   StarIcon,
 } from "@/components/shared/icons/marketing-icons";
+import { getBoostProfileStyle } from "@/lib/talent-profile/boost-profile-style";
 import type { TalentAvailabilityStatus } from "@/lib/talent-profile/availability";
 import type { TalentProfilePageData } from "@/lib/talent-profile/types";
 
@@ -81,9 +82,12 @@ export function PublicTalentProfileHero({
     profile.course,
   )}`;
   const availabilityStyles = availabilityBadgeStyles(profile.availabilityStatus);
+  const boostStyle = getBoostProfileStyle(profile.activeBoost?.slug);
 
   return (
-    <section className="overflow-hidden bg-[color:var(--surface)] sm:rounded-[1.4rem] sm:border sm:border-[color:var(--line-strong)] sm:shadow-[var(--shadow-panel-elevated)]">
+    <section
+      className={`overflow-hidden bg-[color:var(--surface)] sm:rounded-[1.4rem] sm:border sm:border-[color:var(--line-strong)] sm:shadow-[var(--shadow-panel-elevated)] ${boostStyle.frame}`}
+    >
       <div
         className="relative min-h-40 overflow-hidden sm:min-h-52"
         style={coverBackgroundStyle(profile.backgroundImageUrl)}
@@ -96,7 +100,7 @@ export function PublicTalentProfileHero({
           <div className="relative shrink-0 self-start">
             <UserAvatar
               alt={profile.displayName}
-              className="h-24 w-24 rounded-3xl border-4 border-white bg-[color:var(--surface-alt)] shadow-lg after:rounded-3xl sm:h-40 sm:w-40"
+              className={`h-24 w-24 rounded-3xl border-4 border-white bg-[color:var(--surface-alt)] shadow-lg after:rounded-3xl sm:h-40 sm:w-40 ${boostStyle.avatar}`}
               fallbackClassName="rounded-3xl text-2xl font-black text-[color:var(--ink-muted)] sm:text-4xl"
               imageClassName="rounded-3xl"
               initials={`${profile.firstName[0] ?? ""}${profile.lastName[0] ?? ""}`}
@@ -119,7 +123,9 @@ export function PublicTalentProfileHero({
                   {profile.headline || "Talent profile"}
                 </p>
                 {profile.activeBoost ? (
-                  <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[color:var(--tone-orange-soft)] px-3 py-1.5 text-xs font-bold text-[color:var(--tone-orange-deep)]">
+                  <div
+                    className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ${boostStyle.badge}`}
+                  >
                     <Sparkles aria-hidden="true" className="h-3.5 w-3.5" />
                     {profile.activeBoost.badgeLabel}
                   </div>

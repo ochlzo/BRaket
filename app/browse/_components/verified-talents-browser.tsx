@@ -6,6 +6,7 @@ import { useState } from "react";
 
 import { UserAvatar } from "@/components/shared/user-avatar";
 import type { TalentAvailabilityStatus } from "@/lib/talent-profile/availability";
+import { getBoostProfileStyle } from "@/lib/talent-profile/boost-profile-style";
 import type { VerifiedTalentCard } from "@/server/talent-profile/browse-talents";
 
 type VerifiedTalentsBrowserProps = {
@@ -102,17 +103,20 @@ export function VerifiedTalentsBrowser({
                 const availabilityStyles = availabilityBadgeStyles(
                   talent.availabilityStatus,
                 );
+                const boostStyle = getBoostProfileStyle(
+                  talent.activeBoost?.slug,
+                );
 
                 return (
                   <Link
-                    className="block rounded-2xl border border-[color:var(--line-strong)] bg-white p-5 shadow-[var(--shadow-surface-soft)] transition hover:-translate-y-1 hover:shadow-[var(--shadow-panel-soft)] sm:p-6"
+                    className={`block rounded-2xl border border-[color:var(--line-strong)] bg-white p-5 shadow-[var(--shadow-surface-soft)] transition hover:-translate-y-1 hover:shadow-[var(--shadow-panel-soft)] sm:p-6 ${boostStyle.frame}`}
                     href={talent.profileHref}
                     key={talent.userId}
                   >
                     <div className="flex items-start gap-4">
                       <UserAvatar
                         alt={talent.displayName}
-                        className="h-16 w-16 rounded-2xl"
+                        className={`h-16 w-16 rounded-2xl border-2 border-transparent ${boostStyle.avatar}`}
                         fallbackClassName="rounded-2xl bg-[color:var(--tone-orange-soft)] text-lg font-black text-[color:var(--tone-orange-deep)]"
                         imageClassName="rounded-2xl object-cover"
                         initials={talent.initials}
@@ -125,7 +129,9 @@ export function VerifiedTalentsBrowser({
                           </h2>
                           <ShieldCheck className="size-4 shrink-0 text-[color:var(--tone-green-deep)]" />
                           {talent.activeBoost ? (
-                            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[color:var(--tone-orange-soft)] px-2.5 py-1 text-xs font-bold text-[color:var(--tone-orange-deep)]">
+                            <span
+                              className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold ${boostStyle.badge}`}
+                            >
                               <Sparkles
                                 aria-hidden="true"
                                 className="size-3.5"
