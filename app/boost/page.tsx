@@ -16,6 +16,15 @@ import { getCurrentAppUser } from "@/server/users/current-user";
 
 const planTones: ToneName[] = ["orange", "indigo", "green"];
 
+const activePlanFrameStyles: Partial<Record<ToneName, string>> = {
+  green:
+    "border-[color:var(--tone-green-base)] ring-2 ring-[color:var(--tone-green-base)]/25",
+  indigo:
+    "border-[color:var(--tone-indigo-base)] ring-2 ring-[color:var(--tone-indigo-base)]/25",
+  orange:
+    "border-[color:var(--tone-orange-base)] ring-2 ring-[color:var(--tone-orange-base)]/25",
+};
+
 async function getCurrentBoostSlug() {
   const user = await getCurrentAppUser();
 
@@ -79,7 +88,8 @@ export default async function BoostPage() {
       <section className="px-5 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-3">
           {boostPlans.map((plan, index) => {
-            const tone = toneStyles[planTones[index] ?? "sky"];
+            const planTone = planTones[index] ?? "sky";
+            const tone = toneStyles[planTone];
             const isActivePlan = plan.slug === activeBoostSlug;
 
             return (
@@ -87,7 +97,7 @@ export default async function BoostPage() {
                 key={plan.slug}
                 className={`${tone.card} flex h-full flex-col rounded-[1.75rem] border p-8 shadow-[var(--shadow-panel-soft)] transition ${
                   isActivePlan
-                    ? "border-[color:var(--brand-orange)] ring-2 ring-[color:var(--brand-orange)]/25"
+                    ? activePlanFrameStyles[planTone] ?? "border-[color:var(--line-strong)]"
                     : "border-transparent"
                 }`}
               >
@@ -103,7 +113,7 @@ export default async function BoostPage() {
                   <div
                     className={`inline-flex items-center gap-1.5 rounded-full bg-[color:var(--surface)] px-3 py-1.5 text-sm font-bold ${
                       isActivePlan
-                        ? "text-[color:var(--brand-orange)]"
+                        ? tone.text
                         : "text-foreground"
                     }`}
                   >
