@@ -25,8 +25,10 @@ function formatPrice(service: TalentProfileServiceItem) {
   )}`;
 }
 
-function categoryLabel(service: TalentProfileServiceItem) {
-  return service.categories[0] || "Service";
+function serviceCategories(service: TalentProfileServiceItem) {
+  return service.categories.length > 0
+    ? service.categories.slice(0, 3)
+    : ["Service"];
 }
 
 function TalentServiceCard({
@@ -39,9 +41,18 @@ function TalentServiceCard({
   return (
     <article className="rounded-[1.1rem] border border-[color:var(--line-strong)] bg-[color:var(--surface)] p-4 shadow-[var(--shadow-surface-soft)]">
       <div className="flex items-start justify-between gap-3">
-        <span className="inline-flex max-w-[65%] items-center rounded-full bg-[color:var(--tone-orange-pale)] px-3 py-1.5 text-xs font-bold text-[color:var(--tone-orange-deep)]">
-          <span className="truncate">{categoryLabel(service)}</span>
-        </span>
+        <div className="grid min-w-0 flex-1 grid-cols-2 gap-1.5">
+          {serviceCategories(service).map((category, index) => (
+            <span
+              className={`min-w-0 rounded-full bg-[color:var(--tone-orange-pale)] px-3 py-1.5 text-center text-xs font-bold text-[color:var(--tone-orange-deep)] ${
+                index === 2 ? "col-span-2 w-fit max-w-full" : ""
+              }`}
+              key={category}
+            >
+              <span className="block truncate">{category}</span>
+            </span>
+          ))}
+        </div>
         <div className="flex shrink-0 items-center gap-2">
           <span className="text-sm font-extrabold text-[color:var(--foreground)]">
             {formatPrice(service)}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import type { CategoryOption } from "@/app/onboarding/talent/_lib/get-category-options";
+import { TALENT_SERVICE_MAX_CATEGORIES } from "@/app/onboarding/talent/_lib/talent-service-step";
 import {
   Combobox,
   ComboboxChip,
@@ -13,8 +14,6 @@ import {
   useComboboxAnchor,
 } from "@/components/ui/combobox";
 import { Label } from "@/components/ui/label";
-
-const MAX_CATEGORY_SELECTIONS = 5;
 
 type TalentServiceCategorySelectorProps = {
   availableCategories: CategoryOption[];
@@ -37,7 +36,7 @@ export function TalentServiceCategorySelector({
     category.name.toLowerCase().includes(categorySearch.toLowerCase()),
   );
   const hasReachedCategoryLimit =
-    selectedCategoryIds.length >= MAX_CATEGORY_SELECTIONS;
+    selectedCategoryIds.length >= TALENT_SERVICE_MAX_CATEGORIES;
 
   function handleCategorySearchChange(value: string) {
     setCategorySearch(value);
@@ -48,8 +47,10 @@ export function TalentServiceCategorySelector({
   }
 
   function handleCategoryValueChange(value: string[]) {
-    if (value.length > MAX_CATEGORY_SELECTIONS) {
-      setCategoryError(`Select up to ${MAX_CATEGORY_SELECTIONS} categories.`);
+    if (value.length > TALENT_SERVICE_MAX_CATEGORIES) {
+      setCategoryError(
+        `Select up to ${TALENT_SERVICE_MAX_CATEGORIES} categories.`,
+      );
       return;
     }
 
@@ -136,8 +137,8 @@ export function TalentServiceCategorySelector({
 
       <div className="space-y-1">
         <p className="text-xs text-[color:var(--tone-red-base)]">
-          ({selectedCategoryIds.length}/{MAX_CATEGORY_SELECTIONS} selected,
-          minimum 1)
+          ({selectedCategoryIds.length}/{TALENT_SERVICE_MAX_CATEGORIES}{" "}
+          selected, minimum 1)
         </p>
         {categoryError ? (
           <p className="text-xs text-[color:var(--tone-red-base)]">

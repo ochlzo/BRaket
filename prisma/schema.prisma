@@ -114,6 +114,7 @@ model TalentProfile {
   talent_reputation_score     Float?
   createdAt                   DateTime          @default(now())
   updatedAt                   DateTime
+  bu_email                    String?            @unique
   bio                         String
   Services                    Service[]
   TalentPortfolio             TalentPortfolio[]

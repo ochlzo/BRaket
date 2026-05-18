@@ -14,6 +14,7 @@ export type AdminContentReport = {
   reviewedByEmail: string;
   status: string;
   targetId: string;
+  targetAudience: "client" | "talent" | "unknown";
   targetLabel: string;
   targetPath: string;
   targetType: string;
@@ -45,6 +46,27 @@ export async function getAdminContentReports(): Promise<AdminContentReport[]> {
     orderBy: [{ status: "asc" }, { createdAt: "desc" }],
     take: 50,
   });
+  const profileTargetIds = reports
+    .filter((report) => report.targetType === "PROFILE")
+    .map((report) => report.targetId);
+  const profileTargets = profileTargetIds.length
+    ? await prisma.user.findMany({
+        select: {
+          is_talent: true,
+          userId: true,
+        },
+        where: { userId: { in: profileTargetIds } },
+      })
+    : [];
+  const profileAudienceById = new Map<
+    string,
+    AdminContentReport["targetAudience"]
+  >(
+    profileTargets.map((user) => [
+      user.userId,
+      user.is_talent ? "talent" : "client",
+    ]),
+  );
 
   return reports.map((report) => ({
     adminNotes: report.adminNotes ?? "",
@@ -58,6 +80,10 @@ export async function getAdminContentReports(): Promise<AdminContentReport[]> {
     reviewedByEmail: report.reviewedByEmail ?? "",
     status: report.status,
     targetId: report.targetId,
+    targetAudience:
+      report.targetType === "PROFILE"
+        ? (profileAudienceById.get(report.targetId) ?? "unknown")
+        : "unknown",
     targetLabel: report.targetLabel,
     targetPath: report.targetPath ?? "",
     targetType: report.targetType,

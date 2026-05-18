@@ -24,7 +24,9 @@ export function ClientProfilePageContent({
         averageRating={profile.averageRating}
         emptyLabel="No talent reviews yet"
         id="client-reviews"
+        initialVisibleCount={3}
         reputationLabel={profile.reputationLabel}
+        revealCount={10}
         reviews={profile.receivedReviews}
         title="Talent Reviews"
       />

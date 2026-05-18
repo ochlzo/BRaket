@@ -92,6 +92,21 @@ test("rejects no selected categories", () => {
   assert.equal(result.fieldErrors?.categories, "Select at least 1 category.");
 });
 
+test("rejects more than three selected categories", () => {
+  const result = validateTalentServiceStepInput({
+    categoryIds: ["category-1", "category-2", "category-3", "category-4"],
+    description: "Poster package with source files.",
+    files: [],
+    maxPrice: "1500",
+    minPrice: "500",
+    priceUnit: "PER_PROJECT",
+    title: "Event poster design",
+  });
+
+  assert.equal(result.ok, false);
+  assert.equal(result.fieldErrors?.categories, "Select up to 3 categories.");
+});
+
 test("rejects category values that are not existing category ids", () => {
   const result = validateTalentServiceCategorySelection(
     {

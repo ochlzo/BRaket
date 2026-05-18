@@ -6,6 +6,7 @@ export const TALENT_SERVICE_MEDIA_ACCEPTED_TYPES = [
 
 export const TALENT_SERVICE_MEDIA_MAX_IMAGES = 10;
 export const TALENT_SERVICE_MEDIA_MAX_BYTES = 5 * 1024 * 1024;
+export const TALENT_SERVICE_MAX_CATEGORIES = 3;
 
 export const TALENT_SERVICE_PRICE_UNITS = [
   "FIXED",
@@ -235,6 +236,8 @@ export function validateTalentServiceStepInput(
 
   if (input.categoryIds.length === 0) {
     fieldErrors.categories = "Select at least 1 category.";
+  } else if (input.categoryIds.length > TALENT_SERVICE_MAX_CATEGORIES) {
+    fieldErrors.categories = `Select up to ${TALENT_SERVICE_MAX_CATEGORIES} categories.`;
   }
 
   if (!input.minPrice) {

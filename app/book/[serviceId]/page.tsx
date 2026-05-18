@@ -10,6 +10,10 @@ import { getBookingServiceSummary } from "@/server/bookings/data";
 
 type Props = { params: Promise<{ serviceId: string }> };
 
+function serviceCategories(categories: string[]) {
+  return categories.length > 0 ? categories.slice(0, 3) : ["Service"];
+}
+
 export default async function BookingRequestPage({ params }: Props) {
   const { serviceId } = await params;
   const service = await getBookingServiceSummary(serviceId);
@@ -76,9 +80,18 @@ export default async function BookingRequestPage({ params }: Props) {
                       />
                     </div>
                     <div className="space-y-3">
-                      <span className="inline-block rounded-full bg-[color:var(--tone-indigo-soft)] px-3 py-1 text-xs font-semibold text-[color:var(--tone-indigo-deep)]">
-                        {service.categories[0] ?? "Service"}
-                      </span>
+                      <div className="grid grid-cols-2 gap-1.5">
+                        {serviceCategories(service.categories).map((category, index) => (
+                          <span
+                            className={`min-w-0 rounded-full bg-[color:var(--tone-indigo-soft)] px-3 py-1 text-center text-xs font-semibold text-[color:var(--tone-indigo-deep)] ${
+                              index === 2 ? "col-span-2 w-fit max-w-full" : ""
+                            }`}
+                            key={category}
+                          >
+                            <span className="block truncate">{category}</span>
+                          </span>
+                        ))}
+                      </div>
                       <h3 className="text-lg font-bold text-foreground">
                         {service.title}
                       </h3>
