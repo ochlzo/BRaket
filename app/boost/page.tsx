@@ -41,9 +41,9 @@ export default function BoostPage() {
                 <CreditCardIcon aria-hidden="true" className="h-6 w-6" />
               </div>
               <div>
-                <p className="typo-label-sm text-foreground">Checkout amounts</p>
+                <p className="typo-label-sm text-foreground">Secure checkout</p>
                 <p className="typo-meta text-[color:var(--ink-muted)]">
-                  PayMongo receives values in centavos.
+                  Pay with PayMongo and activate your profile boost after confirmation.
                 </p>
               </div>
             </div>
@@ -82,9 +82,6 @@ export default function BoostPage() {
                 <div className="mt-7">
                   <p className="text-4xl font-bold text-foreground">
                     {formatBoostPlanPrice(plan)}
-                  </p>
-                  <p className="typo-meta mt-2 text-[color:var(--ink-muted)]">
-                    PayMongo amount: {plan.amount} centavos
                   </p>
                 </div>
 
