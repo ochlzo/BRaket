@@ -5,6 +5,7 @@ import type { CurrentAppUser } from "@/server/users/current-user";
 
 import { mapClientProfilePageData } from "@/lib/client-profile/mappers";
 import type { ClientProfilePageData } from "@/lib/client-profile/types";
+import { countActionedProfileReportsForUser } from "@/server/moderation/profile-reputation";
 
 export async function getClientProfilePageData(
   currentUser: CurrentAppUser,
@@ -58,6 +59,7 @@ export async function getClientProfilePageData(
   if (!user) {
     return mapClientProfilePageData({
       clientProfile: null,
+      profileReportCount: 0,
       user: {
         address: null,
         authId: currentUser.authId,
@@ -82,8 +84,13 @@ export async function getClientProfilePageData(
     });
   }
 
+  const profileReportCount = await countActionedProfileReportsForUser(
+    user.userId,
+  );
+
   return mapClientProfilePageData({
     clientProfile: user.ClientProfile,
+    profileReportCount,
     user: {
       address: null,
       authId: user.authId,
@@ -167,8 +174,13 @@ export async function getPublicClientProfilePageData(
     return null;
   }
 
+  const profileReportCount = await countActionedProfileReportsForUser(
+    user.userId,
+  );
+
   return mapClientProfilePageData({
     clientProfile: user.ClientProfile,
+    profileReportCount,
     user: {
       address: user.address ?? null,
       authId: user.authId,

@@ -60,6 +60,7 @@ export type TalentProfilePageData = {
   backgroundImageUrl: string;
   bio: string;
   college: string;
+  contactNum: string;
   course: string;
   displayName: string;
   email: string;
@@ -74,6 +75,7 @@ export type TalentProfilePageData = {
   linkedinUrl: string;
   portfolio: TalentProfilePortfolioItem[];
   receivedReviews: TalentProfileReviewItem[];
+  reputationScore: number;
   reputationLabel: string;
   services: TalentProfileServiceItem[];
   talentAvgRating: number | null;
@@ -90,10 +92,12 @@ export type TalentProfilePageData = {
 
 export type TalentProfilePageSource = {
   activeBoost?: TalentProfileBoost | null;
+  profileReportCount: number;
   user: {
     authId: string;
     avatarUrl: string | null;
     background_img_url: string | null;
+    contactNum: string | null;
     createdAt: Date;
     email: string;
     facebook_url: string | null;

@@ -9,6 +9,7 @@ const { mapClientProfilePageData } = mappersModule;
 
 test("maps client profile records into a page model", () => {
   const result = mapClientProfilePageData({
+    profileReportCount: 0,
     user: {
       address: "Legazpi City",
       authId: "auth-1",

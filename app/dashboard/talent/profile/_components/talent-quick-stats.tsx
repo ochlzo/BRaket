@@ -19,6 +19,10 @@ export function TalentQuickStats({ profile }: TalentQuickStatsProps) {
       value: profile.services.length.toString(),
     },
     {
+      label: "Reputation Score",
+      value: profile.reputationScore.toFixed(0),
+    },
+    {
       label: "Total Reviews",
       value: profile.talentReviewCount.toString(),
     },

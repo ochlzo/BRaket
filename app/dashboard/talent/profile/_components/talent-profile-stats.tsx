@@ -62,7 +62,6 @@ function StatCard({
 export function TalentProfileStats({ profile }: TalentProfileStatsProps) {
   const reviewCount = profile.talentReviewCount;
   const rating = profile.talentAvgRating ?? 0;
-  const reputationScore = reviewCount > 0 ? rating * 20 : 0;
 
   return (
     <section
@@ -80,8 +79,8 @@ export function TalentProfileStats({ profile }: TalentProfileStatsProps) {
       <StatCard
         icon={<Award className="size-5" />}
         label="Reputation score"
-        note="Measured from completed work and profile activity"
-        value={reputationScore.toFixed(0)}
+        note="Reduced only by admin-actioned profile reports"
+        value={profile.reputationScore.toFixed(0)}
       />
       <StatCard
         icon={<BriefcaseBusiness className="size-5" />}

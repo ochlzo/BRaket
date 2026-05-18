@@ -6,6 +6,7 @@ import type {
   TalentProfileServiceItem,
   TalentProfileSocialLink,
 } from "./types";
+import { calculateReportBasedReputationScore } from "../reputation-score";
 import { DEFAULT_PROFILE_COVER_BACKGROUND } from "@/lib/profile-cover";
 
 export const DEFAULT_TALENT_COVER_BACKGROUND =
@@ -175,6 +176,7 @@ export function mapTalentProfilePageData(
       DEFAULT_TALENT_COVER_BACKGROUND,
     bio: compactText(talentProfile?.bio),
     college: compactText(talentProfile?.college),
+    contactNum: compactText(source.user.contactNum),
     course: compactText(talentProfile?.course),
     displayName: displayName(firstName, lastName, username),
     email: source.user.email,
@@ -194,6 +196,9 @@ export function mapTalentProfilePageData(
       ? buildPortfolioItems(talentProfile.TalentPortfolio)
       : [],
     receivedReviews,
+    reputationScore: calculateReportBasedReputationScore(
+      source.profileReportCount,
+    ),
     reputationLabel: reputationLabel(talentAvgRating, talentReviewCount),
     services: talentProfile ? buildServices(talentProfile.Services) : [],
     talentAvgRating,

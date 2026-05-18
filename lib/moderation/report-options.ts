@@ -11,7 +11,6 @@ export const reportReasons = [
 
 export const reportStatuses = [
   { label: "Pending", value: "PENDING" },
-  { label: "Reviewed", value: "REVIEWED" },
   { label: "Actioned", value: "ACTIONED" },
   { label: "Dismissed", value: "DISMISSED" },
 ] as const;

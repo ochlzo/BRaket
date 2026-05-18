@@ -82,7 +82,7 @@ export type ClientProfilePageData = {
   organizationName: string;
   portfolio: ClientProfilePortfolioItem[];
   receivedReviews: ClientProfileReviewItem[];
-  reputationScore: number | null;
+  reputationScore: number;
   reputationLabel: string;
   reviewCount: number;
   socialLinks: ClientProfileSocialLink[];
@@ -94,6 +94,7 @@ export type ClientProfilePageData = {
 };
 
 export type ClientProfilePageSource = {
+  profileReportCount: number;
   user: {
     address: string | null;
     authId: string;

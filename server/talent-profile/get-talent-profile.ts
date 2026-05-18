@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { mapTalentProfilePageData } from "@/lib/talent-profile/mappers";
 import type { TalentProfilePageData } from "@/lib/talent-profile/types";
 import { getActiveBoostForTalentProfile } from "@/server/boosts/boost";
+import { countActionedProfileReportsForUser } from "@/server/moderation/profile-reputation";
 import type { CurrentAppUser } from "@/server/users/current-user";
 
 export async function getTalentProfilePageData(
@@ -75,11 +76,13 @@ export async function getTalentProfilePageData(
   if (!user) {
     return mapTalentProfilePageData({
       activeBoost: null,
+      profileReportCount: 0,
       talentProfile: null,
       user: {
         authId: currentUser.authId,
         avatarUrl: currentUser.avatarUrl || null,
         background_img_url: null,
+        contactNum: null,
         createdAt: new Date(currentUser.createdAt),
         email: currentUser.email,
         facebook_url: null,
@@ -103,14 +106,19 @@ export async function getTalentProfilePageData(
         user.TalentProfile.talent_profile_id,
       )
     : null;
+  const profileReportCount = await countActionedProfileReportsForUser(
+    user.userId,
+  );
 
   return mapTalentProfilePageData({
     activeBoost,
+    profileReportCount,
     talentProfile: user.TalentProfile,
     user: {
       authId: user.authId,
       avatarUrl: user.avatarUrl ?? null,
       background_img_url: user.background_img_url ?? null,
+      contactNum: user.contactNum ?? null,
       createdAt: user.createdAt,
       email: user.email,
       facebook_url: user.facebook_url ?? null,
@@ -208,14 +216,19 @@ export async function getPublicTalentProfilePageData(
   const activeBoost = await getActiveBoostForTalentProfile(
     user.TalentProfile.talent_profile_id,
   );
+  const profileReportCount = await countActionedProfileReportsForUser(
+    user.userId,
+  );
 
   return mapTalentProfilePageData({
     activeBoost,
+    profileReportCount,
     talentProfile: user.TalentProfile,
     user: {
       authId: user.authId,
       avatarUrl: user.avatarUrl ?? null,
       background_img_url: user.background_img_url ?? null,
+      contactNum: user.contactNum ?? null,
       createdAt: user.createdAt,
       email: user.email,
       facebook_url: user.facebook_url ?? null,

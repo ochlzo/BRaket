@@ -6,6 +6,7 @@ import type {
   ClientProfileReviewItem,
   ClientProfileSocialLink,
 } from "./types";
+import { calculateReportBasedReputationScore } from "../reputation-score";
 import { DEFAULT_PROFILE_COVER_BACKGROUND } from "@/lib/profile-cover";
 
 export const DEFAULT_COVER_BACKGROUND = DEFAULT_PROFILE_COVER_BACKGROUND;
@@ -173,7 +174,9 @@ export function mapClientProfilePageData(
       ? buildPortfolioItems(clientProfile.ClientPortfolio)
       : [],
     receivedReviews,
-    reputationScore: averageRating ? averageRating * 20 : null,
+    reputationScore: calculateReportBasedReputationScore(
+      source.profileReportCount,
+    ),
     reputationLabel: reputationLabel(averageRating, reviewCount),
     reviewCount,
     socialLinks,

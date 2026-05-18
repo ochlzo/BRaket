@@ -58,6 +58,9 @@ export function PublicTalentProfileHero({
   const academicLabel = `${ordinalYear(profile.yearLevel)} ${courseAcronym(
     profile.course,
   )}`;
+  const contactLabel = [profile.email, profile.contactNum]
+    .filter(Boolean)
+    .join(" • ");
 
   return (
     <section className="overflow-hidden bg-[color:var(--surface)] sm:rounded-[1.4rem] sm:border sm:border-[color:var(--line-strong)] sm:shadow-[var(--shadow-panel-elevated)]">
@@ -95,6 +98,11 @@ export function PublicTalentProfileHero({
                 <p className="mt-1 break-words text-sm font-medium text-[color:var(--ink-muted)] sm:text-lg">
                   {profile.headline || "Talent profile"}
                 </p>
+                {contactLabel ? (
+                  <p className="mt-1 break-words text-sm font-semibold text-[color:var(--ink-body)]">
+                    {contactLabel}
+                  </p>
+                ) : null}
                 {profile.activeBoost ? (
                   <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[color:var(--tone-orange-soft)] px-3 py-1.5 text-xs font-bold text-[color:var(--tone-orange-deep)]">
                     <Sparkles aria-hidden="true" className="h-3.5 w-3.5" />

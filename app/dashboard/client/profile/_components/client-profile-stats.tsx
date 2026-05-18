@@ -78,8 +78,8 @@ export function ClientProfileStats({ profile }: ClientProfileStatsProps) {
       <StatCard
         icon={<Award className="size-5" />}
         label="Reputation score"
-        note="Measured from completed work and profile activity"
-        value={profile.reputationScore?.toFixed(0) ?? "0"}
+        note="Reduced only by admin-actioned profile reports"
+        value={profile.reputationScore.toFixed(0)}
       />
       <StatCard
         icon={<MessageSquareText className="size-5" />}
