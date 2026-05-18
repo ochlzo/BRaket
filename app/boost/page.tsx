@@ -8,10 +8,35 @@ import {
 import { appNavigation } from "@/lib/content/navigation";
 import { semantic } from "@/lib/theme/semantic";
 import { toneStyles, type ToneName } from "@/lib/theme/tailwind";
+import {
+  getActiveBoostForTalentProfile,
+  getTalentProfileIdForUser,
+} from "@/server/boosts/boost";
+import { getCurrentAppUser } from "@/server/users/current-user";
 
 const planTones: ToneName[] = ["orange", "indigo", "green"];
 
-export default function BoostPage() {
+async function getCurrentBoostSlug() {
+  const user = await getCurrentAppUser();
+
+  if (!user?.isTalent) {
+    return null;
+  }
+
+  const talentProfileId = await getTalentProfileIdForUser(user.id);
+
+  if (!talentProfileId) {
+    return null;
+  }
+
+  const activeBoost = await getActiveBoostForTalentProfile(talentProfileId);
+
+  return activeBoost?.slug ?? null;
+}
+
+export default async function BoostPage() {
+  const activeBoostSlug = await getCurrentBoostSlug();
+
   return (
     <PageShell
       activeHref="/boost"
@@ -55,11 +80,16 @@ export default function BoostPage() {
         <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-3">
           {boostPlans.map((plan, index) => {
             const tone = toneStyles[planTones[index] ?? "sky"];
+            const isActivePlan = plan.slug === activeBoostSlug;
 
             return (
               <article
                 key={plan.slug}
-                className={`${tone.card} flex h-full flex-col rounded-[1.75rem] p-8 shadow-[var(--shadow-panel-soft)]`}
+                className={`${tone.card} flex h-full flex-col rounded-[1.75rem] border p-8 shadow-[var(--shadow-panel-soft)] transition ${
+                  isActivePlan
+                    ? "border-[color:var(--brand-orange)] ring-2 ring-[color:var(--brand-orange)]/25"
+                    : "border-transparent"
+                }`}
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -70,8 +100,17 @@ export default function BoostPage() {
                       {plan.name}
                     </h2>
                   </div>
-                  <div className="rounded-full bg-[color:var(--surface)] px-3 py-1.5 text-sm font-bold text-foreground">
-                    Boost
+                  <div
+                    className={`inline-flex items-center gap-1.5 rounded-full bg-[color:var(--surface)] px-3 py-1.5 text-sm font-bold ${
+                      isActivePlan
+                        ? "text-[color:var(--brand-orange)]"
+                        : "text-foreground"
+                    }`}
+                  >
+                    {isActivePlan ? (
+                      <SparklesIcon aria-hidden="true" className="h-3.5 w-3.5" />
+                    ) : null}
+                    {isActivePlan ? "Active" : "Boost"}
                   </div>
                 </div>
 
@@ -107,10 +146,11 @@ export default function BoostPage() {
                 >
                   <input name="plan" type="hidden" value={plan.slug} />
                   <button
-                    className={`${semantic.button.outlineNeutralStrong} w-full bg-[color:var(--surface)]`}
+                    className={`${semantic.button.outlineNeutralStrong} w-full bg-[color:var(--surface)] disabled:cursor-not-allowed disabled:opacity-70`}
+                    disabled={isActivePlan}
                     type="submit"
                   >
-                    Select Plan
+                    {isActivePlan ? "Current Boost" : "Select Plan"}
                   </button>
                 </form>
               </article>
