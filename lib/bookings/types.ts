@@ -20,6 +20,20 @@ export type BookingReviewItem = {
   target: ReviewTarget;
 };
 
+export type BookingServiceMediaItem = {
+  id: string;
+  url: string;
+};
+
+export type BookingServiceReviewItem = {
+  bookingServiceTitle: string;
+  comment: string;
+  createdAt: string;
+  id: string;
+  rating: number;
+  reviewerName: string;
+};
+
 export type BookingListItem = {
   budget: number | null;
   client: BookingParty;
@@ -40,10 +54,14 @@ export type BookingListItem = {
 };
 
 export type BookingServiceSummary = {
+  averageRating: number | null;
   categories: string[];
   description: string;
   id: string;
+  media: BookingServiceMediaItem[];
   priceLabel: string;
+  reputationLabel: string;
+  reviews: BookingServiceReviewItem[];
   talent: BookingParty & {
     headline: string;
     isVerified: boolean;

@@ -2,38 +2,27 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { PageShell } from "@/components/shared/layout/page-shell";
+import { formatBookingBudgetLabel } from "@/lib/bookings/budget-label";
 import { appNavigation } from "@/lib/content/navigation";
-import { getBookingResponseSummary } from "@/server/bookings/responses";
+import { getAuthorizedBookingResponseSummary } from "@/server/bookings/responses";
 import { getCurrentAppUser } from "@/server/users/current-user";
 
 type Props = {
   params: Promise<{ token: string }>;
-  searchParams: Promise<{ error?: string }>;
 };
-
-const pesoFormatter = new Intl.NumberFormat("en-PH", {
-  currency: "PHP",
-  maximumFractionDigits: 0,
-  style: "currency",
-});
 
 export default async function BookingResponsePage({
   params,
-  searchParams,
 }: Props) {
   const { token } = await params;
-  const { error } = await searchParams;
-  const [booking, currentUser] = await Promise.all([
-    getBookingResponseSummary(token),
-    getCurrentAppUser(),
-  ]);
+  const currentUser = await getCurrentAppUser();
+  const booking = await getAuthorizedBookingResponseSummary(token, currentUser);
 
   if (!booking) {
     notFound();
   }
 
   const isPending = booking.status === "PENDING";
-  const canRespond = currentUser?.id === booking.talentUserId;
   const clientProfileReturnHref = booking.clientProfileHref
     ? `${booking.clientProfileHref}?returnTo=${encodeURIComponent(
         `/bookings/respond/${token}`,
@@ -107,38 +96,11 @@ export default async function BookingResponsePage({
                 Proposed budget
               </p>
               <p className="mt-2 text-xl font-extrabold text-[color:var(--brand-orange)]">
-                {booking.budget ? pesoFormatter.format(booking.budget) : "Not specified"}
+                {formatBookingBudgetLabel(booking.budget)}
               </p>
             </div>
 
-            {!canRespond ? (
-              <div className="rounded-2xl border border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] p-5">
-                <p className="text-sm font-bold text-foreground">
-                  Sign in as {booking.talentName} to respond
-                </p>
-                <p className="mt-2 text-sm leading-6 text-[color:var(--ink-muted)]">
-                  You are viewing the request, but accept and decline are only
-                  available to the talent account that received the booking.
-                </p>
-                <Link
-                  className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-[color:var(--brand-orange)] px-4 py-2.5 text-sm font-bold !text-white transition hover:bg-[color:var(--brand-orange-strong)]"
-                  href={`/login?callbackUrl=${encodeURIComponent(
-                    `/bookings/respond/${token}`,
-                  )}`}
-                >
-                  Sign In as Talent
-                </Link>
-              </div>
-            ) : null}
-
-            {error === "not-talent" ? (
-              <p className="rounded-xl bg-[color:var(--surface-alt)] px-4 py-3 text-sm font-semibold text-[color:var(--ink-muted)]">
-                This action can only be completed by the talent for this
-                booking.
-              </p>
-            ) : null}
-
-            {isPending && canRespond ? (
+            {isPending ? (
               <div className="grid gap-3">
                 <Link
                   className="inline-flex items-center justify-center rounded-xl bg-[color:var(--brand-orange)] px-5 py-3 text-sm font-bold !text-white transition hover:bg-[color:var(--brand-orange-strong)]"

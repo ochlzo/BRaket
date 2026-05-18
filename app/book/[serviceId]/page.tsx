@@ -1,7 +1,9 @@
 import Link from "next/link";
 
 import { BookingRequestForm } from "@/app/book/[serviceId]/_components/booking-request-form";
+import { ServiceMediaCollage } from "@/app/book/[serviceId]/_components/service-media-collage";
 import { ReportButton } from "@/components/shared/moderation/report-button";
+import { ProfileReviewsPanel } from "@/components/shared/profile-reviews/profile-reviews-panel";
 import { Separator } from "@/components/ui/separator";
 import { PageShell } from "@/components/shared/layout/page-shell";
 import { UserAvatar } from "@/components/shared/user-avatar";
@@ -48,20 +50,27 @@ export default async function BookingRequestPage({ params }: Props) {
           ) : (
             <>
               <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
-                <div className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-8">
-                  <h1 className="text-2xl font-extrabold tracking-normal text-foreground">
-                    Book This Service
-                  </h1>
-                  <p className="mt-2 text-sm text-[color:var(--ink-muted)]">
-                    Send a clear request so the talent can accept, decline, or
-                    ask follow-up questions.
-                  </p>
+                <div className="space-y-5">
+                  <div className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-8">
+                    <h1 className="text-2xl font-extrabold tracking-normal text-foreground">
+                      Book This Service
+                    </h1>
+                    <p className="mt-2 text-sm text-[color:var(--ink-muted)]">
+                      Send a clear request so the talent can accept, decline, or
+                      ask follow-up questions.
+                    </p>
 
-                  <Separator className="my-6" />
+                    <Separator className="my-6" />
 
-                  <BookingRequestForm
-                    cancelHref="/browse"
-                    serviceId={service.id}
+                    <BookingRequestForm
+                      cancelHref="/browse"
+                      serviceId={service.id}
+                    />
+                  </div>
+
+                  <ServiceMediaCollage
+                    media={service.media}
+                    title={service.title}
                   />
                 </div>
 
@@ -136,6 +145,16 @@ export default async function BookingRequestPage({ params }: Props) {
                       </div>
                     </div>
                   </Link>
+
+                  <ProfileReviewsPanel
+                    averageRating={service.averageRating}
+                    emptyLabel="No reviews for this service yet"
+                    id="service-reviews"
+                    initialVisibleCount={2}
+                    reputationLabel={service.reputationLabel}
+                    reviews={service.reviews}
+                    title="Client Reviews"
+                  />
                 </aside>
               </div>
             </>

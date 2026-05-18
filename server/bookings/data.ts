@@ -3,6 +3,7 @@ import "server-only";
 import type { BookingStatus } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
+import { buildBookingServiceSummary } from "@/lib/bookings/service-summary";
 import type {
   BookingListItem,
   BookingParty,
@@ -37,10 +38,6 @@ function mapParty(user: {
   };
 }
 
-function talentProfileHref(username: string) {
-  return username ? `/talent/${username}` : "/browse";
-}
-
 function priceLabel(minPrice: { toString: () => string }, maxPrice: { toString: () => string }) {
   const min = Number(minPrice.toString());
   const max = Number(maxPrice.toString());
@@ -61,8 +58,21 @@ export async function getBookingServiceSummary(
 ): Promise<BookingServiceSummary | null> {
   const service = await prisma.service.findUnique({
     include: {
+      Bookings: {
+        include: {
+          Reviews: {
+            include: { Reviewer: true },
+            orderBy: { createdAt: "desc" },
+            where: { target: "TALENT" },
+          },
+        },
+        where: { status: "COMPLETED" },
+      },
       ServiceCategories: {
         include: { Category: true },
+        orderBy: { createdAt: "asc" },
+      },
+      ServiceMedia: {
         orderBy: { createdAt: "asc" },
       },
       TalentProfile: {
@@ -76,22 +86,7 @@ export async function getBookingServiceSummary(
     return null;
   }
 
-  return {
-    categories: service.ServiceCategories.map((entry) => entry.Category.name),
-    description: service.description,
-    id: service.serviceId,
-    priceLabel: priceLabel(service.minPrice, service.maxPrice),
-    talent: {
-      ...mapParty(service.TalentProfile.User),
-      headline: service.TalentProfile.headline,
-      isVerified: service.TalentProfile.User.is_verified,
-      profileHref: talentProfileHref(service.TalentProfile.User.username ?? ""),
-      servicesHref: `${talentProfileHref(
-        service.TalentProfile.User.username ?? "",
-      )}#services`,
-    },
-    title: service.title,
-  };
+  return buildBookingServiceSummary(service);
 }
 
 export async function getBookableServices(): Promise<BookableServiceCard[]> {

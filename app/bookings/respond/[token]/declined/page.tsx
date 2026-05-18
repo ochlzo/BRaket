@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 
 import { PageShell } from "@/components/shared/layout/page-shell";
 import { appNavigation } from "@/lib/content/navigation";
-import { getBookingResponseSummary } from "@/server/bookings/responses";
+import { getAuthorizedBookingResponseSummary } from "@/server/bookings/responses";
+import { getCurrentAppUser } from "@/server/users/current-user";
 
 type Props = {
   params: Promise<{ token: string }>;
@@ -11,7 +12,8 @@ type Props = {
 
 export default async function BookingDeclinedPage({ params }: Props) {
   const { token } = await params;
-  const booking = await getBookingResponseSummary(token);
+  const currentUser = await getCurrentAppUser();
+  const booking = await getAuthorizedBookingResponseSummary(token, currentUser);
 
   if (!booking) {
     notFound();

@@ -7,7 +7,7 @@ import { PageShell } from "@/components/shared/layout/page-shell";
 import { appNavigation } from "@/lib/content/navigation";
 import {
   declineBookingByResponseToken,
-  getBookingResponseSummary,
+  getAuthorizedBookingResponseSummary,
 } from "@/server/bookings/responses";
 import { getCurrentAppUser } from "@/server/users/current-user";
 
@@ -23,16 +23,12 @@ function readReason(formData: FormData) {
 
 export default async function BookingDeclinePage({ params }: Props) {
   const { token } = await params;
-  const [booking, currentUser] = await Promise.all([
-    getBookingResponseSummary(token),
-    getCurrentAppUser(),
-  ]);
+  const currentUser = await getCurrentAppUser();
+  const booking = await getAuthorizedBookingResponseSummary(token, currentUser);
 
   if (!booking) {
     notFound();
   }
-
-  const canRespond = currentUser?.id === booking.talentUserId;
 
   async function declineAction(formData: FormData) {
     "use server";
@@ -82,47 +78,29 @@ export default async function BookingDeclinePage({ params }: Props) {
             .
           </p>
 
-          {canRespond ? (
-            <form action={declineAction} className="mt-6 space-y-5">
-              <Textarea
-                className="min-h-36 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm focus-visible:border-[color:var(--brand-orange)] focus-visible:ring-[color:var(--brand-orange)]/20"
-                minLength={10}
-                name="reason"
-                placeholder="Example: I am unavailable on the requested timeline, but I can take similar work next week."
-                required
-              />
-              <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
-                <Link
-                  className="inline-flex items-center justify-center rounded-xl border border-[color:var(--line-strong)] bg-white px-5 py-3 text-sm font-semibold text-foreground transition hover:bg-[color:var(--surface-alt)]"
-                  href="/dashboard/talent/bookings"
-                >
-                  Back to Dashboard
-                </Link>
-                <Button
-                  className="rounded-xl bg-[color:var(--brand-orange)] px-6 py-3 text-sm font-semibold !text-white transition hover:bg-[color:var(--brand-orange-strong)]"
-                  type="submit"
-                >
-                  Send Decline Reason
-                </Button>
-              </div>
-            </form>
-          ) : (
-            <div className="mt-6 rounded-xl bg-[color:var(--surface-alt)] p-4">
-              <p className="text-sm font-semibold text-foreground">
-                Sign in as {booking.talentName} to decline this request.
-              </p>
-              <p className="mt-2 text-sm leading-6 text-[color:var(--ink-muted)]">
-                The account currently signed in is not the talent assigned to
-                this booking.
-              </p>
+          <form action={declineAction} className="mt-6 space-y-5">
+            <Textarea
+              className="min-h-36 rounded-xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] text-sm focus-visible:border-[color:var(--brand-orange)] focus-visible:ring-[color:var(--brand-orange)]/20"
+              minLength={10}
+              name="reason"
+              placeholder="Example: I am unavailable on the requested timeline, but I can take similar work next week."
+              required
+            />
+            <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
               <Link
-                className="mt-4 inline-flex items-center justify-center rounded-xl border border-[color:var(--line-strong)] bg-white px-5 py-3 text-sm font-semibold text-foreground transition hover:bg-[color:var(--surface-alt)]"
-                href={`/bookings/respond/${token}`}
+                className="inline-flex items-center justify-center rounded-xl border border-[color:var(--line-strong)] bg-white px-5 py-3 text-sm font-semibold text-foreground transition hover:bg-[color:var(--surface-alt)]"
+                href="/dashboard/talent/bookings"
               >
-                Back to Request
+                Back to Dashboard
               </Link>
+              <Button
+                className="rounded-xl bg-[color:var(--brand-orange)] px-6 py-3 text-sm font-semibold !text-white transition hover:bg-[color:var(--brand-orange-strong)]"
+                type="submit"
+              >
+                Send Decline Reason
+              </Button>
             </div>
-          )}
+          </form>
         </div>
       </section>
     </PageShell>

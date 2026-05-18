@@ -2,9 +2,13 @@ import "server-only";
 
 import { revalidatePath } from "next/cache";
 
+import { canViewBookingResponse } from "@/lib/bookings/response-auth";
 import { prisma } from "@/lib/prisma";
 import { sendClientBookingResponseEmail } from "@/server/bookings/email";
-import { getCurrentAppUser } from "@/server/users/current-user";
+import {
+  getCurrentAppUser,
+  type CurrentAppUser,
+} from "@/server/users/current-user";
 
 type BookingResponseResult = {
   code?: "answered" | "invalid-reason" | "not-found" | "not-talent";
@@ -36,6 +40,20 @@ async function getBookingByResponseToken(responseToken: string) {
       Talent: true,
     },
     where: { responseToken },
+  });
+}
+
+async function getBookingByResponseTokenForTalent(
+  responseToken: string,
+  talentUserId: string,
+) {
+  return prisma.booking.findFirst({
+    include: {
+      Client: true,
+      Service: true,
+      Talent: true,
+    },
+    where: { responseToken, talentUserId },
   });
 }
 
@@ -88,13 +106,7 @@ async function authorizeTalentResponse(
   return { message: "", ok: true };
 }
 
-export async function getBookingResponseSummary(responseToken: string) {
-  const booking = await getBookingByResponseToken(responseToken);
-
-  if (!booking) {
-    return null;
-  }
-
+function mapBookingResponseSummary(booking: BookingWithResponseRelations) {
   return {
     budget: booking.budget ? Number(booking.budget.toString()) : null,
     clientName: displayName(booking.Client),
@@ -106,9 +118,28 @@ export async function getBookingResponseSummary(responseToken: string) {
     projectDetails: booking.projectDetails,
     serviceTitle: booking.Service.title,
     status: booking.status,
-    talentName: displayName(booking.Talent),
     talentUserId: booking.talentUserId,
   };
+}
+
+export async function getAuthorizedBookingResponseSummary(
+  responseToken: string,
+  currentUser: CurrentAppUser | null,
+) {
+  if (!currentUser) {
+    return null;
+  }
+
+  const booking = await getBookingByResponseTokenForTalent(
+    responseToken,
+    currentUser.id,
+  );
+
+  if (!booking || !canViewBookingResponse(currentUser, booking)) {
+    return null;
+  }
+
+  return mapBookingResponseSummary(booking);
 }
 
 export async function acceptBookingByResponseToken(

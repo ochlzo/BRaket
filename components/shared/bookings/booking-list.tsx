@@ -2,6 +2,7 @@ import type { BookingStatus } from "@prisma/client";
 import Link from "next/link";
 
 import { ReportButton } from "@/components/shared/moderation/report-button";
+import { formatBookingBudgetLabel } from "@/lib/bookings/budget-label";
 import type { BookingListItem } from "@/lib/bookings/types";
 import { updateBookingStatusFormAction } from "@/server/bookings/actions";
 import { BookingReviews } from "./booking-reviews";
@@ -36,12 +37,6 @@ const statusLabels: Record<BookingStatus, string> = {
   IN_PROGRESS: "In progress",
   PENDING: "Pending",
 };
-
-const pesoFormatter = new Intl.NumberFormat("en-PH", {
-  currency: "PHP",
-  maximumFractionDigits: 0,
-  style: "currency",
-});
 
 function StatusButton({
   bookingId,
@@ -195,9 +190,7 @@ export function BookingList({
                   Budget
                 </p>
                 <p className="text-base font-extrabold text-[color:var(--brand-orange)]">
-                  {booking.budget
-                    ? pesoFormatter.format(booking.budget)
-                    : booking.service.priceLabel}
+                  {formatBookingBudgetLabel(booking.budget)}
                 </p>
               </div>
               <div className="flex flex-wrap gap-2 lg:justify-end">
