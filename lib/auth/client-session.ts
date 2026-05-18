@@ -50,6 +50,7 @@ function parseStoredSession(data: string | null): ClientAppSession | null {
     return {
       avatarUrl,
       displayName,
+      isTalent: parsed.isTalent === true,
       type: normalizeUserRole(parsed.type),
       username,
       verified: parsed.verified === true,

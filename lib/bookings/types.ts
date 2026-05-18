@@ -93,6 +93,7 @@ export type TalentServiceListItem = {
   createdAt: string;
   description: string;
   id: string;
+  media: BookingServiceMediaItem[];
   priceLabel: string;
   title: string;
 };

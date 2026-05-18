@@ -5,6 +5,10 @@ import Link from "next/link";
 import { useEffect, useState, useSyncExternalStore } from "react";
 
 import { BrandMark } from "@/components/shared/branding/brand-mark";
+import {
+  SiteHeaderMobileProfileLinks,
+  SiteHeaderProfileMenu,
+} from "@/components/shared/layout/site-header-profile-menu";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import {
   getClientAppSessionSnapshot,
@@ -12,7 +16,6 @@ import {
 } from "@/lib/auth/client-session";
 import {
   clearAppSession,
-  getDashboardProfilePath,
   saveAppSession,
 } from "@/lib/auth/session";
 import type { NavItem } from "@/lib/content/navigation";
@@ -79,6 +82,7 @@ export function SiteHeader({
       if (
         nextSession.avatarUrl !== currentSession.avatarUrl ||
         nextSession.displayName !== currentSession.displayName ||
+        nextSession.isTalent !== currentSession.isTalent ||
         nextSession.username !== currentSession.username ||
         nextSession.type !== currentSession.type
       ) {
@@ -128,7 +132,7 @@ export function SiteHeader({
               </button>
 
               <div className="absolute right-0 top-full z-50 hidden w-48 pt-2 group-hover:block">
-                <div className="overflow-hidden rounded-xl border border-[color:var(--line-strong)] bg-white shadow-[var(--shadow-menu)]">
+                <div className="overflow-visible rounded-xl border border-[color:var(--line-strong)] bg-white shadow-[var(--shadow-menu)]">
                   <div className="px-4 py-3">
                     <p className="text-sm font-semibold text-foreground">
                       {sessionLabel}
@@ -139,22 +143,10 @@ export function SiteHeader({
                   </div>
                   <div className="h-px bg-[color:var(--line-strong)]" />
                   <div className="p-1.5">
-                    <Link
-                      href={getDashboardProfilePath(session.type)}
-                      className="block rounded-lg px-3 py-2 text-sm font-medium text-[color:var(--ink-body)] hover:bg-[color:var(--surface-alt)] hover:text-foreground"
-                    >
-                      My Profile
-                    </Link>
-                    <Link
-                      href={
-                        session.type === "talent"
-                          ? "/dashboard/talent"
-                          : "/dashboard/client"
-                      }
-                      className="block rounded-lg px-3 py-2 text-sm font-medium text-[color:var(--ink-body)] hover:bg-[color:var(--surface-alt)] hover:text-foreground"
-                    >
-                      Dashboard
-                    </Link>
+                    <SiteHeaderProfileMenu
+                      isTalent={session.isTalent}
+                      role={session.type}
+                    />
                   </div>
                   <div className="h-px bg-[color:var(--line-strong)]" />
                   <div className="p-1.5">
@@ -231,24 +223,11 @@ export function SiteHeader({
           <div className="mx-auto mt-4 grid max-w-7xl gap-3 border-t border-[color:var(--line)] pt-4">
             {mounted && session ? (
               <>
-                <Link
-                  href={getDashboardProfilePath(session.type)}
-                  className={semantic.button.outlineNeutral}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  My Profile
-                </Link>
-                <Link
-                  href={
-                    session.type === "talent"
-                      ? "/dashboard/talent"
-                      : "/dashboard/client"
-                  }
-                  className={semantic.button.brandOrange}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Dashboard
-                </Link>
+                <SiteHeaderMobileProfileLinks
+                  isTalent={session.isTalent}
+                  role={session.type}
+                  onNavigate={() => setIsMobileMenuOpen(false)}
+                />
               </>
             ) : mounted ? (
               <>

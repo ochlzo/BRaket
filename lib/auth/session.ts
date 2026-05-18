@@ -9,6 +9,7 @@ export type AuthMode = "login" | "signup";
 export type AppSession = {
   avatarUrl?: string;
   displayName: string;
+  isTalent?: boolean;
   type: UserRole;
   username: string;
 };

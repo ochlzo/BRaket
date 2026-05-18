@@ -4,6 +4,7 @@ import type { BookingStatus } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
 import { buildBookingServiceSummary } from "@/lib/bookings/service-summary";
+import { buildTalentServiceListItem } from "@/lib/bookings/service-list";
 import type {
   BookingListItem,
   BookingParty,
@@ -128,19 +129,15 @@ export async function getServicesForTalent(
         include: { Category: true },
         orderBy: { createdAt: "asc" },
       },
+      ServiceMedia: {
+        orderBy: { createdAt: "asc" },
+      },
     },
     orderBy: { createdAt: "desc" },
     where: { TalentProfile: { user_id: currentUser.id } },
   });
 
-  return services.map((service) => ({
-    categories: service.ServiceCategories.map((entry) => entry.Category.name),
-    createdAt: service.createdAt.toISOString(),
-    description: service.description,
-    id: service.serviceId,
-    priceLabel: priceLabel(service.minPrice, service.maxPrice),
-    title: service.title,
-  }));
+  return services.map(buildTalentServiceListItem);
 }
 
 export async function countServicesForTalent(currentUser: CurrentAppUser) {
