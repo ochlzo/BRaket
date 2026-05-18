@@ -54,13 +54,6 @@ export async function saveTalentServiceStepAction(
     };
   }
 
-  if (!currentUser.isVerified) {
-    return {
-      ...EMPTY_STATE,
-      message: "Wait for admin verification before creating services.",
-    };
-  }
-
   const input = parseTalentServiceStepFormData(formData);
   const validation = validateTalentServiceStepInput(input);
 

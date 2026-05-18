@@ -7,10 +7,8 @@ import { buildTalentProfileStepInitialValues } from "@/app/onboarding/talent/_li
 import { buildTalentServiceStepInitialValues } from "@/app/onboarding/talent/_lib/talent-service-step";
 import {
   getAllowedTalentOnboardingStep,
-  shouldForceTalentVerification,
 } from "@/lib/talent-onboarding/registration-route";
 import { prisma } from "@/lib/prisma";
-import { getApplicantVerificationState } from "@/server/talent-verification/get-applicant-state";
 import { requireCurrentAppUser } from "@/server/users/current-user";
 import { redirect } from "next/navigation";
 
@@ -25,10 +23,6 @@ export default async function OnboardingPage({
 }: OnboardingPageProps) {
   const { step } = await searchParams;
   const currentUser = await requireCurrentAppUser();
-  const verification = await getApplicantVerificationState(
-    currentUser.id,
-    currentUser.isVerified,
-  );
   const talentProfile = await prisma.talentProfile.findUnique({
     select: {
       bio: true,
@@ -82,22 +76,6 @@ export default async function OnboardingPage({
   });
   const initialStep = getAllowedTalentOnboardingStep(step);
 
-  if (!currentUser.isVerified && verification.status !== "pending") {
-    redirect("/onboarding/talent/verification");
-  }
-
-  if (!currentUser.isVerified && initialStep > 1) {
-    redirect("/onboarding/talent?step=1");
-  }
-
-  if (
-    shouldForceTalentVerification({
-      isTalent: currentUser.isTalent,
-      isVerified: currentUser.isVerified,
-    })
-  ) {
-    redirect("/onboarding/talent/verification");
-  }
 
   if (step !== String(initialStep)) {
     redirect(`/onboarding/talent?step=${initialStep}`);
@@ -114,7 +92,6 @@ export default async function OnboardingPage({
           <TalentOnboardingFlow
             availableCategories={categoryOptions}
             availableSkills={skillOptions}
-            canContinuePastProfile={currentUser.isVerified}
             currentUser={{
               firstName: currentUser.firstName,
               lastName: currentUser.lastName,

@@ -149,6 +149,7 @@ export async function getPublicTalentProfilePageData(
   const user = await prisma.user.findUnique({
     where: {
       username: normalizedUsername,
+      is_verified: true,
     },
     include: {
       TalentBookings: {
