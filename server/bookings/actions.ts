@@ -6,7 +6,12 @@ import { headers } from "next/headers";
 
 import type { BookingActionState } from "@/lib/bookings/types";
 import { prisma } from "@/lib/prisma";
-import { sendTalentBookingRequestEmail } from "@/server/bookings/email";
+import { notifyClientAboutBookingResponse } from "@/server/bookings/booking-response-notification";
+import {
+  sendTalentBookingRequestEmail,
+  sendWorkInitiatedEmail,
+  sendWorkSubmittedEmail,
+} from "@/server/bookings/email";
 import { getCurrentAppUser } from "@/server/users/current-user";
 
 const EMPTY_STATE: BookingActionState = {
@@ -86,13 +91,6 @@ export async function createBookingRequestAction(
 
   if (!serviceId) {
     return { ...EMPTY_STATE, message: "Choose a service to book." };
-  }
-
-  if (projectDetails.length < 20) {
-    return {
-      ...EMPTY_STATE,
-      message: "Share at least 20 characters about the project.",
-    };
   }
 
   const service = await prisma.service.findUnique({
@@ -205,11 +203,10 @@ export async function updateBookingStatusAction(
   }
 
   const booking = await prisma.booking.findUnique({
-    select: {
-      bookingId: true,
-      clientUserId: true,
-      status: true,
-      talentUserId: true,
+    include: {
+      Client: true,
+      Service: true,
+      Talent: true,
     },
     where: { bookingId },
   });
@@ -218,13 +215,31 @@ export async function updateBookingStatusAction(
     return { ...EMPTY_STATE, message: "We could not find that booking." };
   }
 
-  const isTalentOwner = booking.talentUserId === currentUser.id;
-  const isClientOwner = booking.clientUserId === currentUser.id;
   const nextStatus = status as BookingStatus;
 
-  if (["ACCEPTED", "DECLINED", "IN_PROGRESS", "COMPLETED"].includes(nextStatus)) {
+  if (
+    (nextStatus === "ACCEPTED" || nextStatus === "DECLINED") &&
+    booking.status === nextStatus
+  ) {
+    return {
+      message:
+        nextStatus === "ACCEPTED"
+          ? "This booking request is already accepted."
+          : "This booking request is already declined.",
+      ok: true,
+    };
+  }
+
+  const isTalentOwner = booking.talentUserId === currentUser.id;
+  const isClientOwner = booking.clientUserId === currentUser.id;
+
+  if (["ACCEPTED", "DECLINED", "WORK_SUBMITTED"].includes(nextStatus)) {
     if (!isTalentOwner) {
       return { ...EMPTY_STATE, message: "Only the talent can update that status." };
+    }
+  } else if (["IN_PROGRESS", "COMPLETED"].includes(nextStatus)) {
+    if (!isClientOwner) {
+      return { ...EMPTY_STATE, message: "Only the client can update that status." };
     }
   } else if (nextStatus === "CANCELLED" && !isClientOwner) {
     return { ...EMPTY_STATE, message: "Only the client can cancel this request." };
@@ -238,17 +253,67 @@ export async function updateBookingStatusAction(
 
     if (nextStatus === "COMPLETED" && booking.status !== "COMPLETED") {
       await tx.talentProfile.update({
-        data: {
-          completed_commissions_count: {
-            increment: 1,
-          },
-        },
-        where: {
-          user_id: booking.talentUserId,
-        },
+        data: { completed_commissions_count: { increment: 1 } },
+        where: { user_id: booking.talentUserId },
       });
     }
   });
+
+  if (nextStatus === "ACCEPTED" || nextStatus === "DECLINED") {
+    await notifyClientAboutBookingResponse({
+      ...booking,
+      declineReason: booking.declineReason ?? null,
+      status: nextStatus,
+    });
+  }
+
+  // Fire notification emails for the new handshake steps
+  if (nextStatus === "IN_PROGRESS" || nextStatus === "WORK_SUBMITTED") {
+    const full = await prisma.booking.findUnique({
+      include: { Client: true, Service: true, Talent: true },
+      where: { bookingId },
+    });
+
+    if (full) {
+      const siteUrl = (await getSiteUrl()).replace(/\/$/, "");
+      const clientDashboard = siteUrl
+        ? `${siteUrl}/dashboard/client/bookings`
+        : "/dashboard/client/bookings";
+      const talentDashboard = siteUrl
+        ? `${siteUrl}/dashboard/talent/bookings`
+        : "/dashboard/talent/bookings";
+      const clientName =
+        `${full.Client.firstName ?? ""} ${full.Client.lastName ?? ""}`.trim() ||
+        full.Client.email;
+      const talentName =
+        `${full.Talent.firstName ?? ""} ${full.Talent.lastName ?? ""}`.trim() ||
+        full.Talent.email;
+
+      if (nextStatus === "IN_PROGRESS") {
+        sendWorkInitiatedEmail({
+          bookingId,
+          client: { displayName: clientName, email: full.Client.email },
+          dashboardUrl: talentDashboard,
+          service: { title: full.Service.title },
+          talent: { displayName: talentName, email: full.Talent.email },
+        }).catch((err: unknown) =>
+          console.warn("Failed to send work-initiated email:", err),
+        );
+      }
+
+      if (nextStatus === "WORK_SUBMITTED") {
+        sendWorkSubmittedEmail({
+          bookingId,
+          client: { displayName: clientName, email: full.Client.email },
+          dashboardUrl: clientDashboard,
+          service: { title: full.Service.title },
+          talent: { displayName: talentName, email: full.Talent.email },
+        }).catch((err: unknown) =>
+          console.warn("Failed to send work-submitted email:", err),
+        );
+      }
+    }
+  }
 
   revalidatePath("/dashboard/client/bookings");
   revalidatePath("/dashboard/talent/bookings");

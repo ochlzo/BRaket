@@ -13,6 +13,7 @@ export type AccountSettingsFieldName =
   | "address"
   | "contactNum"
   | "email"
+  | "buEmail"
   | "firstName"
   | "githubUrl"
   | "instagramUrl"
@@ -26,6 +27,7 @@ export type AccountSettingsFormValues = {
   address: string;
   contactNum: string;
   email: string;
+  buEmail: string;
   facebookUrl: string;
   firstName: string;
   githubUrl: string;
@@ -40,6 +42,9 @@ export type AccountSettingsPageSource = {
   address: string | null;
   contactNum: string | null;
   email: string;
+  TalentProfile: {
+    bu_email: string | null;
+  } | null;
   facebook_url: string | null;
   firstName: string | null;
   github_url: string | null;
@@ -100,6 +105,7 @@ export function parseAccountSettingsFormData(
     address: readTextField(formData, "address"),
     contactNum: normalizeContactNumber(readTextField(formData, "contactNum")),
     email: readTextField(formData, "email"),
+    buEmail: readTextField(formData, "buEmail"),
     facebookUrl: readTextField(formData, "facebookUrl"),
     firstName: readTextField(formData, "firstName"),
     githubUrl: readTextField(formData, "githubUrl"),
@@ -118,6 +124,7 @@ export function buildAccountSettingsFormValues(
     address: compactText(source.address),
     contactNum: compactText(source.contactNum),
     email: compactText(source.email),
+    buEmail: compactText(source.TalentProfile?.bu_email),
     facebookUrl: compactText(source.facebook_url),
     firstName: compactText(source.firstName),
     githubUrl: compactText(source.github_url),

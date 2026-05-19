@@ -22,7 +22,11 @@ import { Button } from "@/components/ui/button";
 import { FileInput } from "@/components/ui/file-input";
 import { Label } from "@/components/ui/label";
 import type { ApplicantVerificationState } from "@/server/talent-verification/get-applicant-state";
-import { getTalentVerificationMaybeLaterPath } from "@/lib/talent-onboarding/registration-route";
+import {
+  getPendingTalentVerificationDashboardState,
+  getTalentVerificationMaybeLaterPath,
+} from "@/lib/talent-onboarding/registration-route";
+import { PendingTalentVerificationDashboard } from "@/app/onboarding/talent/_components/pending-talent-verification-dashboard";
 
 type TalentBuVerificationIntroProps = {
   backLabel?: string;
@@ -60,6 +64,21 @@ export function TalentBuVerificationIntro({
     ? `${verificationBasePath}?source=dashboard`
     : verificationBasePath;
   const formPath = `${verificationBasePath}?step=form${sourceQuery}`;
+  const pendingDashboardState = getPendingTalentVerificationDashboardState({
+    isTalent,
+    source,
+    verificationStatus: verification.status,
+  });
+
+  if (pendingDashboardState.shouldShow) {
+    return (
+      <PendingTalentVerificationDashboard
+        backPath={pendingDashboardState.backPath}
+        message={pendingDashboardState.message}
+        onNavigate={router.push}
+      />
+    );
+  }
 
   if (isFormStep) {
     const isApproved = verification.status === "approved" || state.ok;

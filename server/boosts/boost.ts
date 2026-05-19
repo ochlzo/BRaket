@@ -31,6 +31,12 @@ type PendingBoostRow = {
   boost_subs_id: string;
 };
 
+function isUuid(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    value,
+  );
+}
+
 function toActiveBoost(row: BoostRow): ActiveBoost | null {
   const plan = getBoostPlanByBoostPlanId(row.boost_plan_id);
 
@@ -64,6 +70,10 @@ export async function createPendingBoost({
   plan: BoostPlan;
   talentProfileId: string;
 }) {
+  if (!isUuid(talentProfileId)) {
+    return null;
+  }
+
   const rows = await prisma.$queryRaw<PendingBoostRow[]>`
     insert into public.boost_subscriptions (
       talent_profile_id,
@@ -186,7 +196,7 @@ export async function syncBoostFromPaymongo(boostId: string) {
 export async function getActiveBoostForTalentProfile(
   talentProfileId: string,
 ) {
-  if (!talentProfileId) {
+  if (!isUuid(talentProfileId)) {
     return null;
   }
 

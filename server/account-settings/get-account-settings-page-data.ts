@@ -15,6 +15,11 @@ export async function getAccountSettingsPageData(
       address: true,
       contactNum: true,
       email: true,
+      TalentProfile: {
+        select: {
+          bu_email: true,
+        },
+      },
       facebook_url: true,
       firstName: true,
       github_url: true,

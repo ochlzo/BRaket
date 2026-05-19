@@ -96,11 +96,6 @@ export function PublicClientAboutPanel({
             label="Contact number"
             value={profile.contactNum}
           />
-          <DetailRow
-            icon={<Mail className="size-4" />}
-            label="Talent email"
-            value={<EmailLink email={profile.talentEmail} />}
-          />
         </div>
       </div>
     </section>

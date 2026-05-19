@@ -120,9 +120,11 @@ export function TalentProfileHero({ profile, user }: TalentProfileHeroProps) {
             Edit personal details
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={() => router.push("/onboarding/talent?step=1")}
+            onClick={() =>
+              router.push("/talent/verify?source=talent-dashboard")
+            }
           >
-            Edit talent profile
+            Verify BU Student
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

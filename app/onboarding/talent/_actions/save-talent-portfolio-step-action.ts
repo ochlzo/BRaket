@@ -59,6 +59,18 @@ async function removeUploadedAssets(assets: UploadedTalentPortfolioAsset[]) {
     .remove(assets.map((asset) => asset.objectPath));
 }
 
+function getPortfolioMediaObjectPath(publicUrl: string) {
+  const marker = `/storage/v1/object/public/${TALENT_PORTFOLIO_MEDIA_BUCKET}/`;
+  const markerIndex = publicUrl.indexOf(marker);
+
+  if (markerIndex === -1) {
+    return null;
+  }
+
+  const objectPath = publicUrl.slice(markerIndex + marker.length);
+  return objectPath ? decodeURIComponent(objectPath) : null;
+}
+
 export async function saveTalentPortfolioStepAction(
   formData: FormData,
 ): Promise<TalentPortfolioStepState> {
@@ -86,7 +98,9 @@ export async function saveTalentPortfolioStepAction(
   const existingPortfolio = input.portfolioId
     ? await prisma.talentPortfolio.findFirst({
         include: {
-          TalentPortfolioMedia: { select: { tportfolio_media_id: true } },
+          TalentPortfolioMedia: {
+            select: { media_url: true, tportfolio_media_id: true },
+          },
         },
         where: {
           talent_portfolio_id: input.portfolioId,
@@ -96,7 +110,7 @@ export async function saveTalentPortfolioStepAction(
     : null;
   const validationWithExistingMedia = validateTalentPortfolioStepInput({
     ...input,
-    existingMediaCount: existingPortfolio?.TalentPortfolioMedia.length ?? 0,
+    existingMediaCount: input.existingMediaUrls?.length ?? existingPortfolio?.TalentPortfolioMedia.length ?? 0,
   });
 
   if (!validationWithExistingMedia.ok) {
@@ -185,6 +199,19 @@ export async function saveTalentPortfolioStepAction(
           })),
         });
       }
+
+      if (
+        existingPortfolio &&
+        hasDirtyField(dirtyFields, "media") &&
+        (input.removedExistingMediaUrls?.length ?? 0) > 0
+      ) {
+        await tx.talentPortfolioMedia.deleteMany({
+          where: {
+            media_url: { in: input.removedExistingMediaUrls },
+            talent_portfolio_id: portfolioId,
+          },
+        });
+      }
     });
   } catch {
     await removeUploadedAssets(uploadedAssets).catch(() => {});
@@ -193,6 +220,18 @@ export async function saveTalentPortfolioStepAction(
       ...EMPTY_STATE,
       message: "We could not save your portfolio right now.",
     };
+  }
+
+  if ((input.removedExistingMediaUrls?.length ?? 0) > 0) {
+    const objectPaths = (input.removedExistingMediaUrls ?? [])
+      .map(getPortfolioMediaObjectPath)
+      .filter((path): path is string => Boolean(path));
+
+    if (objectPaths.length > 0) {
+      await removeUploadedAssets(
+        objectPaths.map((objectPath) => ({ objectPath, publicUrl: "" })),
+      ).catch(() => {});
+    }
   }
 
   revalidatePath("/onboarding/talent");

@@ -1,10 +1,13 @@
 import type { TalentProfileServiceItem } from "@/lib/talent-profile/types";
+import type { CategoryOption } from "@/app/onboarding/talent/_lib/get-category-options";
 import Link from "next/link";
 
 import { ReportButton } from "@/components/shared/moderation/report-button";
 import { TalentMediaCollage } from "@/app/dashboard/talent/_components/talent-media-collage";
+import { TalentServiceDialog } from "./talent-service-dialog";
 
 type TalentServicesSectionProps = {
+  availableCategories?: CategoryOption[];
   showBookLinks?: boolean;
   services: TalentProfileServiceItem[];
 };
@@ -32,24 +35,24 @@ function serviceCategories(service: TalentProfileServiceItem) {
 }
 
 function TalentServiceCard({
+  availableCategories,
   service,
   showBookLink,
 }: {
+  availableCategories: CategoryOption[];
   service: TalentProfileServiceItem;
   showBookLink: boolean;
 }) {
   return (
     <article className="rounded-[1.1rem] border border-[color:var(--line-strong)] bg-[color:var(--surface)] p-4 shadow-[var(--shadow-surface-soft)]">
       <div className="flex items-start justify-between gap-3">
-        <div className="grid min-w-0 flex-1 grid-cols-2 gap-1.5">
-          {serviceCategories(service).map((category, index) => (
+        <div className="flex min-w-0 flex-1 flex-wrap gap-2">
+          {serviceCategories(service).map((category) => (
             <span
-              className={`min-w-0 rounded-full bg-[color:var(--tone-orange-pale)] px-3 py-1.5 text-center text-xs font-bold text-[color:var(--tone-orange-deep)] ${
-                index === 2 ? "col-span-2 w-fit max-w-full" : ""
-              }`}
+              className="inline-flex min-w-0 max-w-full items-center rounded-full bg-[color:var(--tone-orange-pale)] px-3 py-1.5 text-xs font-bold text-[color:var(--tone-orange-deep)]"
               key={category}
             >
-              <span className="block truncate">{category}</span>
+              <span className="truncate">{category}</span>
             </span>
           ))}
         </div>
@@ -57,6 +60,12 @@ function TalentServiceCard({
           <span className="text-sm font-extrabold text-[color:var(--foreground)]">
             {formatPrice(service)}
           </span>
+          {!showBookLink ? (
+            <TalentServiceDialog
+              availableCategories={availableCategories}
+              service={service}
+            />
+          ) : null}
           {showBookLink ? (
             <ReportButton
               label="Report service"
@@ -101,6 +110,7 @@ function TalentServiceCard({
 }
 
 export function TalentServicesSection({
+  availableCategories = [],
   services,
   showBookLinks = false,
 }: TalentServicesSectionProps) {
@@ -109,13 +119,17 @@ export function TalentServicesSection({
       className="scroll-mt-24 overflow-hidden rounded-none border-0 bg-transparent sm:rounded-[1.2rem] sm:border sm:border-[color:var(--line-strong)] sm:bg-[color:var(--surface)] sm:shadow-[var(--shadow-panel-soft)]"
       id="services"
     >
-      <div className="border-b border-[color:var(--line-strong)] px-4 py-4 sm:px-5">
+      <div className="flex items-center justify-between gap-3 border-b border-[color:var(--line-strong)] px-4 py-4 sm:px-5">
         <h2 className="typo-card-title-xl">Services</h2>
+        {!showBookLinks ? (
+          <TalentServiceDialog availableCategories={availableCategories} />
+        ) : null}
       </div>
       <div className="space-y-4 px-4 py-4 sm:px-5">
         {services.length > 0 ? (
           services.map((service) => (
             <TalentServiceCard
+              availableCategories={availableCategories}
               key={service.id}
               service={service}
               showBookLink={showBookLinks}

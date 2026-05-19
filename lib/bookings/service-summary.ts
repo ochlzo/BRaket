@@ -46,6 +46,8 @@ type ServiceSummarySource = {
     headline: string;
     User: {
       avatarUrl?: string | null;
+      contactNum?: string | null;
+      email?: string | null;
       firstName?: string | null;
       initials?: string | null;
       is_verified: boolean;
@@ -149,6 +151,7 @@ export function buildBookingServiceSummary(
     reviews,
     talent: {
       avatarUrl: service.TalentProfile.User.avatarUrl ?? "",
+      contactNum: service.TalentProfile.User.contactNum ?? "",
       displayName: displayName(
         service.TalentProfile.User.firstName,
         service.TalentProfile.User.lastName,
@@ -157,6 +160,7 @@ export function buildBookingServiceSummary(
       availabilityLabel: availability.label,
       availabilityStatus: availability.status,
       headline: service.TalentProfile.headline,
+      email: service.TalentProfile.User.email ?? "",
       initials: service.TalentProfile.User.initials ?? "BU",
       isVerified: service.TalentProfile.User.is_verified,
       profileHref: talentProfileHref(username),
