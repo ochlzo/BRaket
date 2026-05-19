@@ -1,4 +1,5 @@
 import type { TalentProfilePageData } from "@/lib/talent-profile/types";
+import type { CategoryOption } from "@/app/onboarding/talent/_lib/get-category-options";
 
 import { ProfileReviewsPanel } from "@/components/shared/profile-reviews/profile-reviews-panel";
 import { TalentAboutPanel } from "./talent-about-panel";
@@ -7,18 +8,26 @@ import { TalentQuickStats } from "./talent-quick-stats";
 import { TalentServicesSection } from "./talent-services-section";
 
 type TalentProfileBodyProps = {
+  availableCategories?: CategoryOption[];
+  availableSkills?: string[];
   profile: TalentProfilePageData;
   showBookLinks?: boolean;
 };
 
 export function TalentProfileBody({
+  availableCategories = [],
+  availableSkills = [],
   profile,
   showBookLinks = false,
 }: TalentProfileBodyProps) {
   return (
     <div className="grid gap-4 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(280px,340px)] lg:items-start">
       <div className="space-y-4 sm:space-y-6">
-        <TalentAboutPanel profile={profile} />
+        <TalentAboutPanel
+          availableSkills={availableSkills}
+          profile={profile}
+          showEditAction={!showBookLinks}
+        />
         <ProfileReviewsPanel
           averageRating={profile.talentAvgRating}
           emptyLabel="No client reviews yet"
@@ -28,6 +37,7 @@ export function TalentProfileBody({
           title="Client Reviews"
         />
         <TalentServicesSection
+          availableCategories={availableCategories}
           services={profile.services}
           showBookLinks={showBookLinks}
         />

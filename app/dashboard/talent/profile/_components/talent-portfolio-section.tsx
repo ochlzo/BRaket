@@ -2,6 +2,7 @@ import type { TalentProfilePortfolioItem } from "@/lib/talent-profile/types";
 
 import { ReportButton } from "@/components/shared/moderation/report-button";
 import { TalentMediaCollage } from "@/app/dashboard/talent/_components/talent-media-collage";
+import { TalentPortfolioDialog } from "./talent-portfolio-dialog";
 
 type TalentPortfolioSectionProps = {
   portfolio: TalentProfilePortfolioItem[];
@@ -17,10 +18,11 @@ function TalentPortfolioPost({
 }) {
   return (
     <article className="rounded-[1.1rem] border border-[color:var(--line-strong)] bg-[color:var(--surface)] p-4 shadow-[var(--shadow-surface-soft)]">
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex min-h-14 items-center justify-between gap-3">
         <h3 className="text-base font-extrabold tracking-normal text-[color:var(--foreground)]">
           {item.title}
         </h3>
+        {!showReportLink ? <TalentPortfolioDialog item={item} /> : null}
         {showReportLink ? (
           <ReportButton
             label="Report portfolio"
@@ -53,8 +55,9 @@ export function TalentPortfolioSection({
 }: TalentPortfolioSectionProps) {
   return (
     <section className="rounded-[1.2rem] border border-[color:var(--line-strong)] bg-[color:var(--surface)] shadow-[var(--shadow-panel-soft)]">
-      <div className="border-b border-[color:var(--line-strong)] px-5 py-4">
+      <div className="flex items-center justify-between gap-3 border-b border-[color:var(--line-strong)] px-5 py-4">
         <h2 className="typo-card-title-xl">Portfolio Posts</h2>
+        {!showReportLinks ? <TalentPortfolioDialog /> : null}
       </div>
       <div className="space-y-4 p-4">
         {portfolio.length > 0 ? (

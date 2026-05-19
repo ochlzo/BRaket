@@ -1,16 +1,21 @@
 import type { TalentProfilePageData } from "@/lib/talent-profile/types";
 import type { CurrentAppUser } from "@/server/users/current-user";
+import type { CategoryOption } from "@/app/onboarding/talent/_lib/get-category-options";
 
 import { TalentProfileBody } from "./talent-profile-body";
 import { TalentProfileHero } from "./talent-profile-hero";
 import { TalentProfileStats } from "./talent-profile-stats";
 
 type TalentProfilePageContentProps = {
+  availableCategories: CategoryOption[];
+  availableSkills: string[];
   profile: TalentProfilePageData;
   user: CurrentAppUser;
 };
 
 export function TalentProfilePageContent({
+  availableCategories,
+  availableSkills,
   profile,
   user,
 }: TalentProfilePageContentProps) {
@@ -18,7 +23,11 @@ export function TalentProfilePageContent({
     <div className="-mx-4 space-y-4 bg-[color:var(--surface)] pb-4 sm:mx-0 sm:bg-transparent sm:space-y-6 sm:pb-6">
       <TalentProfileHero profile={profile} user={user} />
       <TalentProfileStats profile={profile} />
-      <TalentProfileBody profile={profile} />
+      <TalentProfileBody
+        availableCategories={availableCategories}
+        availableSkills={availableSkills}
+        profile={profile}
+      />
     </div>
   );
 }

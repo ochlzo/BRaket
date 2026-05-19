@@ -35,6 +35,18 @@ export async function removeUploadedServiceAssets(
     .remove(assets.map((asset) => asset.objectPath));
 }
 
+export function getServiceMediaObjectPath(publicUrl: string) {
+  const marker = `/storage/v1/object/public/${TALENT_SERVICE_MEDIA_BUCKET}/`;
+  const markerIndex = publicUrl.indexOf(marker);
+
+  if (markerIndex === -1) {
+    return null;
+  }
+
+  const objectPath = publicUrl.slice(markerIndex + marker.length);
+  return objectPath ? decodeURIComponent(objectPath) : null;
+}
+
 export async function uploadServiceMedia(authId: string, files: File[]) {
   const uploadedAssets: UploadedTalentServiceAsset[] = [];
 

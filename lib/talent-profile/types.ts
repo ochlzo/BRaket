@@ -19,10 +19,12 @@ export type TalentProfileMediaItem = {
 
 export type TalentProfileServiceItem = {
   categories: string[];
+  categoryIds: string[];
   description: string;
   id: string;
   maxPrice: number;
   media: TalentProfileMediaItem[];
+  mediaUrls: string[];
   minPrice: number;
   priceUnit: string;
   title: string;
@@ -33,6 +35,7 @@ export type TalentProfilePortfolioItem = {
   description: string;
   id: string;
   media: TalentProfileMediaItem[];
+  mediaUrls: string[];
   title: string;
   updatedAt: string;
 };
@@ -156,6 +159,7 @@ export type TalentProfilePageSource = {
       minPrice: { toString: () => string };
       priceUnit: string;
       ServiceCategories: Array<{
+        categoryId: string;
         Category: { name: string };
       }>;
       ServiceMedia: Array<{

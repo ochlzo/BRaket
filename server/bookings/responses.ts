@@ -4,7 +4,10 @@ import { revalidatePath } from "next/cache";
 
 import { canViewBookingResponse } from "@/lib/bookings/response-auth";
 import { prisma } from "@/lib/prisma";
-import { sendClientBookingResponseEmail } from "@/server/bookings/email";
+import {
+  displayName,
+  notifyClientAboutBookingResponse,
+} from "@/server/bookings/booking-response-notification";
 import {
   getCurrentAppUser,
   type CurrentAppUser,
@@ -19,18 +22,6 @@ type BookingResponseResult = {
 type BookingWithResponseRelations = NonNullable<
   Awaited<ReturnType<typeof getBookingByResponseToken>>
 >;
-
-function displayName(user: {
-  firstName: string | null;
-  lastName: string | null;
-  username: string | null;
-}) {
-  return (
-    `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() ||
-    user.username ||
-    "BRaket user"
-  );
-}
 
 async function getBookingByResponseToken(responseToken: string) {
   return prisma.booking.findUnique({
@@ -55,31 +46,6 @@ async function getBookingByResponseTokenForTalent(
     },
     where: { responseToken, talentUserId },
   });
-}
-
-async function notifyClient(booking: BookingWithResponseRelations) {
-  const result = await sendClientBookingResponseEmail({
-    booking,
-    client: {
-      displayName: displayName(booking.Client),
-      email: booking.Client.email,
-    },
-    service: {
-      title: booking.Service.title,
-    },
-    talent: {
-      displayName: displayName(booking.Talent),
-      email: booking.Talent.email,
-    },
-  });
-
-  if (!result.ok) {
-    console.warn(
-      `Failed to send booking response email for booking ${booking.bookingId}: ${result.message}`,
-    );
-  }
-
-  return result;
 }
 
 async function authorizeTalentResponse(
@@ -183,7 +149,7 @@ export async function acceptBookingByResponseToken(
     where: { bookingId: booking.bookingId },
   });
 
-  await notifyClient(updatedBooking);
+  await notifyClientAboutBookingResponse(updatedBooking);
   revalidatePath("/dashboard/client/bookings");
   revalidatePath("/dashboard/talent/bookings");
 
@@ -247,7 +213,7 @@ export async function declineBookingByResponseToken(
     where: { bookingId: booking.bookingId },
   });
 
-  await notifyClient(updatedBooking);
+  await notifyClientAboutBookingResponse(updatedBooking);
   revalidatePath("/dashboard/client/bookings");
   revalidatePath("/dashboard/talent/bookings");
 

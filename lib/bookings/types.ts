@@ -10,6 +10,8 @@ export type BookingActionState = {
 export type BookingParty = {
   avatarUrl: string;
   displayName: string;
+  contactNum: string;
+  email: string;
   initials: string;
   username: string;
 };
@@ -90,10 +92,15 @@ export type BookableServiceCard = {
 
 export type TalentServiceListItem = {
   categories: string[];
+  categoryIds: string[];
   createdAt: string;
   description: string;
   id: string;
+  maxPrice: number;
   media: BookingServiceMediaItem[];
+  mediaUrls: string[];
+  minPrice: number;
+  priceUnit: string;
   priceLabel: string;
   title: string;
 };

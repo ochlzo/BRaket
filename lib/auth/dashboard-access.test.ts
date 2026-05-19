@@ -41,9 +41,22 @@ test("rejects talent dashboard access before talent onboarding finalization", ()
   assert.equal(
     canAccessDashboardRole({
       expectedRole: "talent",
+      hasTalentProfile: false,
       isTalent: false,
       role: "client",
     }),
     false,
+  );
+});
+
+test("allows talent dashboard access when a talent profile already exists", () => {
+  assert.equal(
+    canAccessDashboardRole({
+      expectedRole: "talent",
+      hasTalentProfile: true,
+      isTalent: false,
+      role: "client",
+    }),
+    true,
   );
 });

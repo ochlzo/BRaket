@@ -6,6 +6,7 @@ const accountSettingsModule = await import(
 );
 
 const {
+  buildAccountSettingsFormValues,
   parseAccountSettingsFormData,
   validateAccountSettingsInput,
 } = accountSettingsModule;
@@ -19,6 +20,7 @@ test("parses account settings form data with digit-only contact numbers", () => 
   formData.set("contactNum", "09-17 482 1945");
   formData.set("address", "  Legazpi City  ");
   formData.set("facebookUrl", "  jane.cruz  ");
+  formData.set("buEmail", "  student@bicol-u.edu.ph  ");
 
   const result = parseAccountSettingsFormData(formData);
 
@@ -28,6 +30,28 @@ test("parses account settings form data with digit-only contact numbers", () => 
   assert.equal(result.contactNum, "09174821945");
   assert.equal(result.address, "Legazpi City");
   assert.equal(result.facebookUrl, "jane.cruz");
+  assert.equal(result.buEmail, "student@bicol-u.edu.ph");
+});
+
+test("maps account settings data with BU email from talent profile", () => {
+  const result = buildAccountSettingsFormValues({
+    TalentProfile: {
+      bu_email: "student@bicol-u.edu.ph",
+    },
+    address: "Legazpi City",
+    contactNum: "09174821945",
+    email: "client@example.com",
+    facebook_url: "",
+    firstName: "Jane",
+    github_url: "",
+    instagram_url: "",
+    lastName: "Cruz",
+    linkedin_url: "",
+    username: "jane-cruz",
+    x_url: "",
+  });
+
+  assert.equal(result.buEmail, "student@bicol-u.edu.ph");
 });
 
 test("rejects missing required account fields", () => {
@@ -35,6 +59,7 @@ test("rejects missing required account fields", () => {
     address: "",
     contactNum: "",
     email: "jane@example.com",
+    buEmail: "",
     facebookUrl: "",
     firstName: "",
     githubUrl: "",
@@ -58,6 +83,7 @@ test("rejects contact numbers that are not exactly 11 digits starting with 09", 
     address: "Legazpi City",
     contactNum: "08123456789",
     email: "jane@example.com",
+    buEmail: "",
     facebookUrl: "",
     firstName: "Jane",
     githubUrl: "",
@@ -82,6 +108,7 @@ test("rejects duplicate usernames", () => {
     address: "Legazpi City",
     contactNum: "09174821945",
     email: "jane@example.com",
+    buEmail: "",
     facebookUrl: "",
     firstName: "Jane",
     githubUrl: "",
@@ -103,6 +130,7 @@ test("rejects duplicate contact numbers", () => {
     address: "Legazpi City",
     contactNum: "09174821945",
     email: "jane@example.com",
+    buEmail: "",
     facebookUrl: "",
     firstName: "Jane",
     githubUrl: "",

@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, type ChangeEvent } from "react";
+import { useEffect, useMemo, useRef, type ChangeEvent } from "react";
 import { ImageIcon, X } from "lucide-react";
+import Image from "next/image";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -32,10 +33,42 @@ type TalentMediaUploadFieldProps = {
   inputId: string;
   inputName: string;
   isRequired?: boolean;
+  onExistingMediaUrlsChange?: (urls: string[]) => void;
   onFilesChange: (files: File[]) => void;
   onNoticeChange: (message: string) => void;
+  removableExistingMedia?: boolean;
   title: string;
 };
+
+function MediaPreviewTile({
+  alt,
+  removable = false,
+  onRemove,
+  src,
+}: {
+  alt: string;
+  onRemove?: () => void;
+  removable?: boolean;
+  src: string;
+}) {
+  return (
+    <div className="group relative aspect-[16/10] overflow-hidden rounded-xl border border-[color:var(--line-strong)] bg-white shadow-[var(--shadow-surface-soft)]">
+      <Image alt={alt} className="object-cover" fill sizes="(max-width: 640px) 50vw, 180px" src={src} />
+      {removable ? (
+        <Button
+          aria-label={`Remove ${alt}`}
+          className="absolute right-2 top-2 rounded-full bg-white/95 shadow-[var(--shadow-surface-soft)]"
+          onClick={onRemove}
+          size="icon-xs"
+          type="button"
+          variant="ghost"
+        >
+          <X className="size-3.5" />
+        </Button>
+      ) : null}
+    </div>
+  );
+}
 
 export function TalentMediaUploadField({
   emptyDescription,
@@ -44,12 +77,24 @@ export function TalentMediaUploadField({
   inputId,
   inputName,
   isRequired = false,
+  onExistingMediaUrlsChange,
   onFilesChange,
   onNoticeChange,
+  removableExistingMedia = false,
   title,
 }: TalentMediaUploadFieldProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const mediaCount = existingMediaUrls.length + files.length;
+  const filePreviewUrls = useMemo(
+    () => files.map((file) => ({ key: getTalentPortfolioFileKey(file), name: file.name, url: URL.createObjectURL(file) })),
+    [files],
+  );
+
+  useEffect(() => {
+    return () => {
+      filePreviewUrls.forEach((file) => URL.revokeObjectURL(file.url));
+    };
+  }, [filePreviewUrls]);
 
   function updateFiles(nextFiles: File[]) {
     const validFiles = nextFiles.filter((file) =>
@@ -114,6 +159,16 @@ export function TalentMediaUploadField({
     syncInputFiles(inputRef.current, []);
   }
 
+  function removeExistingMedia(url: string) {
+    if (!onExistingMediaUrlsChange) {
+      return;
+    }
+
+    const nextUrls = existingMediaUrls.filter((entry) => entry !== url);
+    onExistingMediaUrlsChange(nextUrls);
+    onNoticeChange("");
+  }
+
   return (
     <div className="rounded-2xl border border-dashed border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -170,48 +225,29 @@ export function TalentMediaUploadField({
         ) : null}
       </div>
 
-      <div className="mt-4 grid gap-2">
+      <div className="mt-4 grid gap-3">
         {existingMediaUrls.length > 0 || files.length > 0 ? (
           <>
-            {existingMediaUrls.map((url, index) => (
-              <div
-                className="flex items-center justify-between gap-3 rounded-xl border border-[color:var(--line-strong)] bg-white px-3 py-2.5"
-                key={url}
-              >
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-foreground">
-                    Saved image {index + 1}
-                  </p>
-                  <p className="truncate text-xs text-[color:var(--ink-muted)]">
-                    {url}
-                  </p>
-                </div>
-              </div>
-            ))}
-            {files.map((file, index) => (
-              <div
-                className="flex items-center justify-between gap-3 rounded-xl border border-[color:var(--line-strong)] bg-white px-3 py-2.5"
-                key={getTalentPortfolioFileKey(file)}
-              >
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-foreground">
-                    {file.name}
-                  </p>
-                  <p className="text-xs text-[color:var(--ink-muted)]">
-                    {formatTalentPortfolioFileSize(file.size)}
-                  </p>
-                </div>
-                <Button
-                  aria-label={`Remove ${file.name}`}
-                  onClick={() => removeFile(index)}
-                  size="icon-xs"
-                  type="button"
-                  variant="ghost"
-                >
-                  <X className="size-3.5" />
-                </Button>
-              </div>
-            ))}
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {existingMediaUrls.map((url, index) => (
+                <MediaPreviewTile
+                  alt={`Saved image ${index + 1}`}
+                  key={url}
+                  onRemove={() => removeExistingMedia(url)}
+                  removable={removableExistingMedia}
+                  src={url}
+                />
+              ))}
+              {filePreviewUrls.map((file, index) => (
+                <MediaPreviewTile
+                  alt={file.name}
+                  key={file.key}
+                  onRemove={() => removeFile(index)}
+                  removable
+                  src={file.url}
+                />
+              ))}
+            </div>
           </>
         ) : (
           <div className="rounded-xl border border-dashed border-[color:var(--line-strong)] bg-white px-4 py-5 text-center">

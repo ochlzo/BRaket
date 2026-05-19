@@ -27,6 +27,8 @@ const statusStyles: Record<BookingStatus, string> = {
     "bg-[color:var(--tone-indigo-soft)] text-[color:var(--tone-indigo-deep)]",
   PENDING:
     "bg-[color:var(--tone-amber-soft)] text-[color:var(--tone-orange-deep)]",
+  WORK_SUBMITTED:
+    "bg-[color:var(--tone-amber-soft)] text-[color:var(--tone-amber-deep)]",
 };
 
 const statusLabels: Record<BookingStatus, string> = {
@@ -36,6 +38,7 @@ const statusLabels: Record<BookingStatus, string> = {
   DECLINED: "Declined",
   IN_PROGRESS: "In progress",
   PENDING: "Pending",
+  WORK_SUBMITTED: "Work submitted",
 };
 
 function StatusButton({
@@ -68,16 +71,35 @@ function BookingActions({
   booking: BookingListItem;
   viewer: "client" | "talent";
 }) {
-  if (viewer === "client" && booking.status === "PENDING") {
-    return (
-      <StatusButton bookingId={booking.id} label="Cancel" status="CANCELLED" />
-    );
-  }
-
-  if (viewer !== "talent") {
+  // --- Client actions ---
+  if (viewer === "client") {
+    if (booking.status === "PENDING") {
+      return (
+        <StatusButton bookingId={booking.id} label="Cancel" status="CANCELLED" />
+      );
+    }
+    if (booking.status === "ACCEPTED") {
+      return (
+        <StatusButton
+          bookingId={booking.id}
+          label="Initiate work"
+          status="IN_PROGRESS"
+        />
+      );
+    }
+    if (booking.status === "WORK_SUBMITTED") {
+      return (
+        <StatusButton
+          bookingId={booking.id}
+          label="Approve & complete"
+          status="COMPLETED"
+        />
+      );
+    }
     return null;
   }
 
+  // --- Talent actions ---
   if (booking.status === "PENDING") {
     return (
       <>
@@ -87,27 +109,24 @@ function BookingActions({
     );
   }
 
-  if (booking.status === "ACCEPTED") {
-    return (
-      <StatusButton
-        bookingId={booking.id}
-        label="Start work"
-        status="IN_PROGRESS"
-      />
-    );
-  }
-
   if (booking.status === "IN_PROGRESS") {
     return (
       <StatusButton
         bookingId={booking.id}
-        label="Mark complete"
-        status="COMPLETED"
+        label="Submit work"
+        status="WORK_SUBMITTED"
       />
     );
   }
 
   return null;
+}
+
+function bookingContactDetails(
+  party: BookingListItem["client"],
+  label: string,
+) {
+  return `${label}: ${party.displayName}\nEmail: ${party.email || "-"}\nPhone Number: ${party.contactNum || "-"}`;
 }
 
 export function BookingList({
@@ -175,10 +194,10 @@ export function BookingList({
               <h2 className="text-xl font-extrabold tracking-normal text-foreground">
                 {booking.service.title}
               </h2>
-              <p className="mt-1 text-sm text-[color:var(--ink-muted)]">
+              <p className="mt-1 whitespace-pre-line text-sm leading-6 text-[color:var(--ink-muted)]">
                 {viewer === "client"
-                  ? `Talent: ${booking.talent.displayName}`
-                  : `Client: ${booking.client.displayName}`}
+                  ? bookingContactDetails(booking.talent, "Talent")
+                  : bookingContactDetails(booking.client, "Client")}
               </p>
               <p className="mt-4 whitespace-pre-line text-sm leading-7 text-[color:var(--ink-body)]">
                 {booking.projectDetails}

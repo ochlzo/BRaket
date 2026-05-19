@@ -1,14 +1,28 @@
 import type { TalentProfilePageData } from "@/lib/talent-profile/types";
 
+import { TalentAboutEditor } from "./talent-about-editor";
+
 type TalentAboutPanelProps = {
+  availableSkills?: string[];
   profile: TalentProfilePageData;
+  showEditAction?: boolean;
 };
 
-export function TalentAboutPanel({ profile }: TalentAboutPanelProps) {
+export function TalentAboutPanel({
+  availableSkills = [],
+  profile,
+  showEditAction = false,
+}: TalentAboutPanelProps) {
   return (
     <section className="overflow-hidden rounded-none border-0 bg-transparent sm:rounded-[1.2rem] sm:border sm:border-[color:var(--line-strong)] sm:bg-[color:var(--surface)] sm:shadow-[var(--shadow-panel-soft)]">
-      <div className="border-b border-[color:var(--line-strong)] px-4 py-4 sm:px-5">
+      <div className="flex items-center justify-between gap-3 border-b border-[color:var(--line-strong)] px-4 py-4 sm:px-5">
         <h2 className="typo-card-title-xl">About</h2>
+        {showEditAction ? (
+          <TalentAboutEditor
+            availableSkills={availableSkills}
+            profile={profile}
+          />
+        ) : null}
       </div>
       <div className="px-4 py-4 sm:px-5">
         <p className="text-sm leading-7 text-[color:var(--ink-body)]">

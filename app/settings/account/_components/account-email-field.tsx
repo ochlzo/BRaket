@@ -54,6 +54,7 @@ export function AccountEmailField({
           disabled
           id="email"
           name="email"
+          placeholder="-"
           readOnly
           type="email"
           value={value}

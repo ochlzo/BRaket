@@ -28,6 +28,20 @@ test("talent dashboard routes use the talent dashboard layout wrapper", () => {
   }
 });
 
+test("talent services page reuses the shared service edit dialog", () => {
+  const source = read("app/dashboard/talent/services/page.tsx");
+
+  assert.match(source, /TalentServiceDialog/);
+  assert.match(source, /getCategoryOptions/);
+});
+
+test("talent services new page reuses the onboarding service form", () => {
+  const source = read("app/dashboard/talent/services/new/_components/create-service-form.tsx");
+
+  assert.match(source, /TalentServiceOnboardingForm/);
+  assert.match(source, /buildTalentServiceStepInitialValues\(null\)/);
+});
+
 test("client dashboard routes use the client dashboard layout wrapper", () => {
   const files = [
     "app/dashboard/client/page.tsx",

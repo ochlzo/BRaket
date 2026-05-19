@@ -110,11 +110,6 @@ export function ClientProfileDetails({ profile }: ClientProfileDetailsProps) {
             value={profile.contactNum}
           />
           <DetailRow
-            icon={<Mail className="size-4" />}
-            label="Talent email"
-            value={<EmailLink email={profile.talentEmail} />}
-          />
-          <DetailRow
             icon={<Users className="size-4" />}
             label="Joined"
             value={profile.joinedLabel}
