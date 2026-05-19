@@ -11,6 +11,16 @@ import {
   Wrench,
 } from "lucide-react";
 
+import { AdminPlatformActivityChart } from "@/app/admin/_components/admin-platform-activity-chart";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import type { AdminDashboardData } from "@/server/admin/dashboard-data";
 
 type AdminDashboardOverviewProps = {
@@ -44,7 +54,7 @@ export function AdminDashboardOverview({ data }: AdminDashboardOverviewProps) {
     {
       icon: Wrench,
       label: "Services",
-      meta: "Bookable offers on Braket",
+      meta: "Bookable offers on BRaket",
       value: data.services,
     },
   ];
@@ -53,35 +63,24 @@ export function AdminDashboardOverview({ data }: AdminDashboardOverviewProps) {
     <div className="grid gap-5">
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {cards.map((card) => (
-          <article
-            className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-5 shadow-[var(--shadow-surface-soft)]"
-            key={card.label}
-          >
-            <div className="flex items-center justify-between gap-3">
-              <div className="rounded-xl bg-[color:var(--surface-alt)] p-3 text-[color:var(--brand-blue)]">
-                <card.icon className="size-5" />
-              </div>
-              <p className="text-3xl font-black tracking-[-0.03em]">
-                {card.value}
-              </p>
-            </div>
-            <h2 className="mt-4 text-sm font-black text-foreground">
-              {card.label}
-            </h2>
-            <p className="mt-1 text-sm text-[color:var(--ink-muted)]">
-              {card.meta}
-            </p>
-          </article>
+          <MetricCard key={card.label} {...card} />
         ))}
       </div>
 
+      <AdminPlatformActivityChart series={data.platformActivity} />
+
       <div className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
-        <section className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-5 shadow-[var(--shadow-surface-soft)]">
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="size-5 text-[color:var(--brand-orange)]" />
-            <h2 className="text-lg font-black">Needs Attention</h2>
-          </div>
-          <div className="mt-4 grid gap-3">
+        <Card className="border-[color:var(--line-strong)] bg-[color:var(--surface)] shadow-[var(--shadow-surface-soft)]">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="size-5 text-[color:var(--brand-orange)]" />
+              <CardTitle className="tracking-normal">Needs attention</CardTitle>
+            </div>
+            <CardDescription>
+              Admin queues that can block trust, safety, or fulfillment.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-3">
             <ActionRow
               count={data.pendingApprovals}
               href="/admin?view=talent-approval"
@@ -96,19 +95,24 @@ export function AdminDashboardOverview({ data }: AdminDashboardOverviewProps) {
             />
             <ActionRow
               count={data.activeBookings}
-              href="/dashboard/admin"
+              href="/admin"
               icon={BriefcaseBusiness}
               label="Active bookings in progress"
             />
-          </div>
-        </section>
+          </CardContent>
+        </Card>
 
-        <section className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-5 shadow-[var(--shadow-surface-soft)]">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="size-5 text-[color:var(--tone-green-deep)]" />
-            <h2 className="text-lg font-black">Recent Activity</h2>
-          </div>
-          <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        <Card className="border-[color:var(--line-strong)] bg-[color:var(--surface)] shadow-[var(--shadow-surface-soft)]">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="size-5 text-[color:var(--tone-green-deep)]" />
+              <CardTitle className="tracking-normal">Recent activity</CardTitle>
+            </div>
+            <CardDescription>
+              Latest users and pending reports entering the admin queue.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4 lg:grid-cols-2">
             <ActivityList
               emptyText="No users have joined yet."
               items={data.recentUsers.map((user) => ({
@@ -127,16 +131,21 @@ export function AdminDashboardOverview({ data }: AdminDashboardOverviewProps) {
               }))}
               title="Latest reports"
             />
-          </div>
-        </section>
+          </CardContent>
+        </Card>
       </div>
 
-      <section className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-5 shadow-[var(--shadow-surface-soft)]">
-        <div className="flex items-center gap-2">
-          <History className="size-5 text-[color:var(--brand-blue)]" />
-          <h2 className="text-lg font-black">Activity Logs</h2>
-        </div>
-        <div className="mt-4 grid gap-2">
+      <Card className="border-[color:var(--line-strong)] bg-[color:var(--surface)] shadow-[var(--shadow-surface-soft)]">
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <History className="size-5 text-[color:var(--brand-blue)]" />
+            <CardTitle className="tracking-normal">Activity logs</CardTitle>
+          </div>
+          <CardDescription>
+            A combined timeline of users, bookings, reports, and verifications.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-2">
           {data.activityLogs.length === 0 ? (
             <p className="rounded-xl bg-[color:var(--surface-alt)] px-4 py-3 text-sm text-[color:var(--ink-muted)]">
               No platform activity yet.
@@ -147,9 +156,9 @@ export function AdminDashboardOverview({ data }: AdminDashboardOverviewProps) {
               className="grid gap-3 rounded-xl bg-[color:var(--surface-alt)] px-4 py-3 md:grid-cols-[7rem_minmax(0,1fr)_auto] md:items-center"
               key={log.id}
             >
-              <span className="mx-auto w-fit rounded-full bg-white px-2.5 py-1 text-center text-xs font-black text-[color:var(--brand-blue)] md:mx-0">
+              <Badge className="mx-auto bg-[color:var(--surface)] text-[color:var(--brand-blue)] md:mx-0">
                 {log.kind}
-              </span>
+              </Badge>
               <div className="min-w-0">
                 <p className="break-words text-sm font-bold text-foreground">
                   {log.title}
@@ -163,9 +172,42 @@ export function AdminDashboardOverview({ data }: AdminDashboardOverviewProps) {
               </time>
             </div>
           ))}
-        </div>
-      </section>
+        </CardContent>
+      </Card>
     </div>
+  );
+}
+
+function MetricCard({
+  icon: Icon,
+  label,
+  meta,
+  value,
+}: {
+  icon: typeof UsersRound;
+  label: string;
+  meta: string;
+  value: number;
+}) {
+  return (
+    <Card className="border-[color:var(--line-strong)] bg-[color:var(--surface)] shadow-[var(--shadow-surface-soft)]">
+      <CardHeader>
+        <CardDescription>{label}</CardDescription>
+        <CardTitle className="text-3xl font-bold tracking-normal text-foreground">
+          {value}
+        </CardTitle>
+        <CardAction>
+          <div className="flex size-9 items-center justify-center rounded-lg bg-[color:var(--surface-alt)] text-[color:var(--brand-blue)]">
+            <Icon className="size-4" />
+          </div>
+        </CardAction>
+      </CardHeader>
+      <CardContent>
+        <p className="text-xs font-medium text-[color:var(--ink-muted)]">
+          {meta}
+        </p>
+      </CardContent>
+    </Card>
   );
 }
 
