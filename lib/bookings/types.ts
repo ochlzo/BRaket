@@ -10,6 +10,8 @@ export type BookingActionState = {
 export type BookingParty = {
   avatarUrl: string;
   displayName: string;
+  contactNum: string;
+  email: string;
   initials: string;
   username: string;
 };

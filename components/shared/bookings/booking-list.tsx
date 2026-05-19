@@ -122,6 +122,13 @@ function BookingActions({
   return null;
 }
 
+function bookingContactDetails(
+  party: BookingListItem["client"],
+  label: string,
+) {
+  return `${label}: ${party.displayName}\nEmail: ${party.email || "-"}\nPhone Number: ${party.contactNum || "-"}`;
+}
+
 export function BookingList({
   bookings,
   emptyActionHref,
@@ -187,10 +194,10 @@ export function BookingList({
               <h2 className="text-xl font-extrabold tracking-normal text-foreground">
                 {booking.service.title}
               </h2>
-              <p className="mt-1 text-sm text-[color:var(--ink-muted)]">
+              <p className="mt-1 whitespace-pre-line text-sm leading-6 text-[color:var(--ink-muted)]">
                 {viewer === "client"
-                  ? `Talent: ${booking.talent.displayName}`
-                  : `Client: ${booking.client.displayName}`}
+                  ? bookingContactDetails(booking.talent, "Talent")
+                  : bookingContactDetails(booking.client, "Client")}
               </p>
               <p className="mt-4 whitespace-pre-line text-sm leading-7 text-[color:var(--ink-body)]">
                 {booking.projectDetails}

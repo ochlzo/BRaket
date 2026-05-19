@@ -26,6 +26,8 @@ function displayName(firstName?: string | null, lastName?: string | null) {
 
 function mapParty(user: {
   avatarUrl?: string | null;
+  contactNum?: string | null;
+  email?: string | null;
   firstName?: string | null;
   initials?: string | null;
   lastName?: string | null;
@@ -33,7 +35,9 @@ function mapParty(user: {
 }): BookingParty {
   return {
     avatarUrl: user.avatarUrl ?? "",
+    contactNum: user.contactNum ?? "",
     displayName: displayName(user.firstName, user.lastName),
+    email: user.email ?? "",
     initials: user.initials ?? "BU",
     username: user.username ?? "",
   };

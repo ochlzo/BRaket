@@ -6,6 +6,7 @@ import { headers } from "next/headers";
 
 import type { BookingActionState } from "@/lib/bookings/types";
 import { prisma } from "@/lib/prisma";
+import { notifyClientAboutBookingResponse } from "@/server/bookings/booking-response-notification";
 import {
   sendTalentBookingRequestEmail,
   sendWorkInitiatedEmail,
@@ -90,13 +91,6 @@ export async function createBookingRequestAction(
 
   if (!serviceId) {
     return { ...EMPTY_STATE, message: "Choose a service to book." };
-  }
-
-  if (projectDetails.length < 20) {
-    return {
-      ...EMPTY_STATE,
-      message: "Share at least 20 characters about the project.",
-    };
   }
 
   const service = await prisma.service.findUnique({
@@ -209,11 +203,10 @@ export async function updateBookingStatusAction(
   }
 
   const booking = await prisma.booking.findUnique({
-    select: {
-      bookingId: true,
-      clientUserId: true,
-      status: true,
-      talentUserId: true,
+    include: {
+      Client: true,
+      Service: true,
+      Talent: true,
     },
     where: { bookingId },
   });
@@ -222,9 +215,23 @@ export async function updateBookingStatusAction(
     return { ...EMPTY_STATE, message: "We could not find that booking." };
   }
 
+  const nextStatus = status as BookingStatus;
+
+  if (
+    (nextStatus === "ACCEPTED" || nextStatus === "DECLINED") &&
+    booking.status === nextStatus
+  ) {
+    return {
+      message:
+        nextStatus === "ACCEPTED"
+          ? "This booking request is already accepted."
+          : "This booking request is already declined.",
+      ok: true,
+    };
+  }
+
   const isTalentOwner = booking.talentUserId === currentUser.id;
   const isClientOwner = booking.clientUserId === currentUser.id;
-  const nextStatus = status as BookingStatus;
 
   if (["ACCEPTED", "DECLINED", "WORK_SUBMITTED"].includes(nextStatus)) {
     if (!isTalentOwner) {
@@ -251,6 +258,14 @@ export async function updateBookingStatusAction(
       });
     }
   });
+
+  if (nextStatus === "ACCEPTED" || nextStatus === "DECLINED") {
+    await notifyClientAboutBookingResponse({
+      ...booking,
+      declineReason: booking.declineReason ?? null,
+      status: nextStatus,
+    });
+  }
 
   // Fire notification emails for the new handshake steps
   if (nextStatus === "IN_PROGRESS" || nextStatus === "WORK_SUBMITTED") {

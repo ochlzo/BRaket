@@ -28,6 +28,7 @@ type TalentServiceOnboardingFormProps = {
   initialValues: TalentServiceStepInitialValues;
   onBack: () => void;
   onComplete: () => void;
+  showSkipButton?: boolean;
 };
 
 export function TalentServiceOnboardingForm({
@@ -35,6 +36,7 @@ export function TalentServiceOnboardingForm({
   initialValues,
   onBack,
   onComplete,
+  showSkipButton = true,
 }: TalentServiceOnboardingFormProps) {
   const [title, setTitle] = useState(initialValues.title);
   const [description, setDescription] = useState(initialValues.description);
@@ -163,6 +165,7 @@ export function TalentServiceOnboardingForm({
           <TalentServiceFormHeader
             isSubmitting={isSubmitting}
             onSkip={handleSkip}
+            showSkipButton={showSkipButton}
           />
 
           <div className="space-y-4 sm:space-y-5">
