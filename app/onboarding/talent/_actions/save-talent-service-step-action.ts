@@ -16,6 +16,7 @@ import {
 } from "@/app/onboarding/talent/_lib/dirty-fields";
 import { validateTalentOnboardingFinalization } from "@/app/onboarding/talent/_lib/talent-finalization";
 import {
+  getServiceMediaObjectPath,
   removeUploadedServiceAssets,
   uploadServiceMedia,
   type UploadedTalentServiceAsset,
@@ -91,7 +92,7 @@ export async function saveTalentServiceStepAction(
     ? await prisma.service.findFirst({
         select: {
           serviceId: true,
-          ServiceMedia: { select: { serviceDetailId: true } },
+          ServiceMedia: { select: { mediaUrl: true, serviceDetailId: true } },
         },
         where: {
           serviceId: input.serviceId,
@@ -201,6 +202,19 @@ export async function saveTalentServiceStepAction(
         });
       }
 
+      if (
+        existingService &&
+        hasDirtyField(dirtyFields, "media") &&
+        (input.removedExistingMediaUrls?.length ?? 0) > 0
+      ) {
+        await tx.serviceMedia.deleteMany({
+          where: {
+            mediaUrl: { in: input.removedExistingMediaUrls },
+            serviceId,
+          },
+        });
+      }
+
       const finalization = validateTalentOnboardingFinalization(talentProfile);
       if (!finalization.ok) {
         throw new OnboardingFinalizationError(
@@ -223,6 +237,18 @@ export async function saveTalentServiceStepAction(
           ? error.message
           : "We could not save your service right now.",
     };
+  }
+
+  if ((input.removedExistingMediaUrls?.length ?? 0) > 0) {
+    const objectPaths = input.removedExistingMediaUrls
+      .map(getServiceMediaObjectPath)
+      .filter((path): path is string => Boolean(path));
+
+    if (objectPaths.length > 0) {
+      await removeUploadedServiceAssets(
+        objectPaths.map((objectPath) => ({ objectPath, publicUrl: "" })),
+      ).catch(() => {});
+    }
   }
 
   clearCurrentAppUserCache(currentUser.authId);

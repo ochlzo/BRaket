@@ -44,6 +44,9 @@ export function TalentServiceOnboardingForm({
   const [minPrice, setMinPrice] = useState(initialValues.minPrice);
   const [maxPrice, setMaxPrice] = useState(initialValues.maxPrice);
   const [priceUnit, setPriceUnit] = useState(initialValues.priceUnit);
+  const [existingMediaUrls, setExistingMediaUrls] = useState(
+    initialValues.existingMediaUrls,
+  );
   const [sampleFiles, setSampleFiles] = useState<File[]>([]);
   const [notice, setNotice] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -72,11 +75,15 @@ export function TalentServiceOnboardingForm({
     const validation = validateTalentServiceStepInput({
       categoryIds: selectedCategoryIds,
       description,
-      existingMediaCount: initialValues.existingMediaUrls.length,
+      existingMediaCount: existingMediaUrls.length,
+      existingMediaUrls,
       files: sampleFiles,
       maxPrice,
       minPrice,
       priceUnit,
+      removedExistingMediaUrls: initialValues.existingMediaUrls.filter(
+        (url) => !existingMediaUrls.includes(url),
+      ),
       title,
     });
 
@@ -98,7 +105,16 @@ export function TalentServiceOnboardingForm({
     const formData = new FormData(event.currentTarget);
     formData.set("serviceId", initialValues.serviceId);
     formData.set("categoryIds", JSON.stringify(selectedCategoryIds));
+    formData.set("existingMediaUrls", JSON.stringify(existingMediaUrls));
     formData.set("priceUnit", priceUnit);
+    formData.set(
+      "removedExistingMediaUrls",
+      JSON.stringify(
+        initialValues.existingMediaUrls.filter(
+          (url) => !existingMediaUrls.includes(url),
+        ),
+      ),
+    );
     formData.set("dirtyFields", JSON.stringify(dirtyFields));
 
     try {
@@ -258,12 +274,14 @@ export function TalentServiceOnboardingForm({
 
         <TalentMediaUploadField
           emptyDescription="Sample images are optional for this service."
-          existingMediaUrls={initialValues.existingMediaUrls}
+          existingMediaUrls={existingMediaUrls}
           files={sampleFiles}
           inputId="service-sample-media"
           inputName="serviceMedia"
+          onExistingMediaUrlsChange={setExistingMediaUrls}
           onFilesChange={setSampleFiles}
           onNoticeChange={setNotice}
+          removableExistingMedia={initialValues.existingMediaUrls.length > 0}
           title="Work Samples"
         />
 

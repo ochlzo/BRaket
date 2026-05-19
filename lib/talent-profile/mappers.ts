@@ -77,6 +77,9 @@ function buildServices(
     categories: service.ServiceCategories.map((entry) =>
       compactText(entry.Category.name),
     ).filter(Boolean),
+    categoryIds: service.ServiceCategories.map((entry) =>
+      compactText(entry.categoryId),
+    ).filter(Boolean),
     description: compactText(service.description),
     id: service.serviceId,
     maxPrice: readPrice(service.maxPrice),
@@ -84,6 +87,9 @@ function buildServices(
       id: media.serviceDetailId,
       url: media.mediaUrl,
     })),
+    mediaUrls: service.ServiceMedia.map((media) => compactText(media.mediaUrl)).filter(
+      Boolean,
+    ),
     minPrice: readPrice(service.minPrice),
     priceUnit: service.priceUnit,
     title: compactText(service.title),

@@ -25,10 +25,12 @@ export type TalentServiceStepInput = {
   categoryIds: string[];
   description: string;
   existingMediaCount?: number;
+  existingMediaUrls?: string[];
   files: File[];
   maxPrice: string;
   minPrice: string;
   priceUnit: string;
+  removedExistingMediaUrls?: string[];
   serviceId?: string;
   title: string;
 };
@@ -98,6 +100,10 @@ function readText(formData: FormData, key: string) {
 }
 
 function parseCategoryIds(value: FormDataEntryValue | null) {
+  return parseStringArray(value);
+}
+
+function parseStringArray(value: FormDataEntryValue | null) {
   if (typeof value !== "string") {
     return [];
   }
@@ -138,10 +144,14 @@ export function parseTalentServiceStepFormData(
   return {
     categoryIds: parseCategoryIds(formData.get("categoryIds")),
     description: readText(formData, "description"),
+    existingMediaUrls: parseStringArray(formData.get("existingMediaUrls")),
     files,
     maxPrice: readText(formData, "maxPrice"),
     minPrice: readText(formData, "minPrice"),
     priceUnit: readText(formData, "priceUnit"),
+    removedExistingMediaUrls: parseStringArray(
+      formData.get("removedExistingMediaUrls"),
+    ),
     serviceId: readText(formData, "serviceId"),
     title: readText(formData, "title"),
   };
@@ -190,7 +200,14 @@ export function getTalentServiceStepDirtyFields(
     dirtyFields.push("categoryIds");
   }
 
-  if (input.files.length > 0) {
+  if (
+    input.files.length > 0 ||
+    (input.removedExistingMediaUrls?.length ?? 0) > 0 ||
+    !areStringSetsEqual(
+      initialValues.existingMediaUrls,
+      input.existingMediaUrls ?? initialValues.existingMediaUrls,
+    )
+  ) {
     dirtyFields.push("media");
   }
 
