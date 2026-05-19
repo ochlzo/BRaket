@@ -25,3 +25,13 @@ test("talent quick stats show reputation score after services offered", () => {
   assert.ok(reputationIndex > servicesIndex);
   assert.ok(reviewsIndex > reputationIndex);
 });
+
+test("talent profile hero menu links to BU verification from talent dashboard", () => {
+  const source = readFileSync(
+    "app/dashboard/talent/profile/_components/talent-profile-hero.tsx",
+    "utf8",
+  );
+
+  assert.match(source, /Verify BU Student/);
+  assert.match(source, /\/talent\/verify\?source=talent-dashboard/);
+});

@@ -7,6 +7,7 @@ const routeModule = await import(
 
 const {
   getAllowedTalentOnboardingStep,
+  getPendingTalentVerificationDashboardState,
   getTalentRegistrationPath,
   getTalentVerificationMaybeLaterPath,
   shouldForceTalentVerification,
@@ -25,11 +26,24 @@ test("routes unverified non-talent users to verification", () => {
 test("routes pending non-talent applicants to talent profile setup", () => {
   assert.equal(
     getTalentRegistrationPath({
+      hasTalentProfile: false,
       isTalent: false,
       isVerified: false,
       verificationStatus: "pending",
     }),
     "/onboarding/talent?step=1",
+  );
+});
+
+test("routes users with an existing talent profile to the talent dashboard", () => {
+  assert.equal(
+    getTalentRegistrationPath({
+      hasTalentProfile: true,
+      isTalent: false,
+      isVerified: false,
+      verificationStatus: "pending",
+    }),
+    "/dashboard/talent",
   );
 });
 
@@ -111,5 +125,63 @@ test("sends non-talents back to talent onboarding from dashboard source", () => 
   assert.equal(
     getTalentVerificationMaybeLaterPath(false, "dashboard"),
     "/onboarding/talent?step=1",
+  );
+});
+
+test("shows pending verification state for talent users without source params", () => {
+  assert.deepEqual(
+    getPendingTalentVerificationDashboardState({
+      isTalent: true,
+      verificationStatus: "pending",
+    }),
+    {
+      backPath: "/dashboard/client",
+      message:
+        "Your BU student verification is still waiting for admin review. You can return to your client dashboard while we review it.",
+      shouldShow: true,
+    },
+  );
+});
+
+test("shows pending verification state for talent dashboard source", () => {
+  assert.deepEqual(
+    getPendingTalentVerificationDashboardState({
+      isTalent: true,
+      source: "talent-dashboard",
+      verificationStatus: "pending",
+    }),
+    {
+      backPath: "/dashboard/talent",
+      message:
+        "Your BU student verification is still waiting for admin review. You can return to your talent dashboard while we review it.",
+      shouldShow: true,
+    },
+  );
+});
+
+test("does not show pending verification state outside the exact pending talent state", () => {
+  assert.equal(
+    getPendingTalentVerificationDashboardState({
+      isTalent: false,
+      source: "dashboard",
+      verificationStatus: "pending",
+    }).shouldShow,
+    false,
+  );
+  assert.equal(
+    getPendingTalentVerificationDashboardState({
+      isTalent: false,
+      source: "dashboard",
+      verificationStatus: "approved",
+    }).shouldShow,
+    false,
+  );
+  assert.equal(
+    getPendingTalentVerificationDashboardState({
+      isTalent: false,
+      source: "site",
+      verificationStatus: "pending",
+    }).shouldShow,
+    false,
   );
 });

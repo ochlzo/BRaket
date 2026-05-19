@@ -8,6 +8,7 @@ const MIN_ONBOARDING_STEP = 1;
 export type TalentOnboardingStep = 1 | 2 | 3;
 
 type TalentRegistrationPathInput = {
+  hasTalentProfile?: boolean;
   isTalent: boolean;
   isVerified: boolean;
   verificationStatus?: "approved" | "none" | "pending" | "rejected";
@@ -16,6 +17,12 @@ type TalentRegistrationPathInput = {
 type TalentVerificationInput = {
   isTalent: boolean;
   isVerified: boolean;
+};
+
+type PendingTalentVerificationDashboardInput = {
+  isTalent: boolean;
+  source?: string | null;
+  verificationStatus: "approved" | "none" | "pending" | "rejected";
 };
 
 function parseTalentOnboardingStep(value: string | undefined) {
@@ -37,10 +44,15 @@ export function getAllowedTalentOnboardingStep(requestedStep: string | undefined
 }
 
 export function getTalentRegistrationPath({
+  hasTalentProfile = false,
   isTalent,
   isVerified,
   verificationStatus = "none",
 }: TalentRegistrationPathInput) {
+  if (hasTalentProfile) {
+    return TALENT_DASHBOARD_PATH;
+  }
+
   if (!isVerified && verificationStatus !== "pending") {
     return VERIFICATION_PATH;
   }
@@ -68,4 +80,21 @@ export function getTalentVerificationMaybeLaterPath(
   }
 
   return isTalent ? TALENT_DASHBOARD_PATH : `/onboarding/talent?step=${MIN_ONBOARDING_STEP}`;
+}
+
+export function getPendingTalentVerificationDashboardState({
+  isTalent,
+  source,
+  verificationStatus,
+}: PendingTalentVerificationDashboardInput) {
+  const isTalentDashboardSource = source === "talent-dashboard";
+  const shouldShow = verificationStatus === "pending" && isTalent;
+
+  return {
+    backPath: isTalentDashboardSource ? TALENT_DASHBOARD_PATH : "/dashboard/client",
+    message: isTalentDashboardSource
+      ? "Your BU student verification is still waiting for admin review. You can return to your talent dashboard while we review it."
+      : "Your BU student verification is still waiting for admin review. You can return to your client dashboard while we review it.",
+    shouldShow,
+  };
 }

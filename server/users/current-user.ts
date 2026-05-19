@@ -34,6 +34,7 @@ export type CurrentAppUser = {
   displayName: string;
   email: string;
   firstName: string;
+  hasTalentProfile: boolean;
   headline: string;
   id: string;
   isTalent: boolean;
@@ -205,6 +206,12 @@ export async function getCurrentAppUser(): Promise<CurrentAppUser | null> {
     return null;
   }
 
+  const hasTalentProfile = Boolean(
+    await prisma.talentProfile.findUnique({
+      select: { talent_profile_id: true },
+      where: { user_id: dbUser.userId },
+    }),
+  );
   const currentUser = {
     authId: dbUser.authId,
     avatarUrl: dbUser.avatarUrl ?? "",
@@ -213,6 +220,7 @@ export async function getCurrentAppUser(): Promise<CurrentAppUser | null> {
     displayName,
     email: dbUser.email,
     firstName: dbUser.firstName ?? authFirstName,
+    hasTalentProfile,
     headline,
     id: dbUser.userId,
     isTalent: dbUser.is_talent,
@@ -242,6 +250,7 @@ export async function requireCurrentAppUser(expectedRole?: UserRole) {
     expectedRole &&
     !canAccessDashboardRole({
       expectedRole,
+      hasTalentProfile: user.hasTalentProfile,
       isTalent: user.isTalent,
       role: user.role,
     })

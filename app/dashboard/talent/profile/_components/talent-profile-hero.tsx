@@ -124,6 +124,13 @@ export function TalentProfileHero({ profile, user }: TalentProfileHeroProps) {
           >
             Edit talent profile
           </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() =>
+              router.push("/talent/verify?source=talent-dashboard")
+            }
+          >
+            Verify BU Student
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     );
