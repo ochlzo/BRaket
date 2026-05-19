@@ -10,8 +10,10 @@ export const TALENT_PORTFOLIO_MEDIA_MAX_BYTES = 5 * 1024 * 1024;
 export type TalentPortfolioStepInput = {
   description: string;
   existingMediaCount?: number;
+  existingMediaUrls?: string[];
   files: File[];
   portfolioId?: string;
+  removedExistingMediaUrls?: string[];
   title: string;
 };
 
@@ -48,10 +50,33 @@ export function parseTalentPortfolioStepFormData(
     .getAll("media")
     .filter((entry): entry is File => entry instanceof File);
 
+  function parseStringArray(value: FormDataEntryValue | null) {
+    if (typeof value !== "string") {
+      return [];
+    }
+
+    try {
+      const parsed = JSON.parse(value) as unknown;
+      if (!Array.isArray(parsed)) {
+        return [];
+      }
+
+      return parsed
+        .map((entry) => (typeof entry === "string" ? entry.trim() : ""))
+        .filter(Boolean);
+    } catch {
+      return [];
+    }
+  }
+
   return {
     description: typeof description === "string" ? description.trim() : "",
+    existingMediaUrls: parseStringArray(formData.get("existingMediaUrls")),
     files,
     portfolioId: typeof portfolioId === "string" ? portfolioId.trim() : "",
+    removedExistingMediaUrls: parseStringArray(
+      formData.get("removedExistingMediaUrls"),
+    ),
     title: typeof title === "string" ? title.trim() : "",
   };
 }
@@ -87,7 +112,14 @@ export function buildTalentPortfolioStepInitialValues(
 
 export function getTalentPortfolioStepDirtyFields(
   initialValues: TalentPortfolioStepInitialValues,
-  input: Pick<TalentPortfolioStepInput, "description" | "files" | "title">,
+  input: Pick<
+    TalentPortfolioStepInput,
+    | "description"
+    | "existingMediaUrls"
+    | "files"
+    | "removedExistingMediaUrls"
+    | "title"
+  >,
 ): TalentPortfolioStepDirtyField[] {
   const dirtyFields: TalentPortfolioStepDirtyField[] = [];
 
@@ -99,7 +131,12 @@ export function getTalentPortfolioStepDirtyFields(
     dirtyFields.push("description");
   }
 
-  if (input.files.length > 0) {
+  if (
+    input.files.length > 0 ||
+    (input.removedExistingMediaUrls?.length ?? 0) > 0 ||
+    JSON.stringify(initialValues.existingMediaUrls) !==
+      JSON.stringify(input.existingMediaUrls ?? initialValues.existingMediaUrls)
+  ) {
     dirtyFields.push("media");
   }
 

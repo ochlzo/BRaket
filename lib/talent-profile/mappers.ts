@@ -107,6 +107,9 @@ function buildPortfolioItems(
       id: media.tportfolio_media_id,
       url: media.media_url,
     })),
+    mediaUrls: item.TalentPortfolioMedia.map((media) =>
+      compactText(media.media_url),
+    ).filter(Boolean),
     title: compactText(item.title),
     updatedAt: item.updatedAt.toISOString(),
   }));

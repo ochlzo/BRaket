@@ -245,13 +245,24 @@ export function AccountSettingsForm({
             value={values.username}
           />
 
-          <AccountEmailField
-            currentUser={currentUser}
-            error={fieldErrors.email}
-            onEmailCommitted={(email) => { commitEmailChange({ committedValuesRef, email, setFieldErrors, setValues }); shouldAutoSubmitRef.current = true; }}
-            isEditing={isEditing}
-            value={values.email}
-          />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <AccountEmailField
+              currentUser={currentUser}
+              error={fieldErrors.email}
+              onEmailCommitted={(email) => { commitEmailChange({ committedValuesRef, email, setFieldErrors, setValues }); shouldAutoSubmitRef.current = true; }}
+              isEditing={isEditing}
+              value={values.email}
+            />
+            <AccountTextField
+              error={fieldErrors.buEmail}
+              label="BU Email"
+              name="buEmail"
+              onChange={() => undefined}
+              placeholder="-"
+              readOnly
+              value={values.buEmail}
+            />
+          </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <AccountContactNumberField

@@ -75,6 +75,10 @@ export function getTalentVerificationMaybeLaterPath(
   isTalent: boolean,
   source?: string | null,
 ) {
+  if (source === "talent-dashboard") {
+    return TALENT_PROFILE_PATH;
+  }
+
   if (source !== "dashboard") {
     return MAIN_APP_PATH;
   }

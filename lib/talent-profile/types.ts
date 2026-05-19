@@ -35,6 +35,7 @@ export type TalentProfilePortfolioItem = {
   description: string;
   id: string;
   media: TalentProfileMediaItem[];
+  mediaUrls: string[];
   title: string;
   updatedAt: string;
 };

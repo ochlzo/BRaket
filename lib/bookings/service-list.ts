@@ -8,6 +8,7 @@ const pesoFormatter = new Intl.NumberFormat("en-PH", {
 
 type TalentServiceListItemSource = {
   ServiceCategories: Array<{
+    categoryId: string;
     Category: { name: string };
   }>;
   ServiceMedia: Array<{
@@ -18,6 +19,7 @@ type TalentServiceListItemSource = {
   description: string;
   maxPrice: { toString: () => string };
   minPrice: { toString: () => string };
+  priceUnit: string;
   serviceId: string;
   title: string;
 };
@@ -43,16 +45,24 @@ function priceLabel(
 export function buildTalentServiceListItem(
   service: TalentServiceListItemSource,
 ): TalentServiceListItem {
+  const minPrice = Number(service.minPrice.toString());
+  const maxPrice = Number(service.maxPrice.toString());
+
   return {
     categories: service.ServiceCategories.map((entry) => entry.Category.name),
+    categoryIds: service.ServiceCategories.map((entry) => entry.categoryId),
     createdAt: service.createdAt.toISOString(),
     description: service.description,
     id: service.serviceId,
+    maxPrice,
     media: service.ServiceMedia.map((media) => ({
       id: media.serviceDetailId,
       url: media.mediaUrl,
     })),
+    mediaUrls: service.ServiceMedia.map((media) => media.mediaUrl),
+    minPrice,
     priceLabel: priceLabel(service.minPrice, service.maxPrice),
+    priceUnit: service.priceUnit,
     title: service.title,
   };
 }

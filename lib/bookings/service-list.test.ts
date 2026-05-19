@@ -8,8 +8,8 @@ const { buildTalentServiceListItem } = (await import(
 test("maps service media into talent service list items", () => {
   const item = buildTalentServiceListItem({
     ServiceCategories: [
-      { Category: { name: "Photography" } },
-      { Category: { name: "Events" } },
+      { categoryId: "cat-1", Category: { name: "Photography" } },
+      { categoryId: "cat-2", Category: { name: "Events" } },
     ],
     ServiceMedia: [
       {
@@ -25,12 +25,21 @@ test("maps service media into talent service list items", () => {
     description: "Coverage for student events.",
     maxPrice: { toString: () => "1500" },
     minPrice: { toString: () => "1000" },
+    priceUnit: "FIXED",
     serviceId: "service-1",
     title: "Event Coverage",
   });
 
+  assert.deepEqual(item.categoryIds, ["cat-1", "cat-2"]);
   assert.deepEqual(item.media, [
     { id: "media-1", url: "https://example.com/one.jpg" },
     { id: "media-2", url: "https://example.com/two.jpg" },
   ]);
+  assert.deepEqual(item.mediaUrls, [
+    "https://example.com/one.jpg",
+    "https://example.com/two.jpg",
+  ]);
+  assert.equal(item.minPrice, 1000);
+  assert.equal(item.maxPrice, 1500);
+  assert.equal(item.priceUnit, "FIXED");
 });

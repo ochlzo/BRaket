@@ -28,6 +28,13 @@ test("talent dashboard routes use the talent dashboard layout wrapper", () => {
   }
 });
 
+test("talent services page reuses the shared service edit dialog", () => {
+  const source = read("app/dashboard/talent/services/page.tsx");
+
+  assert.match(source, /TalentServiceDialog/);
+  assert.match(source, /getCategoryOptions/);
+});
+
 test("client dashboard routes use the client dashboard layout wrapper", () => {
   const files = [
     "app/dashboard/client/page.tsx",

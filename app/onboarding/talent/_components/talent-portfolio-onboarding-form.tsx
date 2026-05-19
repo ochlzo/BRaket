@@ -29,6 +29,9 @@ export function TalentPortfolioOnboardingForm({
 }: TalentPortfolioOnboardingFormProps) {
   const [title, setTitle] = useState(initialValues.title);
   const [description, setDescription] = useState(initialValues.description);
+  const [existingMediaUrls, setExistingMediaUrls] = useState(
+    initialValues.existingMediaUrls,
+  );
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [notice, setNotice] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -55,8 +58,12 @@ export function TalentPortfolioOnboardingForm({
 
     const validation = validateTalentPortfolioStepInput({
       description,
-      existingMediaCount: initialValues.existingMediaUrls.length,
+      existingMediaCount: existingMediaUrls.length,
+      existingMediaUrls,
       files: selectedFiles,
+      removedExistingMediaUrls: initialValues.existingMediaUrls.filter(
+        (url) => !existingMediaUrls.includes(url),
+      ),
       title,
     });
 
@@ -67,7 +74,11 @@ export function TalentPortfolioOnboardingForm({
 
     const dirtyFields = getTalentPortfolioStepDirtyFields(initialValues, {
       description,
+      existingMediaUrls,
       files: selectedFiles,
+      removedExistingMediaUrls: initialValues.existingMediaUrls.filter(
+        (url) => !existingMediaUrls.includes(url),
+      ),
       title,
     });
 
@@ -78,6 +89,15 @@ export function TalentPortfolioOnboardingForm({
 
     const formData = new FormData(event.currentTarget);
     formData.set("portfolioId", initialValues.portfolioId);
+    formData.set("existingMediaUrls", JSON.stringify(existingMediaUrls));
+    formData.set(
+      "removedExistingMediaUrls",
+      JSON.stringify(
+        initialValues.existingMediaUrls.filter(
+          (url) => !existingMediaUrls.includes(url),
+        ),
+      ),
+    );
     formData.set("dirtyFields", JSON.stringify(dirtyFields));
 
     try {
@@ -169,13 +189,15 @@ export function TalentPortfolioOnboardingForm({
 
         <TalentMediaUploadField
           emptyDescription="Add at least 1 image to continue."
-          existingMediaUrls={initialValues.existingMediaUrls}
+          existingMediaUrls={existingMediaUrls}
           files={selectedFiles}
           inputId="portfolio-media"
           inputName="media"
           isRequired
+          onExistingMediaUrlsChange={setExistingMediaUrls}
           onFilesChange={setSelectedFiles}
           onNoticeChange={setNotice}
+          removableExistingMedia={initialValues.existingMediaUrls.length > 0}
           title="Portfolio Media"
         />
 

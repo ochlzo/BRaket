@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { PencilLine, Plus } from "lucide-react";
 import { toast } from "sonner";
 
+import { deleteTalentServiceAction } from "@/app/onboarding/talent/_actions/delete-talent-service-action";
 import { saveTalentServiceStepAction } from "@/app/onboarding/talent/_actions/save-talent-service-step-action";
 import { TalentMediaUploadField } from "@/app/onboarding/talent/_components/talent-media-upload-field";
 import { TalentServiceCategorySelector } from "@/app/onboarding/talent/_components/talent-service-category-selector";
@@ -25,6 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { TalentProfileServiceItem } from "@/lib/talent-profile/types";
 
 import { TalentDialogFrame } from "./talent-dialog-frame";
+import { TalentDeleteDialogAction } from "./talent-delete-dialog-action";
 import { TalentProfileSectionAction } from "./talent-profile-section-action";
 
 type TalentServiceDialogProps = {
@@ -37,6 +39,7 @@ export function TalentServiceDialog({
   service,
 }: TalentServiceDialogProps) {
   const router = useRouter();
+  const editLabel = service ? `Edit ${service.title}` : "Edit service";
   const initialValues = buildTalentServiceStepInitialValues(
     service
       ? {
@@ -153,7 +156,7 @@ export function TalentServiceDialog({
     <>
       {isEditMode ? (
         <button
-          aria-label={`Edit ${service.title}`}
+          aria-label={editLabel}
           className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-[color:var(--line-strong)] bg-[color:var(--surface)] text-[color:var(--brand-orange)] shadow-[var(--shadow-surface-soft)] transition hover:bg-[color:var(--surface-alt)]"
           onClick={() => {
             resetDraft();
@@ -179,6 +182,22 @@ export function TalentServiceDialog({
           isEditMode
             ? "Update this service using the same fields and validation as talent onboarding."
             : "Publish a service using the same fields and validation as talent onboarding."
+        }
+        headerAction={
+          isEditMode ? (
+            <TalentDeleteDialogAction
+              confirmDescription="This will permanently delete this service, its images, and related saved reports/bookings data tied to it."
+              confirmLabel="Delete service"
+              confirmTitle="Delete this service?"
+              onConfirm={() => deleteTalentServiceAction(initialValues.serviceId)}
+              onDeleted={() => {
+                resetDraft();
+                setOpen(false);
+                router.refresh();
+              }}
+              triggerLabel="Delete service"
+            />
+          ) : undefined
         }
         open={open}
         onOpenChange={setOpen}

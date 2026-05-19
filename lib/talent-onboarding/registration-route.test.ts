@@ -128,6 +128,13 @@ test("sends non-talents back to talent onboarding from dashboard source", () => 
   );
 });
 
+test("sends talent dashboard verify entry back to the talent profile page", () => {
+  assert.equal(
+    getTalentVerificationMaybeLaterPath(true, "talent-dashboard"),
+    "/dashboard/talent/profile",
+  );
+});
+
 test("shows pending verification state for talent users without source params", () => {
   assert.deepEqual(
     getPendingTalentVerificationDashboardState({

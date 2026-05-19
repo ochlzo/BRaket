@@ -1,6 +1,8 @@
 import Link from "next/link";
 
 import { TalentServiceMediaShowcase } from "@/app/dashboard/talent/_components/talent-service-media-showcase";
+import { TalentServiceDialog } from "@/app/dashboard/talent/profile/_components/talent-service-dialog";
+import { getCategoryOptions } from "@/app/onboarding/talent/_lib/get-category-options";
 import { TalentDashboardLayout } from "@/components/shared/layout/talent-dashboard-layout";
 import type { TalentServiceListItem } from "@/lib/bookings/types";
 import { getServicesForTalent } from "@/server/bookings/data";
@@ -12,7 +14,13 @@ function serviceCategories(service: TalentServiceListItem) {
     : ["Service"];
 }
 
-function MyServiceCard({ service }: { service: TalentServiceListItem }) {
+function MyServiceCard({
+  availableCategories,
+  service,
+}: {
+  availableCategories: Awaited<ReturnType<typeof getCategoryOptions>>;
+  service: TalentServiceListItem;
+}) {
   return (
     <article className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-5 shadow-[var(--shadow-surface-soft)]">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -37,7 +45,11 @@ function MyServiceCard({ service }: { service: TalentServiceListItem }) {
           </p>
         </div>
 
-        <div className="flex shrink-0 flex-wrap items-center gap-4 lg:justify-end">
+        <div className="flex shrink-0 flex-col items-start gap-2 lg:items-end">
+          <TalentServiceDialog
+            availableCategories={availableCategories}
+            service={service}
+          />
           <div className="text-left lg:text-right">
             <p className="text-sm font-extrabold text-[color:var(--brand-orange)]">
               {service.priceLabel}
@@ -64,7 +76,10 @@ function MyServiceCard({ service }: { service: TalentServiceListItem }) {
 
 export default async function MyServicesPage() {
   const currentUser = await requireCurrentAppUser("talent");
-  const services = await getServicesForTalent(currentUser);
+  const [services, availableCategories] = await Promise.all([
+    getServicesForTalent(currentUser),
+    getCategoryOptions(),
+  ]);
 
   return (
     <TalentDashboardLayout
@@ -82,7 +97,11 @@ export default async function MyServicesPage() {
       {services.length > 0 ? (
         <div className="space-y-4">
           {services.map((service) => (
-            <MyServiceCard key={service.id} service={service} />
+            <MyServiceCard
+              availableCategories={availableCategories}
+              key={service.id}
+              service={service}
+            />
           ))}
         </div>
       ) : (

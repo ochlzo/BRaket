@@ -16,6 +16,7 @@ import { Separator } from "@/components/ui/separator";
 import type { ClientProfilePortfolioItem } from "@/lib/client-profile/types";
 import { ClientPortfolioComposer } from "./client-portfolio-composer";
 import { ClientPortfolioCollage } from "./client-portfolio-collage";
+import { ClientPortfolioEditDialog } from "./client-portfolio-edit-dialog";
 
 type ClientPortfolioFeedProps = {
   portfolio: ClientProfilePortfolioItem[];
@@ -65,17 +66,18 @@ export function ClientPortfolioFeed({ portfolio }: ClientPortfolioFeedProps) {
             portfolio.map((item, index) => (
               <div key={item.id} className="pb-4 last:pb-0">
                 <article className="mx-auto w-full max-w-[40rem] rounded-none border-0 bg-transparent p-0 shadow-none sm:rounded-[1.2rem] sm:border sm:border-[color:var(--line-strong)] sm:bg-[color:var(--surface)] sm:p-4 sm:shadow-[var(--shadow-surface-soft)]">
-                  <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-                    <div>
+                  <div className="mb-3 flex items-start justify-between gap-3">
+                    <div className="min-w-0">
                       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--ink-muted)]">
                         <CalendarDays className="mr-1 inline size-3.5" />
                         {formatDate(item.createdAt)}
                       </p>
-                      <h3 className="mt-1 pt-2 text-base font-bold tracking-[-0.03em] text-[color:var(--foreground)] sm:text-lg">
-                        {item.title}
-                      </h3>
                     </div>
+                    <ClientPortfolioEditDialog item={item} />
                   </div>
+                  <h3 className="text-base font-bold tracking-[-0.03em] text-[color:var(--foreground)] sm:text-lg">
+                        {item.title}
+                  </h3>
 
                   <ClientPortfolioCollage
                     item={item}

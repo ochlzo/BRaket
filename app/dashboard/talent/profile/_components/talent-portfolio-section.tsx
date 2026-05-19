@@ -18,10 +18,11 @@ function TalentPortfolioPost({
 }) {
   return (
     <article className="rounded-[1.1rem] border border-[color:var(--line-strong)] bg-[color:var(--surface)] p-4 shadow-[var(--shadow-surface-soft)]">
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex min-h-14 items-center justify-between gap-3">
         <h3 className="text-base font-extrabold tracking-normal text-[color:var(--foreground)]">
           {item.title}
         </h3>
+        {!showReportLink ? <TalentPortfolioDialog item={item} /> : null}
         {showReportLink ? (
           <ReportButton
             label="Report portfolio"

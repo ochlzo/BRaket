@@ -2,39 +2,55 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Plus } from "lucide-react";
+import { PencilLine, Plus } from "lucide-react";
 import { toast } from "sonner";
 
+import { deleteTalentPortfolioAction } from "@/app/onboarding/talent/_actions/delete-talent-portfolio-action";
 import { saveTalentPortfolioStepAction } from "@/app/onboarding/talent/_actions/save-talent-portfolio-step-action";
-import { TalentMediaUploadField } from "@/app/onboarding/talent/_components/talent-media-upload-field";
 import {
   buildTalentPortfolioStepInitialValues,
   getTalentPortfolioStepDirtyFields,
   validateTalentPortfolioStepInput,
 } from "@/app/onboarding/talent/_lib/talent-portfolio-step";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { Textarea } from "@/components/ui/textarea";
+import { PortfolioPostFormBody } from "@/components/shared/portfolio/portfolio-post-form-body";
+import type { TalentProfilePortfolioItem } from "@/lib/talent-profile/types";
 
 import { TalentDialogFrame } from "./talent-dialog-frame";
+import { TalentDeleteDialogAction } from "./talent-delete-dialog-action";
 import { TalentProfileSectionAction } from "./talent-profile-section-action";
 
-const initialValues = buildTalentPortfolioStepInitialValues(null);
+type TalentPortfolioDialogProps = {
+  item?: TalentProfilePortfolioItem;
+};
 
-export function TalentPortfolioDialog() {
+export function TalentPortfolioDialog({ item }: TalentPortfolioDialogProps) {
   const router = useRouter();
+  const editLabel = item ? `Edit ${item.title}` : "Edit portfolio item";
+  const initialValues = buildTalentPortfolioStepInitialValues(
+    item
+      ? {
+          description: item.description,
+          talent_portfolio_id: item.id,
+          TalentPortfolioMedia: item.mediaUrls.map((media_url) => ({ media_url })),
+          title: item.title,
+        }
+      : null,
+  );
   const [open, setOpen] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [title, setTitle] = useState(initialValues.title);
+  const [description, setDescription] = useState(initialValues.description);
+  const [existingMediaUrls, setExistingMediaUrls] = useState(
+    initialValues.existingMediaUrls,
+  );
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [notice, setNotice] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isEditMode = Boolean(item);
 
   function resetDraft() {
-    setTitle("");
-    setDescription("");
+    setTitle(initialValues.title);
+    setDescription(initialValues.description);
+    setExistingMediaUrls(initialValues.existingMediaUrls);
     setSelectedFiles([]);
     setNotice("");
   }
@@ -51,8 +67,12 @@ export function TalentPortfolioDialog() {
 
     const validation = validateTalentPortfolioStepInput({
       description,
-      existingMediaCount: 0,
+      existingMediaCount: existingMediaUrls.length,
+      existingMediaUrls,
       files: selectedFiles,
+      removedExistingMediaUrls: initialValues.existingMediaUrls.filter(
+        (url) => !existingMediaUrls.includes(url),
+      ),
       title,
     });
     if (!validation.ok) {
@@ -62,11 +82,29 @@ export function TalentPortfolioDialog() {
 
     const dirtyFields = getTalentPortfolioStepDirtyFields(initialValues, {
       description,
+      existingMediaUrls,
       files: selectedFiles,
+      removedExistingMediaUrls: initialValues.existingMediaUrls.filter(
+        (url) => !existingMediaUrls.includes(url),
+      ),
       title,
     });
+    if (dirtyFields.length === 0) {
+      setOpen(false);
+      return;
+    }
+
     const formData = new FormData(event.currentTarget);
-    formData.set("portfolioId", "");
+    formData.set("portfolioId", initialValues.portfolioId);
+    formData.set("existingMediaUrls", JSON.stringify(existingMediaUrls));
+    formData.set(
+      "removedExistingMediaUrls",
+      JSON.stringify(
+        initialValues.existingMediaUrls.filter(
+          (url) => !existingMediaUrls.includes(url),
+        ),
+      ),
+    );
     formData.set("dirtyFields", JSON.stringify(dirtyFields));
 
     try {
@@ -76,7 +114,7 @@ export function TalentPortfolioDialog() {
         showValidationToast(result.message);
         return;
       }
-      toast.success("Portfolio post added.");
+      toast.success(isEditMode ? "Portfolio post updated." : "Portfolio post added.");
       router.refresh();
       setOpen(false);
     } finally {
@@ -86,90 +124,83 @@ export function TalentPortfolioDialog() {
 
   return (
     <>
-      <TalentProfileSectionAction
-        label="Add portfolio post"
-        onClick={() => {
-          resetDraft();
-          setOpen(true);
-        }}
-      >
-        <Plus className="size-4" />
-      </TalentProfileSectionAction>
+      {isEditMode ? (
+        <button
+          aria-label={editLabel}
+          className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-[color:var(--line-strong)] bg-[color:var(--surface)] text-[color:var(--brand-orange)] shadow-[var(--shadow-surface-soft)] transition hover:bg-[color:var(--surface-alt)]"
+          onClick={() => {
+            resetDraft();
+            setOpen(true);
+          }}
+          type="button"
+        >
+          <PencilLine className="size-4" />
+        </button>
+      ) : (
+        <TalentProfileSectionAction
+          label="Add portfolio post"
+          onClick={() => {
+            resetDraft();
+            setOpen(true);
+          }}
+        >
+          <Plus className="size-4" />
+        </TalentProfileSectionAction>
+      )}
       <TalentDialogFrame
-        description="Add a portfolio post using the same fields and validation as talent onboarding."
+        description={
+          isEditMode
+            ? "Update this portfolio post using the same fields and validation as talent onboarding."
+            : "Add a portfolio post using the same fields and validation as talent onboarding."
+        }
+        headerAction={
+          isEditMode ? (
+            <TalentDeleteDialogAction
+              confirmDescription="This will permanently delete this portfolio post and all of its images from storage."
+              confirmLabel="Delete post"
+              confirmTitle="Delete this portfolio post?"
+              onConfirm={() =>
+                deleteTalentPortfolioAction(initialValues.portfolioId)
+              }
+              onDeleted={() => {
+                resetDraft();
+                setOpen(false);
+                router.refresh();
+              }}
+              triggerLabel="Delete portfolio post"
+            />
+          ) : undefined
+        }
         open={open}
         onOpenChange={setOpen}
-        title="Add portfolio post"
+        title={isEditMode ? "Edit portfolio post" : "Add portfolio post"}
       >
         <form className="flex min-h-0 flex-1 flex-col" onSubmit={handleSubmit}>
-          <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-4 py-4 sm:px-5">
-            <div className="space-y-4 sm:space-y-5">
-              <div className="space-y-1.5 sm:space-y-2">
-                <Label className="text-sm font-semibold" htmlFor="portfolio-title">
-                  Portfolio Title{" "}
-                  <span className="text-[color:var(--tone-red-base)]">*</span>
-                </Label>
-                <Input
-                  className="h-10 rounded-full border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 text-sm sm:h-11 sm:rounded-xl"
-                  id="portfolio-title"
-                  name="title"
-                  onChange={(event) => setTitle(event.currentTarget.value)}
-                  placeholder="e.g. Campus event branding kit"
-                  required
-                  value={title}
-                />
-              </div>
-              <div className="space-y-1.5 sm:space-y-2">
-                <Label
-                  className="text-sm font-semibold"
-                  htmlFor="portfolio-description"
-                >
-                  Description{" "}
-                  <span className="text-[color:var(--tone-red-base)]">*</span>
-                </Label>
-                <Textarea
-                  className="min-h-28 rounded-2xl border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 py-3 text-sm sm:rounded-xl"
-                  id="portfolio-description"
-                  name="description"
-                  onChange={(event) => setDescription(event.currentTarget.value)}
-                  placeholder="Describe the project, your role, tools used, and result."
-                  required
-                  rows={4}
-                  value={description}
-                />
-              </div>
-            </div>
-            <Separator />
-            <TalentMediaUploadField
-              emptyDescription="Add at least 1 image to continue."
-              existingMediaUrls={[]}
-              files={selectedFiles}
-              inputId="portfolio-media"
-              inputName="media"
-              isRequired
-              onFilesChange={setSelectedFiles}
-              onNoticeChange={setNotice}
-              title="Portfolio Media"
-            />
-            {notice ? (
-              <p
-                className="rounded-xl border border-[color:var(--line-strong)] bg-[color:var(--surface-alt)] px-4 py-3 text-sm text-[color:var(--ink-soft)]"
-                role="status"
-              >
-                {notice}
-              </p>
-            ) : null}
-          </div>
-          <div className="sticky bottom-0 z-10 shrink-0 border-t border-[color:var(--line-strong)] bg-[color:var(--surface)] px-4 py-4 sm:px-5">
-            <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-              <Button className="rounded-xl" onClick={() => setOpen(false)} type="button" variant="outline">
-                Cancel
-              </Button>
-              <Button className="rounded-xl" disabled={isSubmitting} type="submit">
-                {isSubmitting ? "Saving..." : "Create portfolio"}
-              </Button>
-            </div>
-          </div>
+          <PortfolioPostFormBody
+            cancelLabel="Cancel"
+            description={description}
+            descriptionPlaceholder="Describe the project, your role, tools used, and result."
+            emptyDescription="Add at least 1 image to continue."
+            existingMediaUrls={existingMediaUrls}
+            files={selectedFiles}
+            inputId="portfolio-media"
+            inputName="media"
+            isRequired
+            isSubmitting={isSubmitting}
+            mediaTitle="Portfolio Media"
+            notice={notice}
+            onCancel={() => setOpen(false)}
+            onDescriptionChange={setDescription}
+            onExistingMediaUrlsChange={setExistingMediaUrls}
+            onFilesChange={setSelectedFiles}
+            onNoticeChange={setNotice}
+            onTitleChange={setTitle}
+            removableExistingMedia={isEditMode}
+            submitLabel={isEditMode ? "Save changes" : "Create portfolio"}
+            submitPendingLabel="Saving..."
+            title={title}
+            titlePlaceholder="e.g. Campus event branding kit"
+          />
         </form>
       </TalentDialogFrame>
     </>

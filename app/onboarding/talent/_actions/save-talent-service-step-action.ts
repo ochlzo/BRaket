@@ -240,7 +240,7 @@ export async function saveTalentServiceStepAction(
   }
 
   if ((input.removedExistingMediaUrls?.length ?? 0) > 0) {
-    const objectPaths = input.removedExistingMediaUrls
+    const objectPaths = (input.removedExistingMediaUrls ?? [])
       .map(getServiceMediaObjectPath)
       .filter((path): path is string => Boolean(path));
 
