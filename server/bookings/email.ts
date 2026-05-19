@@ -184,3 +184,101 @@ export async function sendClientBookingResponseEmail({
     to: client.email,
   });
 }
+
+type WorkStatusEmailInput = {
+  bookingId: string;
+  client: { displayName: string; email: string };
+  dashboardUrl: string;
+  service: { title: string };
+  talent: { displayName: string; email: string };
+};
+
+export async function sendWorkInitiatedEmail({
+  bookingId,
+  client,
+  dashboardUrl,
+  service,
+  talent,
+}: WorkStatusEmailInput) {
+  const safeClient = escapeHtml(client.displayName);
+  const safeService = escapeHtml(service.title);
+  const safeUrl = escapeHtml(dashboardUrl);
+  const subject = `Work started: ${service.title}`;
+  const text = [
+    `Hi ${talent.displayName},`,
+    "",
+    `${client.displayName} has initiated work on your booking for "${service.title}".`,
+    "You can now start working on the project.",
+    "",
+    `View booking: ${dashboardUrl}`,
+  ].join("\n");
+
+  const html = `
+    <div style="font-family:Arial,sans-serif;line-height:1.6;color:#1f2937;max-width:560px">
+      <h1 style="font-size:20px;margin:0 0 12px">Work started</h1>
+      <p>Hi ${escapeHtml(talent.displayName)},</p>
+      <p><strong>${safeClient}</strong> has initiated work on your booking for <strong>${safeService}</strong>.</p>
+      <p>You can now begin working on the project.</p>
+      <p style="margin-top:20px">
+        <a href="${safeUrl}" style="display:inline-block;padding:10px 14px;border-radius:10px;background:#2563eb;color:#fff;text-decoration:none">
+          View booking
+        </a>
+      </p>
+    </div>
+  `;
+
+  return sendEmail({
+    html,
+    idempotencyKey: `work-initiated-${bookingId}`,
+    replyTo: client.email,
+    subject,
+    text,
+    to: talent.email,
+  });
+}
+
+export async function sendWorkSubmittedEmail({
+  bookingId,
+  client,
+  dashboardUrl,
+  service,
+  talent,
+}: WorkStatusEmailInput) {
+  const safeTalent = escapeHtml(talent.displayName);
+  const safeService = escapeHtml(service.title);
+  const safeUrl = escapeHtml(dashboardUrl);
+  const subject = `Work submitted for your review: ${service.title}`;
+  const text = [
+    `Hi ${client.displayName},`,
+    "",
+    `${talent.displayName} has submitted their work for "${service.title}" and it's ready for your review.`,
+    "",
+    "Please log in to your dashboard to review and approve the completed work.",
+    "",
+    `View booking: ${dashboardUrl}`,
+  ].join("\n");
+
+  const html = `
+    <div style="font-family:Arial,sans-serif;line-height:1.6;color:#1f2937;max-width:560px">
+      <h1 style="font-size:20px;margin:0 0 12px">Work submitted for your review</h1>
+      <p>Hi ${escapeHtml(client.displayName)},</p>
+      <p><strong>${safeTalent}</strong> has submitted their work for <strong>${safeService}</strong> and it's ready for your review.</p>
+      <p>Please log in to your dashboard to review and approve the completed work.</p>
+      <p style="margin-top:20px">
+        <a href="${safeUrl}" style="display:inline-block;padding:10px 14px;border-radius:10px;background:#f97316;color:#fff;text-decoration:none">
+          Review & approve
+        </a>
+      </p>
+      <p style="font-size:13px;color:#6b7280;margin-top:16px">Once you approve, the booking will be marked as completed and you'll be prompted to leave a review.</p>
+    </div>
+  `;
+
+  return sendEmail({
+    html,
+    idempotencyKey: `work-submitted-${bookingId}`,
+    replyTo: talent.email,
+    subject,
+    text,
+    to: client.email,
+  });
+}

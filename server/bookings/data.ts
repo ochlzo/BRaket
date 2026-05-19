@@ -222,6 +222,7 @@ export function countBookingsByStatus(bookings: BookingListItem[]) {
     "ACCEPTED",
     "IN_PROGRESS",
     "PENDING",
+    "WORK_SUBMITTED",
   ]);
 
   return {
