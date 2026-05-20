@@ -1,0 +1,154 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: auth-login.spec.ts >> Member 1 - Login and Authentication >> TC-LOGIN-005: Forgot password option should be accessible
+- Location: tests\auth-login.spec.ts:48:7
+
+# Error details
+
+```
+Test timeout of 30000ms exceeded.
+```
+
+```
+Error: locator.click: Test timeout of 30000ms exceeded.
+Call log:
+  - waiting for getByRole('button', { name: /forgot password/i })
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - link "B BRaket" [ref=e10]:
+        - /url: /
+        - generic [ref=e11]: B
+        - generic [ref=e13]: BRaket
+      - generic [ref=e14]:
+        - generic [ref=e15]:
+          - heading "Discover talent. Unlock potential." [level=2] [ref=e16]
+          - paragraph [ref=e17]: Join hundreds of Bicol University students already building income, experience, and stronger portfolios on BRaket.
+        - paragraph [ref=e24]: 500+ students already earning
+        - generic [ref=e25]:
+          - generic [ref=e26]: Verified Talents
+          - generic [ref=e28]: Secure Payments
+          - generic [ref=e30]: Real Portfolios
+    - generic [ref=e32]:
+      - generic [ref=e35]:
+        - generic [ref=e36]:
+          - heading "Welcome back" [level=1] [ref=e37]
+          - paragraph [ref=e38]: Sign in with Google, your password, or a 6-digit email code.
+        - generic [ref=e40]:
+          - generic [ref=e41]:
+            - generic [ref=e42]: Email Address
+            - generic [ref=e43]:
+              - generic:
+                - img
+              - textbox "Email Address" [ref=e44]:
+                - /placeholder: you@example.com
+          - generic [ref=e45]:
+            - generic [ref=e46]:
+              - generic [ref=e47]: Password
+              - link "Forgot password" [ref=e48]:
+                - /url: "#forgot-password"
+            - generic [ref=e49]:
+              - generic:
+                - img
+              - textbox "Password" [ref=e50]:
+                - /placeholder: Enter your password
+              - button "Show password" [ref=e51]:
+                - img [ref=e52]
+          - alert [ref=e55]: Enter your email address to continue.
+          - button "Sign In" [active] [ref=e56]:
+            - text: Sign In
+            - img
+          - button "Use email code instead" [ref=e57]
+          - generic [ref=e58]:
+            - generic [ref=e59]:
+              - separator [ref=e60]
+              - generic [ref=e61]: or sign in with Google
+              - separator [ref=e62]
+            - button "Sign in with Google" [ref=e63]:
+              - img
+              - text: Sign in with Google
+          - paragraph [ref=e64]:
+            - text: Need an account?
+            - link "Create one" [ref=e65]:
+              - /url: /signup
+      - generic [ref=e66]: © 2026 BRaket. All rights reserved.
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e72] [cursor=pointer]:
+    - img [ref=e73]
+  - alert [ref=e78]
+```
+
+# Test source
+
+```ts
+  1  | import { test, expect } from "@playwright/test";
+  2  | 
+  3  | test.describe("Member 1 - Login and Authentication", () => {
+  4  |   test("TC-LOGIN-001: Login page should load successfully", async ({ page }) => {
+  5  |     await page.goto("/login");
+  6  | 
+  7  |     await expect(
+  8  |       page.getByRole("heading", { name: /welcome back/i })
+  9  |     ).toBeVisible();
+  10 | 
+  11 |     await expect(
+  12 |       page.getByText(/sign in with google, your password, or a 6-digit email code/i)
+  13 |     ).toBeVisible();
+  14 |   });
+  15 | 
+  16 |   test("TC-LOGIN-002: Login form should show email field", async ({ page }) => {
+  17 |     await page.goto("/login");
+  18 | 
+  19 |     await expect(page.getByLabel(/email/i)).toBeVisible();
+  20 |   });
+  21 | 
+  22 |   test("TC-LOGIN-003: Empty login submission should show validation or stay on login page", async ({
+  23 |     page,
+  24 |   }) => {
+  25 |     await page.goto("/login");
+  26 | 
+  27 |     const signInButton = page.getByRole("button", { name: /^sign in$/i });
+  28 |     await signInButton.click();
+  29 | 
+  30 |     await expect(page).toHaveURL(/.*login.*/);
+  31 |   });
+  32 | 
+  33 |   test("TC-LOGIN-004: Invalid login credentials should not redirect to dashboard", async ({
+  34 |     page,
+  35 |   }) => {
+  36 |     await page.goto("/login");
+  37 | 
+  38 |     await page.getByLabel(/email/i).fill("wrong-user@example.com");
+  39 | 
+  40 |     const passwordField = page.getByLabel(/password/i);
+  41 |     await passwordField.fill("wrongpassword123");
+  42 | 
+  43 |     await page.getByRole("button", { name: /^sign in$/i }).click();
+  44 | 
+  45 |     await expect(page).not.toHaveURL(/.*dashboard.*/);
+  46 |   });
+  47 | 
+  48 |   test("TC-LOGIN-005: Forgot password option should be accessible", async ({
+  49 |     page,
+  50 |   }) => {
+  51 |     await page.goto("/login");
+  52 | 
+> 53 |     await page.getByRole("button", { name: /forgot password/i }).click();
+     |                                                                  ^ Error: locator.click: Test timeout of 30000ms exceeded.
+  54 | 
+  55 |     await expect(page.getByText(/password/i)).toBeVisible();
+  56 |   });
+  57 | });
+```
