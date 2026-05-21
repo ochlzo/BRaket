@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BRaket
 
-## Getting Started
+BRaket is a platform that connects Bicol University students with opportunities to showcase their talents, offer services, and manage commission-based work.
 
-First, run the development server:
+## Test Documentation
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Testing documents and supporting evidence are organized in the [docs/test-docs directory](docs/test-docs/).
+
+| Member                   | Area Handled                                  |
+| ------------------------ | --------------------------------------------- |
+| Chenie Buergo            | Login and Authentication + Documentation Lead |
+| Dan Emanuel Pispis       | Registration / Profile Creation               |
+| Sean Dylan Armenta       | Service Listings                              |
+| Angelica Lita            | Search, Filter, and Browse Talents/Services   |
+| John Benedict Candelaria | Booking / Commission Flow                     |
+
+## Architecture
+
+BRaket follows a Next.js App Router structure with route entrypoints kept in `app/`, shared UI in `components/`, reusable infrastructure in `lib/`, server-only business logic in `server/`, and database schema assets in `prisma/`.
+
+```shell
+braket-nextjs/
+|-- app/          # Pages, layouts, route handlers, and route-local UI
+|-- components/   # Shared UI primitives and reusable app components
+|-- features/     # Feature-scoped client state, hooks, and components
+|-- lib/          # Shared auth, Supabase, Redux, content, and utilities
+|-- server/       # Server actions, services, authorization, and DB logic
+`-- prisma/       # Prisma schema, migrations, and seed scripts
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```shell
+Browser
+  |
+  v
+app/ routes and layouts
+  |
+  +--> components/ and features/   # UI composition and client interaction
+  |
+  +--> lib/                        # Shared helpers and infrastructure
+          |
+          v
+       server/                     # Business rules and protected writes
+          |
+          +--> Prisma              # Relational data access
+          `--> Supabase            # Authentication, sessions, and storage
+```

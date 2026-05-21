@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BRaket QA Tester</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Selenium QA</p>
+          <h1>BRaket Automated Tester</h1>
+          <p class="subtitle">
+            Run registration and profile creation checks from a clean dashboard.
+          </p>
+        </div>
+        <div class="status-card">
+          <span id="app-dot" class="dot"></span>
+          <div>
+            <strong id="app-status">Checking app...</strong>
+            <p id="app-url"></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="toolbar">
+        <button id="run-registration" data-suite="registration">
+          Run Registration
+        </button>
+        <button id="run-profiles" data-suite="profiles">Run Profiles</button>
+        <button id="run-all" data-suite="all">Run All</button>
+        <button id="stop-run" class="quiet">Stop</button>
+      </section>
+
+      <section class="grid">
+        <article class="panel">
+          <div class="panel-title">
+            <h2>Current Run</h2>
+            <span id="run-pill" class="pill">Idle</span>
+          </div>
+          <div class="stats">
+            <div>
+              <span id="tests-total">0</span>
+              <p>Tests</p>
+            </div>
+            <div>
+              <span id="tests-pass">0</span>
+              <p>Passed</p>
+            </div>
+            <div>
+              <span id="tests-fail">0</span>
+              <p>Failed</p>
+            </div>
+          </div>
+          <p id="run-label" class="muted">No test selected yet.</p>
+        </article>
+
+        <article class="panel">
+          <div class="panel-title">
+            <h2>Result</h2>
+            <span id="result-pill" class="pill">Waiting</span>
+          </div>
+          <div id="result-list" class="result-list">
+            <p class="muted">Run a test suite to see a simple result here.</p>
+          </div>
+        </article>
+      </section>
+
+      <section class="panel output-panel">
+        <div class="panel-title">
+          <h2>Results</h2>
+          <button id="jump-latest" class="small-button" type="button">
+            Latest
+          </button>
+        </div>
+        <div id="output" class="output" tabindex="0">
+          Waiting for a test run...
+        </div>
+      </section>
+    </main>
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
