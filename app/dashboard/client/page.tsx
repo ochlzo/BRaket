@@ -13,7 +13,7 @@ export default async function ClientDashboardPage() {
       subtitle="Your client dashboard will show bookings, requests, and updates as they come in."
       title={`Welcome, ${titleName}`}
     >
-      <ClientAnalyticsDashboard bookings={bookings} userId={user.id} />
+      <ClientAnalyticsDashboard bookings={bookings} />
     </ClientDashboardLayout>
   );
 }

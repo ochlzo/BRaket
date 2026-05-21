@@ -2,6 +2,7 @@
 
 import type { BookingStatus } from "@prisma/client";
 import { useMemo, useState } from "react";
+
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -12,9 +13,15 @@ import {
 } from "@/components/ui/card";
 import type { BookingListItem } from "@/lib/bookings/types";
 
-type ClientActivityChartProps = {
+type TalentActivityChartProps = {
   bookings: BookingListItem[];
-  userId: string;
+};
+
+type ActivityPoint = {
+  completed: number;
+  date: string;
+  label: string;
+  requests: number;
 };
 
 const chartDays = 90;
@@ -31,14 +38,6 @@ function dayKey(date: Date) {
   return date.toISOString().slice(0, 10);
 }
 
-function seededNumber(seed: string, index: number) {
-  let value = 0;
-  for (let i = 0; i < seed.length; i += 1) {
-    value = (value * 31 + seed.charCodeAt(i) + index * 17) % 9973;
-  }
-  return value;
-}
-
 function formatLabel(date: Date) {
   return new Intl.DateTimeFormat("en-PH", {
     day: "numeric",
@@ -46,7 +45,7 @@ function formatLabel(date: Date) {
   }).format(date);
 }
 
-function buildEmptyRange() {
+function buildEmptyRange(): ActivityPoint[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -56,14 +55,14 @@ function buildEmptyRange() {
 
     return {
       completed: 0,
-      date,
+      date: dayKey(date),
       label: formatLabel(date),
       requests: 0,
     };
   });
 }
 
-function buildRealSeries(bookings: BookingListItem[]) {
+function buildTalentSeries(bookings: BookingListItem[]) {
   const counts = new Map<string, { completed: number; requests: number }>();
 
   for (const booking of bookings) {
@@ -78,26 +77,9 @@ function buildRealSeries(bookings: BookingListItem[]) {
 
   return buildEmptyRange().map((point) => ({
     ...point,
-    completed: counts.get(dayKey(point.date))?.completed ?? 0,
-    requests: counts.get(dayKey(point.date))?.requests ?? 0,
+    completed: counts.get(point.date)?.completed ?? 0,
+    requests: counts.get(point.date)?.requests ?? 0,
   }));
-}
-
-function buildMockSeries(userId: string) {
-  return buildEmptyRange().map((point, index) => {
-    const wave = Math.sin(index / 4) + Math.cos(index / 9);
-    const seeded = seededNumber(userId, index);
-    const requests = Math.max(
-      0,
-      Math.round(2 + wave * 2 + (seeded % 7) + (index % 13 === 0 ? 6 : 0)),
-    );
-
-    return {
-      ...point,
-      completed: Math.max(0, Math.round(requests * 0.42 + (seeded % 3) - 1)),
-      requests,
-    };
-  });
 }
 
 function makeLinePath(
@@ -129,7 +111,12 @@ function makeLinePath(
     .join(" ");
 }
 
-function makeAreaPath(points: number[], width: number, height: number, max: number) {
+function makeAreaPath(
+  points: number[],
+  width: number,
+  height: number,
+  max: number,
+) {
   const line = makeLinePath(points, width, height, max);
   return `${line} L ${width} ${height} L 0 ${height} Z`;
 }
@@ -141,41 +128,39 @@ function tickIndexes(length: number) {
   );
 }
 
-export function ClientActivityChart({
-  bookings,
-  userId,
-}: ClientActivityChartProps) {
+export function TalentActivityChart({ bookings }: TalentActivityChartProps) {
   const [rangeDays, setRangeDays] = useState<RangeDays>(90);
-  const isDemo = bookings.length === 0;
-  const fullSeries = useMemo(
-    () => (isDemo ? buildMockSeries(userId) : buildRealSeries(bookings)),
-    [bookings, isDemo, userId],
-  );
+  const fullSeries = useMemo(() => buildTalentSeries(bookings), [bookings]);
   const series = fullSeries.slice(-rangeDays);
   const width = 900;
   const height = 260;
   const requestValues = series.map((point) => point.requests);
   const completedValues = series.map((point) => point.completed);
   const totalRequests = requestValues.reduce((total, value) => total + value, 0);
+  const totalCompleted = completedValues.reduce(
+    (total, value) => total + value,
+    0,
+  );
   const maxValue = Math.max(...requestValues, ...completedValues, 1);
   const ticks = tickIndexes(series.length);
+  const selectedLabel = rangeOptions
+    .find((option) => option.days === rangeDays)
+    ?.label.toLowerCase() ?? "selected range";
 
   return (
     <Card className="border-[color:var(--line-strong)] bg-[color:var(--surface)] shadow-[var(--shadow-surface-soft)]">
       <CardHeader className="gap-3 md:grid-cols-[1fr_auto]">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <CardTitle className="tracking-normal">Request activity</CardTitle>
-            {isDemo ? (
-              <Badge className="bg-[color:var(--tone-amber-soft)] text-[color:var(--tone-amber-deep)]">
-                Demo data
-              </Badge>
-            ) : null}
+            <CardTitle className="tracking-normal">
+              Commission activity
+            </CardTitle>
+            <Badge className="bg-[color:var(--tone-sky-soft)] text-[color:var(--tone-sky-deep)]">
+              Live data
+            </Badge>
           </div>
           <CardDescription>
-            {isDemo
-              ? "Mock trend generated for this signed-in user."
-              : "Real requests and completed bookings from this account."}
+            Real service requests and completed projects for this talent account.
           </CardDescription>
         </div>
         <div className="flex overflow-hidden rounded-lg border border-[color:var(--line-strong)] text-xs font-semibold">
@@ -202,35 +187,35 @@ export function ClientActivityChart({
               {totalRequests}
             </p>
             <p className="text-xs font-medium text-[color:var(--ink-muted)]">
-              Requests sent in {rangeOptions.find((option) => option.days === rangeDays)?.label.toLowerCase()}
+              Requests received in {selectedLabel}
             </p>
           </div>
           <div className="flex gap-4 text-xs font-semibold text-[color:var(--ink-muted)]">
             <span className="flex items-center gap-2">
               <span className="size-2 rounded-full bg-[color:var(--brand-orange)]" />
-              Requests Sent
+              Requests Received
             </span>
             <span className="flex items-center gap-2">
               <span className="size-2 rounded-full bg-[color:var(--brand-blue)]" />
-              Completed Jobs
+              Completed Projects: {totalCompleted}
             </span>
           </div>
         </div>
 
         <div className="overflow-hidden rounded-lg border border-[color:var(--line)] bg-[color:var(--surface-alt)]/40">
           <svg
-            aria-label="Request activity chart"
+            aria-label="Talent commission activity chart"
             className="h-[260px] w-full"
             preserveAspectRatio="none"
             role="img"
             viewBox={`0 0 ${width} ${height}`}
           >
             <defs>
-              <linearGradient id="requests-fill" x1="0" x2="0" y1="0" y2="1">
+              <linearGradient id="talent-requests-fill" x1="0" x2="0" y1="0" y2="1">
                 <stop offset="0%" stopColor="var(--brand-orange)" stopOpacity="0.42" />
                 <stop offset="100%" stopColor="var(--brand-orange)" stopOpacity="0.02" />
               </linearGradient>
-              <linearGradient id="completed-fill" x1="0" x2="0" y1="0" y2="1">
+              <linearGradient id="talent-completed-fill" x1="0" x2="0" y1="0" y2="1">
                 <stop offset="0%" stopColor="var(--brand-blue)" stopOpacity="0.24" />
                 <stop offset="100%" stopColor="var(--brand-blue)" stopOpacity="0.02" />
               </linearGradient>
@@ -248,11 +233,11 @@ export function ClientActivityChart({
             ))}
             <path
               d={makeAreaPath(requestValues, width, height, maxValue)}
-              fill="url(#requests-fill)"
+              fill="url(#talent-requests-fill)"
             />
             <path
               d={makeAreaPath(completedValues, width, height, maxValue)}
-              fill="url(#completed-fill)"
+              fill="url(#talent-completed-fill)"
             />
             <path
               d={makeLinePath(requestValues, width, height, maxValue)}
