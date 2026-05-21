@@ -54,10 +54,25 @@ const talentNavItems: SidebarNavItem[] = [
   },
 ];
 
-function buildTalentNavItems(servicesCount?: number): SidebarNavItem[] {
-  return talentNavItems.map((item) =>
-    item.href === "/dashboard/talent/services"
-      ? { ...item, badge: servicesCount }
+function buildTalentNavItems(
+  servicesCount?: number,
+  bookingsCount?: number,
+): SidebarNavItem[] {
+  return talentNavItems.map((item) => {
+    if (item.href === "/dashboard/talent/services") {
+      return { ...item, badge: servicesCount };
+    }
+    if (item.href === "/dashboard/talent/bookings") {
+      return { ...item, badge: bookingsCount };
+    }
+    return item;
+  });
+}
+
+function buildClientNavItems(bookingsCount?: number): SidebarNavItem[] {
+  return clientNavItems.map((item) =>
+    item.href === "/dashboard/client/bookings"
+      ? { ...item, badge: bookingsCount }
       : item,
   );
 }
@@ -72,6 +87,7 @@ type AppSidebarProps = {
   isTalent: boolean;
   role: UserRole;
   servicesCount?: number;
+  bookingsCount?: number;
 };
 
 export function AppSidebar({
@@ -80,9 +96,12 @@ export function AppSidebar({
   isTalent,
   role,
   servicesCount,
+  bookingsCount,
 }: AppSidebarProps) {
   const items =
-    role === "client" ? clientNavItems : buildTalentNavItems(servicesCount);
+    role === "client"
+      ? buildClientNavItems(bookingsCount)
+      : buildTalentNavItems(servicesCount, bookingsCount);
 
   return (
     <Sidebar

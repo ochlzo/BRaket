@@ -34,9 +34,10 @@ const BREVO_WEBHOOK_LOG_FILE = path.join(
   "brevo-webhook-events.log",
 );
 
-export function clearWebhookLog() {
-  fs.mkdirSync(path.dirname(BREVO_WEBHOOK_LOG_FILE), { recursive: true });
-  fs.writeFileSync(BREVO_WEBHOOK_LOG_FILE, "", "utf8");
+export function clearWebhookLog(webhookLogFile?: string) {
+  const logFile = webhookLogFile || BREVO_WEBHOOK_LOG_FILE;
+  fs.mkdirSync(path.dirname(logFile), { recursive: true });
+  fs.writeFileSync(logFile, "", "utf8");
 }
 
 function readWebhookEvents() {

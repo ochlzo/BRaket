@@ -76,17 +76,9 @@ export default async function BoostSuccessPage({
           ) : null}
 
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link className={semantic.button.brandOrange} href="/boost">
-              Back to Boost
+            <Link className={semantic.button.brandOrange} href="/dashboard/talent/profile">
+              Go to Profile
             </Link>
-            <a
-              className={semantic.button.outlineNeutral}
-              href="https://dashboard.paymongo.com/"
-              rel="noreferrer"
-              target="_blank"
-            >
-              Open PayMongo Dashboard
-            </a>
           </div>
         </div>
       </section>

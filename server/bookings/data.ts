@@ -155,6 +155,18 @@ export async function countServicesForTalent(currentUser: CurrentAppUser) {
   });
 }
 
+export async function countBookingsForUser(
+  currentUser: CurrentAppUser,
+  viewer: "client" | "talent",
+) {
+  return prisma.booking.count({
+    where:
+      viewer === "talent"
+        ? { talentUserId: currentUser.id }
+        : { clientUserId: currentUser.id },
+  });
+}
+
 export async function getBookingsForUser(
   currentUser: CurrentAppUser,
   viewer: "client" | "talent",

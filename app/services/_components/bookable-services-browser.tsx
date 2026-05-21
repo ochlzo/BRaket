@@ -1,48 +1,55 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Search, SlidersHorizontal } from "lucide-react";
-import Link from "next/link";
+import Fuse from "fuse.js";
 
-import { ReportButton } from "@/components/shared/moderation/report-button";
-import { UserAvatar } from "@/components/shared/user-avatar";
+import { Combobox, ComboboxChip, ComboboxChips, ComboboxChipsInput, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList, useComboboxAnchor } from "@/components/ui/combobox";
 import type { BookableServiceCard } from "@/lib/bookings/types";
+import { ServiceCard } from "./service-card";
 
-type BookableServicesBrowserProps = {
-  services: BookableServiceCard[];
-};
+type BookableServicesBrowserProps = { services: BookableServiceCard[] };
 
-function serviceCategories(service: BookableServiceCard) {
-  return service.categories.length > 0
-    ? service.categories.slice(0, 3)
-    : ["Service"];
-}
+const MIN_PRESETS = [500, 1000, 2000, 3000, 4000, 5000, 7500, 10000];
+const MAX_PRESETS = [1000, 2000, 3000, 4000, 5000, 7500, 10000, 15000, 20000, 30000, 50000];
 
-export function BookableServicesBrowser({
-  services,
-}: BookableServicesBrowserProps) {
+export function BookableServicesBrowser({ services }: BookableServicesBrowserProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeCategory, setActiveCategory] = useState("all");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [categorySearch, setCategorySearch] = useState("");
+  const [minPrice, setMinPrice] = useState<number | null>(null);
   const [maxPrice, setMaxPrice] = useState<number | null>(null);
-  const categories = useMemo(
-    () =>
-      Array.from(
-        new Set(services.flatMap((service) => service.categories)),
-      ).sort((a, b) => a.localeCompare(b)),
-    [services],
-  );
-  const filteredServices = services.filter((service) => {
-    const search = searchTerm.toLowerCase();
-    const searchMatch =
-      service.title.toLowerCase().includes(search) ||
-      service.talent.displayName.toLowerCase().includes(search) ||
-      service.description.toLowerCase().includes(search);
-    const categoryMatch =
-      activeCategory === "all" || service.categories.includes(activeCategory);
-    const priceMatch = maxPrice === null || service.minPrice <= maxPrice;
+  const [minInput, setMinInput] = useState("");
+  const [maxInput, setMaxInput] = useState("");
+  const anchorRef = useComboboxAnchor();
 
-    return searchMatch && categoryMatch && priceMatch;
-  });
+  useEffect(() => {
+    const h = setTimeout(() => setDebouncedSearchTerm(searchTerm), 300);
+    return () => clearTimeout(h);
+  }, [searchTerm]);
+
+  const categories = useMemo(() => Array.from(new Set(services.flatMap((s) => s.categories))).sort((a, b) => a.localeCompare(b)), [services]);
+
+  const filteredCategoriesOptions = categories.filter((cat) => cat.toLowerCase().includes(categorySearch.toLowerCase()));
+
+  const fuse = useMemo(() => new Fuse(services, {
+    keys: [{ name: "title", weight: 1.0 }, { name: "categories", weight: 0.5 }, { name: "talent.displayName", weight: 0.4 }, { name: "description", weight: 0.2 }],
+    threshold: 0.4,
+    includeScore: true,
+    ignoreLocation: true,
+  }), [services]);
+
+  const filteredServices = useMemo(() => {
+    const filter = (s: BookableServiceCard) =>
+      (selectedCategories.length === 0 || s.categories.some((c) => selectedCategories.includes(c))) &&
+      (minPrice === null || s.minPrice >= minPrice) &&
+      (maxPrice === null || s.minPrice <= maxPrice);
+
+    return debouncedSearchTerm.trim()
+      ? fuse.search(debouncedSearchTerm).filter((r) => filter(r.item)).map((r) => r.item)
+      : services.filter(filter);
+  }, [services, fuse, debouncedSearchTerm, selectedCategories, minPrice, maxPrice]);
 
   return (
     <>
@@ -59,7 +66,7 @@ export function BookableServicesBrowser({
             </p>
           </div>
 
-          <div className="mx-auto mb-8 max-w-3xl">
+          <div className="mx-auto max-w-3xl">
             <div className="relative">
               <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[color:var(--ink-muted)]" />
               <input
@@ -70,34 +77,6 @@ export function BookableServicesBrowser({
                 value={searchTerm}
               />
             </div>
-          </div>
-
-          <div className="flex flex-wrap justify-center gap-3">
-            <button
-              className={`typo-meta rounded-full border px-4 py-2 transition ${
-                activeCategory === "all"
-                  ? "border-[color:var(--brand-blue)] bg-[color:var(--brand-blue)] text-white"
-                  : "border-[color:var(--line-strong)] bg-white text-[color:var(--ink-body)] hover:border-[color:var(--brand-blue)]"
-              }`}
-              onClick={() => setActiveCategory("all")}
-              type="button"
-            >
-              All Categories
-            </button>
-            {categories.map((category) => (
-              <button
-                className={`typo-meta rounded-full border px-4 py-2 transition ${
-                  activeCategory === category
-                    ? "border-[color:var(--brand-blue)] bg-[color:var(--brand-blue)] text-white"
-                    : "border-[color:var(--line-strong)] bg-white text-[color:var(--ink-body)] hover:border-[color:var(--brand-blue)]"
-                }`}
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                type="button"
-              >
-                {category}
-              </button>
-            ))}
           </div>
         </div>
       </section>
@@ -112,33 +91,144 @@ export function BookableServicesBrowser({
               </div>
 
               <div className="flex flex-wrap items-center gap-4">
-                <label className="flex items-center gap-2 text-sm font-semibold text-[color:var(--ink-muted)]">
-                  Max Price:
-                  <select
-                    className="rounded-lg border border-[color:var(--line-strong)] bg-white px-3 py-1.5 text-sm font-medium text-foreground outline-none"
-                    onChange={(event) =>
-                      setMaxPrice(
-                        event.target.value === "any"
-                          ? null
-                          : Number(event.target.value),
-                      )
-                    }
-                    value={maxPrice === null ? "any" : maxPrice}
+                <div className="flex items-center gap-2 text-sm font-semibold text-[color:var(--ink-muted)]">
+                  Categories:
+                  <Combobox
+                    inputValue={categorySearch}
+                    itemToStringLabel={(cat) => cat}
+                    itemToStringValue={(cat) => cat}
+                    multiple
+                    onInputValueChange={setCategorySearch}
+                    onValueChange={(val) => {
+                      if (Array.isArray(val)) {
+                        setSelectedCategories(val);
+                      }
+                    }}
+                    value={selectedCategories}
                   >
-                    <option value="any">Any Price</option>
-                    <option value="1000">Up to PHP 1,000</option>
-                    <option value="3000">Up to PHP 3,000</option>
-                    <option value="5000">Up to PHP 5,000</option>
-                    <option value="10000">Up to PHP 10,000</option>
-                  </select>
-                </label>
+                    <ComboboxChips
+                      className="min-h-9 max-h-16 w-80 sm:w-96 overflow-y-auto rounded-lg border border-[color:var(--line-strong)] bg-white px-2 py-1"
+                      ref={anchorRef}
+                    >
+                      {selectedCategories.map((cat) => (
+                        <ComboboxChip
+                          className="rounded-full bg-[color:var(--tone-indigo-soft)] px-2 py-0.5 text-[color:var(--tone-indigo-deep)] text-xs font-semibold"
+                          key={cat}
+                        >
+                          {cat}
+                        </ComboboxChip>
+                      ))}
+                      <ComboboxChipsInput
+                        className="text-xs placeholder:text-[color:var(--ink-muted)]"
+                        placeholder={
+                          selectedCategories.length > 0
+                            ? "Filter categories..."
+                            : "All Categories"
+                        }
+                      />
+                    </ComboboxChips>
+                    <ComboboxContent
+                      anchor={anchorRef}
+                      className="rounded-lg border border-[color:var(--line-strong)] bg-white shadow-[var(--shadow-menu)]"
+                    >
+                      <ComboboxList>
+                        {filteredCategoriesOptions.map((cat) => (
+                          <ComboboxItem
+                            key={cat}
+                            value={cat}
+                          >
+                            {cat}
+                          </ComboboxItem>
+                        ))}
+                        <ComboboxEmpty>
+                          No matching categories.
+                        </ComboboxEmpty>
+                      </ComboboxList>
+                    </ComboboxContent>
+                  </Combobox>
+                </div>
+
+                <div className="flex items-center gap-2 text-sm font-semibold text-[color:var(--ink-muted)]">
+                  <span>Price Range:</span>
+                  <Combobox
+                    value={minPrice === null ? "" : String(minPrice)}
+                    onValueChange={(val) => {
+                      if (typeof val === "string") {
+                        const num = val ? Number(val) : null;
+                        setMinPrice(num);
+                        setMinInput(num !== null ? `PHP ${num.toLocaleString()}` : "");
+                      }
+                    }}
+                    inputValue={minInput}
+                    onInputValueChange={(val) => {
+                      setMinInput(val);
+                      const numeric = val.replace(/\D/g, "");
+                      setMinPrice(numeric ? Number(numeric) : null);
+                    }}
+                  >
+                    <ComboboxInput
+                      className="w-32 h-9 rounded-lg border border-[color:var(--line-strong)] bg-white text-xs text-foreground outline-none"
+                      placeholder="Min Price"
+                      showTrigger
+                      showClear={minPrice !== null}
+                    />
+                    <ComboboxContent className="rounded-lg border border-[color:var(--line-strong)] bg-white shadow-[var(--shadow-menu)] min-w-[140px]">
+                      <ComboboxList className="max-h-60 overflow-y-auto">
+                        <ComboboxItem value="">Any</ComboboxItem>
+                        {MIN_PRESETS.map((p) => (
+                          <ComboboxItem key={p} value={String(p)}>
+                            PHP {p.toLocaleString()}
+                          </ComboboxItem>
+                        ))}
+                      </ComboboxList>
+                    </ComboboxContent>
+                  </Combobox>
+                  <span>to</span>
+                  <Combobox
+                    value={maxPrice === null ? "" : String(maxPrice)}
+                    onValueChange={(val) => {
+                      if (typeof val === "string") {
+                        const num = val ? Number(val) : null;
+                        setMaxPrice(num);
+                        setMaxInput(num !== null ? `PHP ${num.toLocaleString()}` : "");
+                      }
+                    }}
+                    inputValue={maxInput}
+                    onInputValueChange={(val) => {
+                      setMaxInput(val);
+                      const numeric = val.replace(/\D/g, "");
+                      setMaxPrice(numeric ? Number(numeric) : null);
+                    }}
+                  >
+                    <ComboboxInput
+                      className="w-32 h-9 rounded-lg border border-[color:var(--line-strong)] bg-white text-xs text-foreground outline-none"
+                      placeholder="Max Price"
+                      showTrigger
+                      showClear={maxPrice !== null}
+                    />
+                    <ComboboxContent className="rounded-lg border border-[color:var(--line-strong)] bg-white shadow-[var(--shadow-menu)] min-w-[140px]">
+                      <ComboboxList className="max-h-60 overflow-y-auto">
+                        <ComboboxItem value="">Any</ComboboxItem>
+                        {MAX_PRESETS.map((p) => (
+                          <ComboboxItem key={p} value={String(p)}>
+                            PHP {p.toLocaleString()}
+                          </ComboboxItem>
+                        ))}
+                      </ComboboxList>
+                    </ComboboxContent>
+                  </Combobox>
+                </div>
 
                 <button
                   className="typo-label-sm rounded-full px-3 py-1.5 text-[color:var(--ink-soft)] transition hover:bg-[color:var(--surface-hover)] hover:text-foreground"
                   onClick={() => {
                     setSearchTerm("");
-                    setActiveCategory("all");
+                    setSelectedCategories([]);
+                    setCategorySearch("");
+                    setMinPrice(null);
                     setMaxPrice(null);
+                    setMinInput("");
+                    setMaxInput("");
                   }}
                   type="button"
                 >
@@ -159,67 +249,7 @@ export function BookableServicesBrowser({
           {filteredServices.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {filteredServices.map((service) => (
-                <article
-                  className="flex flex-col rounded-2xl border border-[color:var(--line-strong)] bg-white p-5 shadow-[var(--shadow-surface-soft)] transition hover:-translate-y-1 hover:shadow-lg"
-                  key={service.id}
-                >
-                  <div className="flex min-h-[4.25rem] items-start justify-between gap-3">
-                    <div className="grid min-w-0 flex-1 grid-cols-[repeat(2,minmax(0,8.75rem))] content-start gap-1.5">
-                      {serviceCategories(service).map((category) => (
-                        <span
-                          className="flex min-h-7 max-w-full items-center justify-center rounded-full bg-[color:var(--tone-indigo-soft)] px-2.5 py-1 text-center text-[11px] font-bold leading-tight text-[color:var(--tone-indigo-deep)]"
-                          key={category}
-                        >
-                          <span className="line-clamp-2 break-words">
-                            {category}
-                          </span>
-                        </span>
-                      ))}
-                    </div>
-                    <ReportButton
-                      label="Report"
-                      targetId={service.id}
-                      targetLabel={`${service.title} by ${service.talent.displayName}`}
-                      targetPath={`/book/${service.id}`}
-                      targetType="SERVICE"
-                    />
-                  </div>
-                  <h2 className="mt-3 min-h-14 line-clamp-2 text-lg font-extrabold tracking-normal text-foreground">
-                    {service.title}
-                  </h2>
-                  <p className="mt-2 min-h-[4.5rem] line-clamp-3 text-sm leading-6 text-[color:var(--ink-muted)]">
-                    {service.description}
-                  </p>
-
-                  <div className="mt-5 flex items-center gap-3">
-                    <UserAvatar
-                      alt={service.talent.displayName}
-                      className="h-10 w-10"
-                      initials={service.talent.initials}
-                      src={service.talent.avatarUrl}
-                    />
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-bold text-foreground">
-                        {service.talent.displayName}
-                      </p>
-                      <p className="truncate text-xs text-[color:var(--ink-muted)]">
-                        {service.talent.headline}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mt-auto flex items-center justify-between gap-4 pt-5">
-                    <span className="text-base font-extrabold text-[color:var(--brand-orange)]">
-                      {service.priceLabel}
-                    </span>
-                    <Link
-                      className="rounded-full bg-[color:var(--brand-blue)] px-4 py-2 text-sm font-bold text-white transition hover:bg-[color:var(--brand-blue-strong)]"
-                      href={`/book/${service.id}`}
-                    >
-                      Book
-                    </Link>
-                  </div>
-                </article>
+                <ServiceCard key={service.id} service={service} />
               ))}
             </div>
           ) : (

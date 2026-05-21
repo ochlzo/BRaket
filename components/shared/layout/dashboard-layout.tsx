@@ -7,7 +7,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { countServicesForTalent } from "@/server/bookings/data";
+import { countBookingsForUser, countServicesForTalent } from "@/server/bookings/data";
 import { getCurrentAppUser } from "@/server/users/current-user";
 
 type DashboardLayoutProps = {
@@ -39,6 +39,9 @@ export async function DashboardLayout({
     role === "talent" && currentUser
       ? await countServicesForTalent(currentUser)
       : undefined;
+  const bookingsCount = currentUser
+    ? await countBookingsForUser(currentUser, role)
+    : undefined;
 
   return (
     <SidebarProvider defaultOpen={defaultSidebarOpen}>
@@ -48,6 +51,7 @@ export async function DashboardLayout({
         isTalent={currentUser?.isTalent ?? false}
         role={role}
         servicesCount={servicesCount}
+        bookingsCount={bookingsCount}
       />
 
       <SidebarInset

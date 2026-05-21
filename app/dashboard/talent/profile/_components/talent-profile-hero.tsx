@@ -188,22 +188,24 @@ export function TalentProfileHero({ profile, user }: TalentProfileHeroProps) {
                 <p className="mt-1 break-words text-sm font-medium text-[color:var(--ink-muted)] sm:text-lg">
                   {headline}
                 </p>
-                {profile.activeBoost ? (
-                  <div
-                    className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ${boostStyle.badge}`}
-                  >
-                    <Sparkles aria-hidden="true" className="h-3.5 w-3.5" />
-                    {profile.activeBoost.badgeLabel}
-                  </div>
-                ) : null}
               </div>
 
               <div className="hidden sm:block">{renderProfileMenu()}</div>
             </div>
 
-            <TalentAvailabilityControl
-              initialStatus={profile.availabilityStatus}
-            />
+            <div className="flex flex-wrap items-center gap-3">
+              {profile.activeBoost ? (
+                <div
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ${boostStyle.badge}`}
+                >
+                  <Sparkles aria-hidden="true" className="h-3.5 w-3.5" />
+                  {profile.activeBoost.badgeLabel}
+                </div>
+              ) : null}
+              <TalentAvailabilityControl
+                initialStatus={profile.availabilityStatus}
+              />
+            </div>
 
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-[color:var(--ink-muted)]">
               <span className="flex items-center gap-1.5 whitespace-nowrap">

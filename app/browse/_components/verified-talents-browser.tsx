@@ -1,8 +1,9 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Search, ShieldCheck, Sparkles, Star } from "lucide-react";
-import { useState } from "react";
+import Fuse from "fuse.js";
 
 import { UserAvatar } from "@/components/shared/user-avatar";
 import type { TalentAvailabilityStatus } from "@/lib/talent-profile/availability";
@@ -38,24 +39,32 @@ export function VerifiedTalentsBrowser({
   talents,
 }: VerifiedTalentsBrowserProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const search = searchTerm.trim().toLowerCase();
-  const filteredTalents = talents.filter((talent) => {
-    if (!search) {
-      return true;
-    }
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 
-    return [
-      talent.displayName,
-      talent.headline,
-      talent.bio,
-      talent.college,
-      talent.course,
-      talent.skills.join(" "),
-    ]
-      .join(" ")
-      .toLowerCase()
-      .includes(search);
-  });
+  useEffect(() => {
+    const h = setTimeout(() => setDebouncedSearchTerm(searchTerm), 300);
+    return () => clearTimeout(h);
+  }, [searchTerm]);
+
+  const fuse = useMemo(() => new Fuse(talents, {
+    keys: [
+      { name: "displayName", weight: 1.0 },
+      { name: "skills", weight: 0.8 },
+      { name: "headline", weight: 0.5 },
+      { name: "college", weight: 0.4 },
+      { name: "course", weight: 0.4 },
+      { name: "bio", weight: 0.2 },
+    ],
+    threshold: 0.4,
+    includeScore: true,
+    ignoreLocation: true,
+  }), [talents]);
+
+  const filteredTalents = useMemo(() => {
+    return debouncedSearchTerm.trim()
+      ? fuse.search(debouncedSearchTerm).map((r) => r.item)
+      : talents;
+  }, [talents, fuse, debouncedSearchTerm]);
 
   return (
     <>
