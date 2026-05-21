@@ -17,6 +17,14 @@ export type AdminDashboardData = {
   completedBookings: number;
   pendingApprovals: number;
   pendingReports: number;
+  platformActivity: Array<{
+    bookings: number;
+    date: string;
+    label: string;
+    reports: number;
+    users: number;
+    verifications: number;
+  }>;
   recentReports: Array<{
     createdAt: string;
     id: string;
@@ -53,7 +61,44 @@ function displayName(user: {
   return name || user.username || user.email;
 }
 
+function buildActivityRange(days = 90) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return Array.from({ length: days }, (_, index) => {
+    const date = new Date(today);
+    date.setDate(today.getDate() - (days - index - 1));
+
+    return {
+      bookings: 0,
+      date: date.toISOString().slice(0, 10),
+      label: new Intl.DateTimeFormat("en-PH", {
+        day: "numeric",
+        month: "short",
+      }).format(date),
+      reports: 0,
+      users: 0,
+      verifications: 0,
+    };
+  });
+}
+
+function countByDay(rows: Array<{ createdAt: Date }>) {
+  const counts = new Map<string, number>();
+
+  for (const row of rows) {
+    const key = row.createdAt.toISOString().slice(0, 10);
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+
+  return counts;
+}
+
 export async function getAdminDashboardData(): Promise<AdminDashboardData> {
+  const activityStart = new Date();
+  activityStart.setHours(0, 0, 0, 0);
+  activityStart.setDate(activityStart.getDate() - 89);
+
   const [
     totalUsers,
     talentUsers,
@@ -64,6 +109,10 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
     completedBookings,
     pendingApprovals,
     pendingReports,
+    activityUsers,
+    activityBookings,
+    activityReports,
+    activityVerifications,
     recentUsers,
     recentReports,
     recentBookings,
@@ -78,6 +127,22 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
     prisma.booking.count({ where: { status: BookingStatus.COMPLETED } }),
     prisma.talentVerificationRequest.count({ where: { status: "PENDING" } }),
     prisma.contentReport.count({ where: { status: ReportStatus.PENDING } }),
+    prisma.user.findMany({
+      select: { createdAt: true },
+      where: { createdAt: { gte: activityStart } },
+    }),
+    prisma.booking.findMany({
+      select: { createdAt: true },
+      where: { createdAt: { gte: activityStart } },
+    }),
+    prisma.contentReport.findMany({
+      select: { createdAt: true },
+      where: { createdAt: { gte: activityStart } },
+    }),
+    prisma.talentVerificationRequest.findMany({
+      select: { createdAt: true },
+      where: { createdAt: { gte: activityStart } },
+    }),
     prisma.user.findMany({
       orderBy: { createdAt: "desc" },
       select: {
@@ -162,6 +227,17 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
   ]
     .sort((left, right) => Date.parse(right.createdAt) - Date.parse(left.createdAt))
     .slice(0, 8);
+  const usersByDay = countByDay(activityUsers);
+  const bookingsByDay = countByDay(activityBookings);
+  const reportsByDay = countByDay(activityReports);
+  const verificationsByDay = countByDay(activityVerifications);
+  const platformActivity = buildActivityRange().map((day) => ({
+    ...day,
+    bookings: bookingsByDay.get(day.date) ?? 0,
+    reports: reportsByDay.get(day.date) ?? 0,
+    users: usersByDay.get(day.date) ?? 0,
+    verifications: verificationsByDay.get(day.date) ?? 0,
+  }));
 
   return {
     activeBookings,
@@ -170,6 +246,7 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
     completedBookings,
     pendingApprovals,
     pendingReports,
+    platformActivity,
     recentReports: recentReports.map((report) => ({
       createdAt: report.createdAt.toISOString(),
       id: report.reportId,
