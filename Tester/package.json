@@ -1,0 +1,16 @@
+{
+  "name": "braket-selenium-qa",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "ui": "node gui/server.js",
+    "test": "node --test features/*.test.js",
+    "test:registration": "node --test features/registration.input-validation.test.js",
+    "test:profiles": "node --test features/profile-creation.input-validation.test.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.1",
+    "selenium-webdriver": "^4.27.0"
+  }
+}
