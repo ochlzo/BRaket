@@ -1,0 +1,15 @@
+{
+  "name": "armenta-service-listings-testing-evidence",
+  "private": true,
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:create": "playwright test service-listings-create.spec.ts",
+    "test:e2e:edit": "playwright test service-listings-edit.spec.ts",
+    "test:e2e:delete": "playwright test service-listings-delete.spec.ts",
+    "test:e2e:validation-security": "playwright test service-listings-validation-security.spec.ts",
+    "test:e2e:report": "playwright show-report reports/all"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0"
+  }
+}
