@@ -4,6 +4,7 @@ type SendEmailInput = {
   from?: string;
   html: string;
   idempotencyKey?: string;
+  tags?: string[];
   replyTo?: string;
   subject: string;
   text: string;
@@ -36,6 +37,7 @@ export async function sendEmail({
   from = process.env.BOOKING_EMAIL_FROM,
   html,
   idempotencyKey,
+  tags,
   replyTo,
   subject,
   text,
@@ -66,6 +68,7 @@ export async function sendEmail({
       htmlContent: html,
       replyTo: replyToAddress,
       sender,
+      tags,
       subject,
       textContent: text,
       to: [recipient],

@@ -158,6 +158,7 @@ export function BookingList({
       {bookings.map((booking) => (
         <article
           className="rounded-2xl border border-[color:var(--line-strong)] bg-white p-5 shadow-[var(--shadow-surface-soft)] sm:p-6"
+          data-booking-id={booking.id}
           key={booking.id}
         >
           <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_420px]">

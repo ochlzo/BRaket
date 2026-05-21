@@ -8,10 +8,12 @@ import type { BookingActionState } from "@/lib/bookings/types";
 import { prisma } from "@/lib/prisma";
 import { notifyClientAboutBookingResponse } from "@/server/bookings/booking-response-notification";
 import {
+  sendClientBookingCancelledEmail,
   sendTalentBookingRequestEmail,
   sendWorkInitiatedEmail,
   sendWorkSubmittedEmail,
 } from "@/server/bookings/email";
+import { sendWorkCompletedEmail } from "@/server/bookings/work-completed-email";
 import { getCurrentAppUser } from "@/server/users/current-user";
 
 const EMPTY_STATE: BookingActionState = {
@@ -91,6 +93,13 @@ export async function createBookingRequestAction(
 
   if (!serviceId) {
     return { ...EMPTY_STATE, message: "Choose a service to book." };
+  }
+
+  if (!projectDetails) {
+    return {
+      ...EMPTY_STATE,
+      message: "Project details are required.",
+    };
   }
 
   const service = await prisma.service.findUnique({
@@ -267,6 +276,31 @@ export async function updateBookingStatusAction(
     });
   }
 
+  if (nextStatus === "CANCELLED") {
+    const full = await prisma.booking.findUnique({
+      include: { Client: true, Service: true, Talent: true },
+      where: { bookingId },
+    });
+
+    if (full) {
+      const clientName =
+        `${full.Client.firstName ?? ""} ${full.Client.lastName ?? ""}`.trim() ||
+        full.Client.email;
+      const talentName =
+        `${full.Talent.firstName ?? ""} ${full.Talent.lastName ?? ""}`.trim() ||
+        full.Talent.email;
+
+      sendClientBookingCancelledEmail({
+        booking: full,
+        client: { displayName: clientName, email: full.Client.email },
+        service: { title: full.Service.title },
+        talent: { displayName: talentName, email: full.Talent.email },
+      }).catch((err: unknown) =>
+        console.warn("Failed to send booking-cancelled email:", err),
+      );
+    }
+  }
+
   // Fire notification emails for the new handshake steps
   if (nextStatus === "IN_PROGRESS" || nextStatus === "WORK_SUBMITTED") {
     const full = await prisma.booking.findUnique({
@@ -312,6 +346,36 @@ export async function updateBookingStatusAction(
           console.warn("Failed to send work-submitted email:", err),
         );
       }
+    }
+  }
+
+  if (nextStatus === "COMPLETED") {
+    const full = await prisma.booking.findUnique({
+      include: { Client: true, Service: true, Talent: true },
+      where: { bookingId },
+    });
+
+    if (full) {
+      const siteUrl = (await getSiteUrl()).replace(/\/$/, "");
+      const talentDashboard = siteUrl
+        ? `${siteUrl}/dashboard/talent/bookings`
+        : "/dashboard/talent/bookings";
+      const clientName =
+        `${full.Client.firstName ?? ""} ${full.Client.lastName ?? ""}`.trim() ||
+        full.Client.email;
+      const talentName =
+        `${full.Talent.firstName ?? ""} ${full.Talent.lastName ?? ""}`.trim() ||
+        full.Talent.email;
+
+      sendWorkCompletedEmail({
+        bookingId,
+        client: { displayName: clientName, email: full.Client.email },
+        dashboardUrl: talentDashboard,
+        service: { title: full.Service.title },
+        talent: { displayName: talentName, email: full.Talent.email },
+      }).catch((err: unknown) =>
+        console.warn("Failed to send work-completed email:", err),
+      );
     }
   }
 

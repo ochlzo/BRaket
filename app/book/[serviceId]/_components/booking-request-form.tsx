@@ -39,7 +39,7 @@ export function BookingRequestForm({
   }, [router, state.ok, state.redirectTo]);
 
   return (
-    <form action={formAction} className="space-y-6">
+    <form action={formAction} className="space-y-6" noValidate>
       <input name="serviceId" type="hidden" value={serviceId} />
 
       <div className="space-y-2">
@@ -54,7 +54,6 @@ export function BookingRequestForm({
           id="project-details"
           name="projectDetails"
           placeholder="Describe what you need, the desired outcome, important requirements, and any deadline."
-          required
         />
       </div>
 

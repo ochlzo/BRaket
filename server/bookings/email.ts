@@ -3,6 +3,7 @@ import "server-only";
 import type { Booking } from "@prisma/client";
 
 import { sendEmail } from "@/server/email/brevo";
+import { recordBookingEmailEvent } from "@/server/bookings/email-events";
 
 type BookingTalentEmailInput = {
   booking: Pick<Booking, "bookingId" | "budget" | "projectDetails" | "notes">;
@@ -23,6 +24,21 @@ type BookingTalentEmailInput = {
 
 type BookingClientEmailInput = {
   booking: Pick<Booking, "bookingId" | "declineReason" | "status">;
+  client: {
+    displayName: string;
+    email: string;
+  };
+  service: {
+    title: string;
+  };
+  talent: {
+    displayName: string;
+    email: string;
+  };
+};
+
+type BookingCancelEmailInput = {
+  booking: Pick<Booking, "bookingId" | "status">;
   client: {
     displayName: string;
     email: string;
@@ -115,14 +131,55 @@ export async function sendTalentBookingRequestEmail({
     </div>
   `;
 
-  return sendEmail({
-    html,
-    idempotencyKey: `booking-request-${booking.bookingId}`,
-    replyTo: client.email,
-    subject,
-    text,
-    to: talent.email,
+  recordBookingEmailEvent({
+    bookingId: booking.bookingId,
+    clientEmail: client.email,
+    kind: "talent-booking-request",
+    serviceId: undefined,
+    stage: "attempt",
+    talentEmail: talent.email,
   });
+
+  try {
+    const result = await sendEmail({
+      html,
+      idempotencyKey: `booking-request-${booking.bookingId}`,
+      tags: [`booking-request:${booking.bookingId}`],
+      replyTo: client.email,
+      subject,
+      text,
+      to: talent.email,
+    });
+
+    recordBookingEmailEvent({
+      bookingId: booking.bookingId,
+      clientEmail: client.email,
+      kind: "talent-booking-request",
+      message: result.ok ? undefined : result.message,
+      serviceId: undefined,
+      stage: result.ok ? "success" : "failure",
+      talentEmail: talent.email,
+    });
+
+    return result;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+
+    recordBookingEmailEvent({
+      bookingId: booking.bookingId,
+      clientEmail: client.email,
+      kind: "talent-booking-request",
+      message,
+      serviceId: undefined,
+      stage: "failure",
+      talentEmail: talent.email,
+    });
+
+    return {
+      ok: false,
+      message: `Booking email request threw an error: ${message}`,
+    };
+  }
 }
 
 export async function sendClientBookingResponseEmail({
@@ -178,6 +235,7 @@ export async function sendClientBookingResponseEmail({
   return sendEmail({
     html,
     idempotencyKey: `booking-response-${booking.bookingId}-${booking.status}`,
+    tags: [`booking-response:${booking.bookingId}:${booking.status}`],
     replyTo: talent.email,
     subject,
     text,
@@ -230,6 +288,7 @@ export async function sendWorkInitiatedEmail({
   return sendEmail({
     html,
     idempotencyKey: `work-initiated-${bookingId}`,
+    tags: [`booking-work-initiated:${bookingId}`],
     replyTo: client.email,
     subject,
     text,
@@ -276,9 +335,50 @@ export async function sendWorkSubmittedEmail({
   return sendEmail({
     html,
     idempotencyKey: `work-submitted-${bookingId}`,
+    tags: [`booking-work-submitted:${bookingId}`],
     replyTo: talent.email,
     subject,
     text,
     to: client.email,
+  });
+}
+
+export async function sendClientBookingCancelledEmail({
+  booking,
+  client,
+  service,
+  talent,
+}: BookingCancelEmailInput) {
+  const safeClientName = escapeHtml(client.displayName);
+  const safeTalentName = escapeHtml(talent.displayName);
+  const safeServiceTitle = escapeHtml(service.title);
+  const subject = `Your booking was canceled: ${service.title}`;
+  const text = [
+    `Hi ${talent.displayName},`,
+    "",
+    `${client.displayName} canceled the booking for "${service.title}".`,
+    "The request is no longer active.",
+    "",
+    `Booking id: ${booking.bookingId}`,
+  ].join("\n");
+
+  const html = `
+    <div style="font-family:Arial,sans-serif;line-height:1.6;color:#1f2937;max-width:560px">
+      <h1 style="font-size:20px;margin:0 0 12px">Booking canceled</h1>
+      <p>Hi ${safeTalentName},</p>
+      <p><strong>${safeClientName}</strong> canceled the booking for <strong>${safeServiceTitle}</strong>.</p>
+      <p>The request is no longer active.</p>
+      <p style="font-size:13px;color:#6b7280;margin-top:16px">Booking id: ${booking.bookingId}</p>
+    </div>
+  `;
+
+  return sendEmail({
+    html,
+    idempotencyKey: `booking-cancelled-${booking.bookingId}`,
+    tags: [`booking-cancelled:${booking.bookingId}`],
+    replyTo: client.email,
+    subject,
+    text,
+    to: talent.email,
   });
 }
