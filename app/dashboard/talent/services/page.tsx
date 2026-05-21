@@ -28,12 +28,10 @@ function MyServiceCard({
           <div className="mb-3 flex flex-wrap gap-1.5">
             {serviceCategories(service).map((category) => (
               <span
-                className="max-w-full rounded-full bg-[color:var(--tone-indigo-soft)] px-3 py-1 text-center text-xs font-bold leading-4 text-[color:var(--tone-indigo-deep)]"
+                className="max-w-full rounded-full bg-[color:var(--tone-indigo-soft)] px-3 py-1 text-center text-xs font-bold leading-4 text-[color:var(--tone-indigo-deep)] whitespace-nowrap"
                 key={category}
               >
-                <span className="block whitespace-normal break-words">
-                  {category}
-                </span>
+                {category}
               </span>
             ))}
           </div>
