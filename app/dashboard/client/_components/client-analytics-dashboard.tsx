@@ -19,6 +19,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import type { BookingListItem } from "@/lib/bookings/types";
+import { ClientActivityChart } from "./client-activity-chart";
 import {
   RecentBookings,
   StatusOverview,
@@ -153,6 +154,10 @@ export function ClientAnalyticsDashboard({
       </Card>
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.6fr)]">
+        <div className="xl:col-span-2">
+          <ClientActivityChart bookings={bookings} />
+        </div>
+
         <Card className="border-[color:var(--line-strong)] bg-[color:var(--surface)] shadow-[var(--shadow-surface-soft)]">
           <CardHeader>
             <CardTitle className="tracking-normal">Recent activity</CardTitle>
